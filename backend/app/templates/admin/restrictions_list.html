@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% block title %}Restrictions · ElderShield Admin{% endblock %}
+{% block content %}
+<section class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem">
+    <h1 style="margin:0">Country restrictions</h1>
+    <a class="btn" href="/admin/ui/restrictions/new">New group</a>
+  </div>
+  <p class="muted">Multi-country groups synced to devices via RuleBundle.</p>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Countries</th><th>Apply</th><th>Ver</th><th>Enabled</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td>{{ r.countries | join(", ") }}</td>
+        <td>{{ r.apply_to | join(", ") }}</td>
+        <td>{{ r.version }}</td>
+        <td>{{ r.enabled }}</td>
+        <td><a href="/admin/ui/restrictions/{{ r.id }}">Edit</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No restrictions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
