@@ -19,6 +19,8 @@ venv/
 *.egg-info/
 dist/
 build/
+backend/*.db
+backend/.env
 
 # Android / Gradle
 **/.gradle/
