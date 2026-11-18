@@ -1,0 +1,41 @@
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.pem
+*.keystore
+credentials.json
+**/local.properties
+**/secrets.*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Android / Gradle
+**/.gradle/
+**/build/
+**/captures/
+**/.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Grok / local agent
+.grok-build/
