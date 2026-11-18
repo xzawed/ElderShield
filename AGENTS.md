@@ -4,7 +4,8 @@
 관리자만 웹 대시보드로 제어. 부모님은 설치·권한 후 조작 없음.
 
 **설계 SSOT**: `docs/specs/2026-11-18-eldershield-system-design.md` (루트 `ElderShield_Design_v1.0.md`는 스텁)  
-**문서 인덱스**: `docs/README.md` — `specs/`(결정), `plans/`(구현 서사), `00`/`01`/`06`(요약)
+**문서 인덱스**: `docs/README.md` — `specs/`(결정), `plans/`(구현 서사), `00`/`01`/`06`(요약)  
+**스프린트**: `docs/plans/2026-11-19-sprint-board.md` (Hybrid C · TDD · 교차 실측). 문서 비대화 금지(보드는 Status만 갱신)
 
 ## 역할 분담 (이 세션)
 

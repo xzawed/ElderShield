@@ -1,5 +1,6 @@
 # 06. 로드맵
 
+**스프린트 보드 (Hybrid C)**: [`plans/2026-11-19-sprint-board.md`](plans/2026-11-19-sprint-board.md)  
 **상세 WBS·주간 일정**: [`plans/2026-11-19-phase1-schedule-wbs.md`](plans/2026-11-19-phase1-schedule-wbs.md)  
 **기획·검토 게이트**: [`plans/2026-11-19-development-plan-and-review.md`](plans/2026-11-19-development-plan-and-review.md)
 
