@@ -32,7 +32,7 @@
 | **S2** | Device API + min admin UI | UT-B-20–25 + version→latest smoke | `pytest -q` | Pass 2026-11-19 (22 tests) |
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
-| **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew test` + no parent UI | Pending |
+| **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
 | **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Pending |
 
 ## S1 slices
@@ -64,12 +64,19 @@
 | S4.1 | CountryRestrictionMatcher | UT-A-01–22 | Pass (`:core:test`) |
 | S4.2 | CallScreeningService wire-up | assembleDebug | Pass (needs role on device) |
 
-## S5 slices (next)
+## S5 slices
 
-| Slice | Deliverable | UT first |
-|-------|-------------|----------|
-| S5.1 | AppScanner risk scoring | UT-A-40–44 |
-| S5.2 | DnsMonitor + heartbeat fields | manual/device |
+| Slice | Deliverable | UT first | Status |
+|-------|-------------|----------|--------|
+| S5.1 | AppScanner risk scoring | UT-A-40–44 | Pass |
+| S5.2 | DnsMonitor + DeviceReportWorker heartbeat | unit + assemble | Pass |
+
+## S6 slices (next)
+
+| Slice | Deliverable | Notes |
+|-------|-------------|-------|
+| S6.1 | Device checklist (bank apps, call block) | User device |
+| S6.2 | Play internal track + rollback runbook | `docs/runbooks/rollback.md` |
 
 ## Doc budget
 
