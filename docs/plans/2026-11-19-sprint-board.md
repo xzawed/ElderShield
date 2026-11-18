@@ -28,20 +28,27 @@
 | Sprint | DoD (see schedule M*) | TDD focus (IDs) | Measure | Status |
 |--------|----------------------|-----------------|---------|--------|
 | **S0** | Docs/rules fixed | — | Link/scope check | Pass 2026-11-19 |
-| **S1** | Backend models + admin CRUD | UT-B-01–06, 10–16 | `pytest -q` | Pending |
+| **S1** | Backend models + admin CRUD | UT-B-01–06, 10–16 | `pytest -q` | Pass 2026-11-19 (14 tests) |
 | **S2** | Device API + min admin UI | UT-B-20–25 + version→latest smoke | `pytest -q` | Pending |
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew test` | Pending |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew test` | Pending |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew test` + no parent UI | Pending |
 | **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Pending |
 
-## S1 slices (next)
+## S1 slices
+
+| Slice | Deliverable | UT first | Status |
+|-------|-------------|----------|--------|
+| S1.1 | FastAPI/SQLModel/Alembic scaffold | health | Pass |
+| S1.2 | Domain version + `countries[]` invariants | UT-B-01–06 | Pass |
+| S1.3 | Admin country-restrictions + countries + auth | UT-B-10–16 | Pass |
+
+## S2 slices (next)
 
 | Slice | Deliverable | UT first |
 |-------|-------------|----------|
-| S1.1 | FastAPI/SQLModel/Alembic scaffold | — (scaffold; tests wire-up) |
-| S1.2 | Domain version + `countries[]` invariants | UT-B-01–06 |
-| S1.3 | Admin country-restrictions + countries + auth | UT-B-10–16 |
+| S2.1 | Device API: rules/latest, heartbeat, scan-result | UT-B-20–25 |
+| S2.2 | Min admin UI (multi-select countries) | manual smoke |
 
 ## Doc budget
 
