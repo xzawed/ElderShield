@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ElderShield Admin{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <style>
+    :root { --bg:#f6f7f9; --ink:#1a1d23; --line:#d7dbe3; --accent:#0f6e56; }
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin:0; background:var(--bg); color:var(--ink); }
+    header { background:#fff; border-bottom:1px solid var(--line); padding:0.9rem 1.25rem; display:flex; gap:1rem; align-items:center; }
+    header a { color:var(--accent); text-decoration:none; font-weight:600; }
+    main { max-width:960px; margin:1.5rem auto; padding:0 1rem; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:1.25rem; margin-bottom:1rem; }
+    label { display:block; font-size:0.85rem; margin:0.6rem 0 0.25rem; }
+    input[type=text], input[type=password], textarea, select { width:100%; box-sizing:border-box; padding:0.55rem 0.65rem; border:1px solid var(--line); border-radius:8px; }
+    select[multiple] { min-height:9rem; }
+    button, .btn { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:0.55rem 0.9rem; cursor:pointer; text-decoration:none; display:inline-block; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:0.55rem; border-bottom:1px solid var(--line); font-size:0.95rem; }
+    .muted { color:#667085; font-size:0.85rem; }
+    .error { color:#b42318; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>ElderShield Admin</strong>
+    {% if admin_authed %}
+    <a href="/admin/ui/restrictions">Restrictions</a>
+    <a href="/admin/ui/devices">Devices</a>
+    <a href="/admin/ui/logout">Logout</a>
+    {% endif %}
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

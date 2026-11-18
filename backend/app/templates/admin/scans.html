@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+{% block title %}Scan results · ElderShield Admin{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Scan results — {{ device_uuid }}</h1>
+  <p><a href="/admin/ui/devices">← Devices</a></p>
+  <table>
+    <thead>
+      <tr><th>Package</th><th>Installer</th><th>Permissions</th><th>Score</th><th>At</th></tr>
+    </thead>
+    <tbody>
+      {% for s in scans %}
+      <tr>
+        <td>{{ s.package_name }}</td>
+        <td>{{ s.installer or "—" }}</td>
+        <td>{{ s.dangerous_permissions | join(", ") }}</td>
+        <td>{{ s.risk_score }}</td>
+        <td>{{ s.created_at }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">No scan results.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

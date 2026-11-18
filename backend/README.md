@@ -18,6 +18,8 @@ copy .env.example .env
 uvicorn app.main:app --reload
 ```
 
+Admin UI: `http://127.0.0.1:8000/admin/ui/login` (use `ADMIN_API_KEY`)
+
 ## Test
 
 ```bash

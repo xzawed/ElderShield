@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block title %}Devices · ElderShield Admin{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Devices</h1>
+  <p class="muted">Read-only status from heartbeats / scans.</p>
+  <table>
+    <thead>
+      <tr><th>UUID</th><th>App</th><th>DNS</th><th>Call screening</th><th>Rule ver</th><th>Last sync</th><th>Scans</th></tr>
+    </thead>
+    <tbody>
+      {% for d in devices %}
+      <tr>
+        <td>{{ d.device_uuid }}</td>
+        <td>{{ d.app_version }}</td>
+        <td>{{ d.dns_configured }}</td>
+        <td>{{ d.call_screening_enabled }}</td>
+        <td>{{ d.last_rule_version }}</td>
+        <td>{{ d.last_sync_at or "—" }}</td>
+        <td><a href="/admin/ui/devices/{{ d.device_uuid }}/scans">View</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="muted">No devices yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
