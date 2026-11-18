@@ -31,6 +31,8 @@ backend/.env
 *.aab
 *.ap_
 *.dex
+android/local.properties
+android/.idea/
 
 # IDE / OS
 .idea/

@@ -30,7 +30,7 @@
 | **S0** | Docs/rules fixed | — | Link/scope check | Pass 2026-11-19 |
 | **S1** | Backend models + admin CRUD | UT-B-01–06, 10–16 | `pytest -q` | Pass 2026-11-19 (14 tests) |
 | **S2** | Device API + min admin UI | UT-B-20–25 + version→latest smoke | `pytest -q` | Pass 2026-11-19 (22 tests) |
-| **S3** | Android Room + sync | UT-A-30–33 | `./gradlew test` | Pending |
+| **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew test` | Pending |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew test` + no parent UI | Pending |
 | **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Pending |
@@ -50,12 +50,19 @@
 | S2.1 | Device API: rules/latest, heartbeat, scan-result | UT-B-20–25 | Pass 2026-11-19 (20 tests) |
 | S2.2 | Min admin UI (multi-select countries) | UI multi-select test | Pass 2026-11-19 |
 
-## S3 slices (next)
+## S3 slices
+
+| Slice | Deliverable | UT first | Status |
+|-------|-------------|----------|--------|
+| S3.1 | Android scaffold + Room RuleBundle cache | — | Pass (app sources; enable `:app` with SDK) |
+| S3.2 | RuleSyncWorker + RuleSyncPolicy | UT-A-30–33 | Pass (`:core:test`) |
+
+## S4 slices (next)
 
 | Slice | Deliverable | UT first |
 |-------|-------------|----------|
-| S3.1 | Android scaffold + Room RuleBundle cache | UT-A-30–33 prep |
-| S3.2 | RuleSyncWorker pull + cache fallback | UT-A-30–33 |
+| S4.1 | CountryRestrictionMatcher | UT-A-01–22 |
+| S4.2 | CallScreeningService wire-up | device smoke |
 
 ## Doc budget
 
