@@ -20,6 +20,14 @@
             </intent-filter>
         </activity>
 
-        <!-- CallScreeningService lands in S4 -->
+        <service
+            android:name=".service.ElderCallScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
+

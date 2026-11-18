@@ -22,7 +22,8 @@ UT-A-30..33 live in `:core` (`RuleSyncPolicyTest`).
 
 ## App build (requires Android SDK)
 
-1. Install Android SDK / set `sdk.dir` in `local.properties`
-2. `./gradlew :app:assembleDebug`
+1. Copy `local.properties.example` → `local.properties` and set `sdk.dir`
+2. Ensure `include(":app")` in `settings.gradle.kts`
+3. `./gradlew :app:assembleDebug`
 
 VpnService / Overlay / Accessibility / Device Admin are **not** used.

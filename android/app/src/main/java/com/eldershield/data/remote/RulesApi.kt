@@ -41,13 +41,13 @@ class RulesApi(
                     applyTo = o.getJSONArray("applyTo").toStringList(),
                     enabled = o.optBoolean("enabled", true),
                     version = o.optInt("version", 1),
-                    description = o.optString("description", null),
+                    description = if (o.isNull("description")) null else o.optString("description"),
                 )
         }
         return RuleBundle(
             version = json.optInt("version", 0),
             countryRestrictions = restrictions,
-            updatedAt = json.optString("updatedAt", null),
+            updatedAt = if (json.isNull("updatedAt")) null else json.optString("updatedAt"),
         )
     }
 
