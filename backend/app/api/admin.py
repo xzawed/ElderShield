@@ -11,6 +11,7 @@ from app.api.schemas import (
 from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
 from app.models.country_restriction import CountryRestriction
+from app.models.device import AppScanResult
 from app.services.country_restriction_service import (
     create_country_restriction,
     update_country_restriction,
@@ -81,3 +82,19 @@ def delete_restriction(
     session.delete(row)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/devices/{device_uuid}/scan-results")
+def list_scan_results(device_uuid: str, session: Session = Depends(get_session)) -> list[dict]:
+    rows = session.exec(
+        select(AppScanResult).where(AppScanResult.device_uuid == device_uuid)
+    ).all()
+    return [
+        {
+            "packageName": r.package_name,
+            "installer": r.installer,
+            "dangerousPermissions": list(r.dangerous_permissions),
+            "riskScore": r.risk_score,
+        }
+        for r in rows
+    ]

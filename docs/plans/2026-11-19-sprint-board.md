@@ -43,12 +43,12 @@
 | S1.2 | Domain version + `countries[]` invariants | UT-B-01–06 | Pass |
 | S1.3 | Admin country-restrictions + countries + auth | UT-B-10–16 | Pass |
 
-## S2 slices (next)
+## S2 slices
 
-| Slice | Deliverable | UT first |
-|-------|-------------|----------|
-| S2.1 | Device API: rules/latest, heartbeat, scan-result | UT-B-20–25 |
-| S2.2 | Min admin UI (multi-select countries) | manual smoke |
+| Slice | Deliverable | UT first | Status |
+|-------|-------------|----------|--------|
+| S2.1 | Device API: rules/latest, heartbeat, scan-result | UT-B-20–25 | Pass 2026-11-19 (20 tests) |
+| S2.2 | Min admin UI (multi-select countries) | manual smoke | Pending |
 
 ## Doc budget
 
