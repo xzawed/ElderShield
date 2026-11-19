@@ -75,7 +75,7 @@
 
 | Slice | Deliverable | Notes |
 |-------|-------------|-------|
-| S6.1 | Device checklist (bank apps, call block) | User device |
+| S6.1 | Device checklist (bank apps, call block) | Runbook `device-test.md` + provisioning UI; awaiting user device |
 | S6.2 | Play internal track + rollback runbook | Runbook+rollback/call-rules/devices; SSOT docs synced; Play track pending |
 
 ## Doc budget

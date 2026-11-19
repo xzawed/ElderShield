@@ -10,6 +10,7 @@ Grok Build 문서 관례를 따른다.
 | `docs/runbooks/` | 운영 절차 |
 | `docs/releases/` | 릴리스 노트 |
 
+루트: [`../README.md`](../README.md) · [`../README.ko.md`](../README.ko.md) · [`../CONTRIBUTING.md`](../CONTRIBUTING.md) · [`../SECURITY.md`](../SECURITY.md)  
 에이전트 규칙: [`../AGENTS.md`](../AGENTS.md)
 
 ---

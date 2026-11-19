@@ -1,88 +1,179 @@
 # ElderShield
 
 <p align="center">
+  <img src="docs/assets/eldershield-banner.jpg" alt="ElderShield — defensive guard for parents’ Android devices" width="920" />
+</p>
+
+<p align="center">
   <strong>Defensive guard for parents’ Android devices</strong><br/>
-  Block high-risk country calls &amp; web access · Detect suspicious apps · Admin-only control
+  Block high-risk country calls · Monitor Private DNS · Detect suspicious apps · Admin-only control
 </p>
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
   <img alt="Platform" src="https://img.shields.io/badge/Android-minSdk%2029-3DDC84?logo=android&logoColor=white">
   <img alt="Backend" src="https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white">
-  <img alt="Status" src="https://img.shields.io/badge/Status-Phase%201%20planning-orange">
+  <img alt="Status" src="https://img.shields.io/badge/Status-Phase%201%20implementation-brightgreen">
   <img alt="Visibility" src="https://img.shields.io/badge/Repo-Private-lightgrey">
 </p>
 
 <p align="center">
-  <a href="#eldershield">English</a> · <a href="#eldershield-실버실드">한국어</a>
+  <a href="README.md">English</a> · <a href="README.ko.md">한국어</a>
+  · <a href="CONTRIBUTING.md">Contributing</a>
+  · <a href="SECURITY.md">Security</a>
+  · <a href="docs/README.md">Docs</a>
 </p>
 
 ---
 
-## What it is
+## Overview
 
-**ElderShield** (실버실드) protects parents’ phones and tablets with a **hands-off** defensive layer:
+| | |
+|---|---|
+| **Product** | ElderShield (실버실드) — hands-off defensive layer for parents’ phones/tablets |
+| **Who acts** | **Admin only** (web + API). Parents install once, grant roles/permissions, then do nothing |
+| **Phase 1** | Call screening · Private DNS status · App risk scan report · Versioned rule sync |
+| **Not Phase 1** | Default `VpnService`, Overlay, Accessibility Service, Device Admin, counter-attacks |
 
-| Capability | Phase 1 approach |
-|------------|------------------|
-| Risky-country **calls** | `CallScreeningService` + cached rules |
-| Risky-country **internet** | Private DNS (NextDNS / AdGuard); VPN later |
+| Capability | How it works |
+|------------|----------------|
+| Risky-country **calls** | `CallScreeningService` + Room-cached `RuleBundle` (+ `CallRule` whitelist) |
+| Risky-country **internet** | Private DNS (NextDNS / AdGuard) — status reported; VPN later |
 | **Scam / sideloaded apps** | Scan & report to admin only (no parent popups) |
-| **Control plane** | Admin web dashboard + versioned rule sync |
+| **Control plane** | Admin web + `X-API-Key` APIs + monotonic rule **generation** |
 
-Parents install once and grant permissions. **No day-to-day UI.** You manage rules remotely.
+> Complements (does not replace) consumer antivirus products.
 
-> Complements (does not replace) tools like Bitdefender.
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph Admin
+    W[Admin Web / HTMX]
+  end
+  subgraph Backend
+    API[FastAPI /api/v1]
+    DB[(SQLite / SQLModel)]
+  end
+  subgraph Device["Android com.eldershield"]
+    CS[CallScreening]
+    SYNC[RuleSyncWorker]
+    SCAN[AppScanner]
+    DNS[DnsMonitor]
+    ROOM[(Room cache)]
+  end
+  W -->|HTTPS + Admin API Key| API
+  API --> DB
+  SYNC -->|Device API Key<br/>GET /rules/latest| API
+  SCAN -->|scan-result| API
+  DNS -->|heartbeat| API
+  SYNC --> ROOM
+  ROOM --> CS
+```
+
+| Layer | Stack |
+|-------|--------|
+| Backend | FastAPI · SQLModel · pytest · Admin UI (HTMX) |
+| Android | Kotlin · minSdk 29 · `:core` (JVM domain) · `:app` (Room / WorkManager / CallScreening) |
+| Auth | Separate **device** vs **admin** `X-API-Key` (startup refuses `change-me-*`) |
+
+**RuleBundle `version`** = monotonic **generation** (increments on create/update/delete/rollback). It is **not** `max(row.version)`.
 
 ---
 
 ## Hard constraints
 
-These are non-negotiable product rules:
+| Rule | Detail |
+|------|--------|
+| Zero parent friction | Silent rule updates; no parent-facing alerts |
+| Banking-app safe | `VpnService` **off** by default; **no** Overlay / Accessibility / Device Admin |
+| Defense only | No counter-attacks, no forced remote wipes |
+| Multi-country | `countries` is always an **array** |
 
-- **Zero friction for parents** — silent rule updates, minimal notifications  
-- **Banking-app safe** — `VpnService` off by default; no Overlay / Accessibility / Device Admin  
-- **Defense only** — no counter-attacks, no forced remote wipes  
-- **Multi-country lists** — restrictions stay as selectable arrays, not single picks  
-
-Full design: [`docs/specs/2026-11-18-eldershield-system-design.md`](docs/specs/2026-11-18-eldershield-system-design.md)
+Design SSOT: [`docs/specs/2026-11-18-eldershield-system-design.md`](docs/specs/2026-11-18-eldershield-system-design.md)
 
 ---
 
-## Architecture (at a glance)
+## Quick start
 
-```text
-Admin Web  ──HTTPS + API Key──▶  Backend (FastAPI)
-                                      │
-                         WorkManager pull (rules)
-                                      ▼
-                              Android app
-                    CallScreening · Sync · Scanner · Room
+### Backend
+
+```bash
+cd backend
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env   # set distinct ADMIN_API_KEY + DEVICE_API_KEY
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-**Stack (planned):** FastAPI + SQLModel/Alembic · Kotlin Android (`com.eldershield`) · Admin UI (HTMX or Vue)
-
----
-
-## Documentation
-
-| Doc | Purpose |
+| URL | Purpose |
 |-----|---------|
-| [`docs/README.md`](docs/README.md) | Documentation index |
-| [`docs/00-product-overview.md`](docs/00-product-overview.md) | Product summary |
-| [`docs/01-architecture.md`](docs/01-architecture.md) | Architecture summary |
-| [`docs/06-roadmap.md`](docs/06-roadmap.md) | Milestones |
-| [`docs/plans/`](docs/plans/) | Schedule, WBS, review gates |
-| [`docs/specs/`](docs/specs/) | Design SSOT & unit-test design |
-| [`AGENTS.md`](AGENTS.md) | Agent / contributor working rules |
+| `http://<host>:8000/admin/ui/login` | Admin UI (HMAC session cookie — not raw key) |
+| `http://<host>:8000/api/v1/...` | Device + admin JSON APIs |
+| `http://<host>:8000/health` | Liveness |
+
+Local escape hatch only: `ELDERSHIELD_ALLOW_INSECURE_DEFAULTS=1`  
+HTTPS cookie flag: `COOKIE_SECURE=1`  
+Ops notes: [`docs/runbooks/admin-api-keys.md`](docs/runbooks/admin-api-keys.md) · [`docs/runbooks/rollback.md`](docs/runbooks/rollback.md)
+
+### Android (debug)
+
+```bash
+cd android
+# local.properties → sdk.dir=...
+./gradlew :app:assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+1. Open app → enter **Base URL** (origin only, e.g. `http://192.168.0.10:8000`) + **Device API key** → **Save & sync now**  
+2. **Request call screening role** (or `adb shell cmd role add-role-holder android.app.role.CALL_SCREENING com.eldershield`)  
+3. Create a CountryRestriction with `applyTo` including `call` in Admin UI  
+4. Confirm `GET /api/v1/admin/devices` shows heartbeat  
+
+Full checklist: [`docs/runbooks/device-test.md`](docs/runbooks/device-test.md)
+
+> Debug builds allow cleartext HTTP for LAN. **Release keeps cleartext off.**
 
 ---
 
-## Status
+## Verification (automated)
 
-Phase **1** is in **planning / docs**. Implementation order: **Backend → Admin UI → Android**, with TDD on matching & versioning logic first.
+| Suite | Command | Expect |
+|-------|---------|--------|
+| Backend | `cd backend && pytest -q` | All green |
+| Android domain | `cd android && ./gradlew :core:test` | All green |
+| APK | `cd android && ./gradlew :app:assembleDebug` | BUILD SUCCESSFUL |
 
-Roadmap: [`docs/06-roadmap.md`](docs/06-roadmap.md)
+Unit-test IDs: [`docs/specs/2026-11-19-unit-test-design.md`](docs/specs/2026-11-19-unit-test-design.md) · Sprint board: [`docs/plans/2026-11-19-sprint-board.md`](docs/plans/2026-11-19-sprint-board.md)
+
+---
+
+## Documentation map
+
+| Path | Role |
+|------|------|
+| [`docs/README.md`](docs/README.md) | Doc index |
+| [`docs/specs/`](docs/specs/) | Design SSOT & unit-test design |
+| [`docs/plans/`](docs/plans/) | Schedule / sprint board |
+| [`docs/runbooks/`](docs/runbooks/) | Rollback, API keys, **device test** |
+| [`AGENTS.md`](AGENTS.md) | Agent working rules |
+| [`backend/README.md`](backend/README.md) | Backend setup |
+| [`android/README.md`](android/README.md) | Android modules |
+
+---
+
+## Status & known gaps
+
+| Area | State |
+|------|--------|
+| S0–S5 | Implemented (backend + Android core paths) |
+| S6.1 | Real-device checklist — see runbook |
+| S6.2 | Rollback API + runbook done; Play internal track pending |
+| Alembic | `versions/` empty — schema via `create_all` (dev) |
+| `appRiskRules` | Bundle field reserved; scoring is local for now |
 
 ---
 
@@ -93,29 +184,3 @@ Licensed under the **Apache License, Version 2.0**. See [`LICENSE`](LICENSE).
 ```text
 Copyright 2026 xzawed
 ```
-
----
-
-## ElderShield (실버실드)
-
-<p>
-  <img alt="라이선스" src="https://img.shields.io/badge/라이선스-Apache%202.0-blue.svg">
-  <img alt="상태" src="https://img.shields.io/badge/상태-Phase%201%20기획-orange">
-</p>
-
-부모님 Android 기기용 **방어적 Guard**입니다. 위험 국가 전화·인터넷을 막고, 출처 불명/사기 앱을 탐지해 **관리자 대시보드로만** 보고합니다. 부모님은 설치·권한 허용 후 추가 조작이 없습니다.
-
-### 핵심 제약
-
-- 부모님 불편 제로 · 무인지 업데이트  
-- 은행 앱 호환 (VpnService 기본 비활성, Overlay/Accessibility/Device Admin 금지)  
-- 합법적 방어만 · 제한 국가 **다중 선택** 유지  
-
-### 문서
-
-전체 설계·일정·테스트 설계는 [`docs/README.md`](docs/README.md)를 보세요.  
-에이전트 작업 규칙: [`AGENTS.md`](AGENTS.md)
-
-### 라이선스
-
-Apache License 2.0 — [`LICENSE`](LICENSE)
