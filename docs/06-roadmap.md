@@ -19,8 +19,9 @@
 ## Phase 2+
 
 - VpnService 기반 IP 국가 필터 (은행앱 회귀 후에만)
-- NextDNS: 운영 `.env` 키·전용 프로필 실배포 (코드 경로·런북은 Phase 1 S6.3)
 - 정교한 앱 위험 점수·통계 대시보드
+
+Phase 1 운영자 잔여(코드 밖): NextDNS 전용 프로필·`NEXTDNS_*` · Play 내부 AAB 업로드 — [`nextdns-setup.md`](runbooks/nextdns-setup.md) · [`play-internal.md`](runbooks/play-internal.md)
 
 ## 크리티컬 패스
 

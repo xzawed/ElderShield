@@ -32,5 +32,6 @@ ElderShield(실버실드)는 부모님 Android 기기의 **위험 국가 전화�
 
 ## Phase 1 / 2
 
-- **Phase 1**: Call screening, Private DNS 상태 모니터, AppScanner 보고, Admin CRUD
-- **Phase 2+**: VpnService IP 필터, NextDNS API 자동 연동, 고도화 점수·통계
+- **Phase 1**: Call screening(수신 전용 국가 차단), Private DNS 모니터, DNS denylist + **NextDNS sync API**(운영 키 필요), AppScanner 보고, Admin CRUD
+- **Phase 2+**: VpnService IP 필터(은행앱 회귀 후), 고도화 점수·통계 대시보드  
+  (NextDNS **운영 프로필·키 실배포**는 Phase 1 코드 경로 위 운영자 게이트)

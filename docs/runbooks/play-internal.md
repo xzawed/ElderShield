@@ -6,11 +6,12 @@ Operator-owned Console steps. Engineering preconditions only below.
 
 | Item | Requirement |
 |------|-------------|
-| Release APK/AAB | `assembleRelease` / bundle — **not** debug cleartext |
-| Manifest | `usesCleartextTraffic=false` on release; no Overlay / Accessibility / Device Admin |
-| VpnService | Default **off** (bank-app hard constraint) |
-| Signing | Upload key / Play App Signing configured by operator |
+| Release APK/AAB | `./gradlew :app:assembleRelease` → `app-release-unsigned.apk` (lab smoke 2026-11-19); Play needs **signed AAB** |
+| Manifest | `usesCleartextTraffic=false` (verified in `app` manifest); no Overlay / Accessibility / Device Admin |
+| VpnService | Default **off** (bank-app hard constraint); no `BIND_VPN_SERVICE` |
+| Signing | Upload keystore + Play App Signing — **operator** (not in repo) |
 | Privacy | Minimize phone-number logging; screening logs must not print raw numbers |
+| Version | `versionName` 0.1.0 / `versionCode` 1 (align with `docs/releases/v0.1.0.md`) |
 
 ## Operator checklist (Play Console)
 

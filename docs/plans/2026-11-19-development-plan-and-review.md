@@ -15,11 +15,11 @@
 - 규칙 **버전 동기화** (WorkManager Pull)
 - **사기/출처불명 앱 탐지** → 서버 보고만 (부모님 알림 없음)
 - Private DNS **설정 상태 모니터** + heartbeat
+- DNS denylist + **NextDNS sync API** (운영 `NEXTDNS_*` 게이트)
 - 관리자 대시보드: 기기 상태, 스캔 결과, 규칙 롤백
 
 ### Out of Scope (Phase 2+)
 - VpnService 기반 IP 국가 필터
-- NextDNS/AdGuard API 자동 동기화
 - 고도화 위험 점수·통계 대시보드
 - iOS, 부모님용 풍부한 UI
 

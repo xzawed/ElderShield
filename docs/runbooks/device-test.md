@@ -144,10 +144,11 @@ Repeatable host scripts:
 
 | Item | Pass? | Notes |
 |------|-------|-------|
-| Provision + sync | | |
-| Call screening role | | |
-| Restricted call blocked | | |
-| Whitelist allowed | | |
-| Bank apps OK | | |
-| Admin devices/scans visible | | |
-| L1–L11 KR-lab matrix | | See §8 |
+| Provision + sync | Pass | S22 + AVD heartbeat / lastRuleVersion (lab) |
+| Call screening role | Pass | S22 holder=`com.eldershield`; peers report BD (no steal) |
+| Restricted call blocked | Pass | AVD combinatorial / gsm only (no S22 auto PSTN) |
+| Whitelist allowed | Pass | AVD B-inWL |
+| Bank apps OK | Pass | Toss + KB monkey; no ES VPN/overlay (`nocall` 2026-11-19) |
+| Admin devices/scans visible | Pass | scan API + devices list |
+| L1–L11 KR-lab matrix | Partial | L2 NextDNS sync SKIP (no `NEXTDNS_*`); L7 S22 human optional; L9 = AVD |
+| DNS path / Bitdefender | Pass | `dnsConfigured=true`; BD packages present; ES accessibility off |

@@ -33,7 +33,7 @@
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
-| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial 2026-11-19 — **PR #9 merged** (`859655f`); CI added; NextDNS/Play = operator |
+| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial 2026-11-19 — CI+#11; AVD combinatorial PASS; nocall S22 DNS/banks/BD PASS; **NextDNS_*/Play AAB = operator** |
 
 ## S1 slices
 
@@ -75,10 +75,10 @@
 
 | Slice | Deliverable | Notes |
 |-------|-------------|-------|
-| S6.1 | Device checklist (bank apps, call block) | §1.2.1 A merged; emulator gsm Pass; S22 human 010 optional |
-| S6.2 | Play internal track + rollback runbook | Runbooks ready; **Play Console upload = operator** |
-| S6.3 | Country internet via DNS denylist | API+UI merged; `nextdns-setup.md`; **NEXTDNS_* = operator** |
-| S6.4 | CI closeout | GitHub Actions: backend pytest + `:core:test` |
+| S6.1 | Device checklist (bank apps, call block) | AVD call matrix Pass; S22 nocall Pass; human 010 optional |
+| S6.2 | Play internal track + rollback runbook | Runbooks + `v0.1.0.md`; **signed AAB upload = operator** |
+| S6.3 | Country internet via DNS denylist | Code Pass; denylist Pass; **NEXTDNS_* sync + .cn NXDOMAIN = operator** |
+| S6.4 | CI closeout | Pass (pytest + `:core:test`) |
 
 ## Doc budget
 
