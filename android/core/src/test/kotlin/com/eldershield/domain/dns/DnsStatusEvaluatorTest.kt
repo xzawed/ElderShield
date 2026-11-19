@@ -19,4 +19,10 @@ class DnsStatusEvaluatorTest {
         assertFalse(DnsStatusEvaluator.fromAndroidSettings(2, null).configured)
         assertFalse(DnsStatusEvaluator.fromAndroidSettings(3, "").configured)
     }
+
+    @Test
+    fun arbitraryHostnameIsNotTrustedConfigured() {
+        assertFalse(DnsStatusEvaluator.fromAndroidSettings(3, "evil.example").configured)
+        assertTrue(DnsStatusEvaluator.fromAndroidSettings(3, "dns.nextdns.io").configured)
+    }
 }

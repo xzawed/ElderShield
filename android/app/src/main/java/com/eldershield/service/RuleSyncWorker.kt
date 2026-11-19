@@ -3,15 +3,16 @@ package com.eldershield.service
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.eldershield.data.ActiveRuleBundleCache
 import com.eldershield.data.RuleRepositoryImpl
 import com.eldershield.data.local.ElderShieldDatabase
 import com.eldershield.data.remote.RulesApi
 import com.eldershield.domain.sync.RuleSyncPolicy
-import com.eldershield.domain.sync.SyncOutcome
+import com.eldershield.domain.sync.SyncWorkDisposition
 
 /**
  * Silent background sync — never surfaces UI to the parent device.
- * Failures keep cache (UT-A-32) or EmptyNoBlock (UT-A-33).
+ * Failures keep cache for screening (UT-A-32/33) but WorkManager retries.
  */
 class RuleSyncWorker(
     appContext: Context,
@@ -28,12 +29,13 @@ class RuleSyncWorker(
             }
             val dao = ElderShieldDatabase.get(applicationContext).ruleBundleDao()
             val repo = RuleRepositoryImpl(dao, RulesApi(baseUrl, apiKey))
-            when (RuleSyncPolicy(repo).sync()) {
-                is SyncOutcome.Updated,
-                is SyncOutcome.Unchanged,
-                is SyncOutcome.UsedCache,
-                SyncOutcome.EmptyNoBlock,
-                -> Result.success()
+            val policy = RuleSyncPolicy(repo)
+            val outcome = policy.sync()
+            ActiveRuleBundleCache.bundle = policy.activeBundle(outcome)
+            if (SyncWorkDisposition.shouldRetry(outcome)) {
+                Result.retry()
+            } else {
+                Result.success()
             }
         } catch (_: Exception) {
             // Never crash the process; retry later with backoff.

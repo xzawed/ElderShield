@@ -2,6 +2,7 @@ package com.eldershield.service
 
 import android.telecom.Call
 import android.telecom.CallScreeningService
+import com.eldershield.data.ActiveRuleBundleCache
 import com.eldershield.data.local.ElderShieldDatabase
 import com.eldershield.domain.matching.CallScreeningDecision
 import com.eldershield.domain.model.CallRule
@@ -44,11 +45,19 @@ class ElderCallScreeningService : CallScreeningService() {
         respondToCall(callDetails, response)
     }
 
-    private fun loadCachedBundle(): RuleBundle? =
-        runBlocking {
-            val entity = ElderShieldDatabase.get(applicationContext).ruleBundleDao().get() ?: return@runBlocking null
-            decode(entity.payloadJson)
+    private fun loadCachedBundle(): RuleBundle? {
+        ActiveRuleBundleCache.bundle?.let { return it }
+        val fromDb =
+            runBlocking {
+                val entity = ElderShieldDatabase.get(applicationContext).ruleBundleDao().get()
+                    ?: return@runBlocking null
+                decode(entity.payloadJson)
+            }
+        if (fromDb != null) {
+            ActiveRuleBundleCache.bundle = fromDb
         }
+        return fromDb
+    }
 
     private fun decode(json: String): RuleBundle {
         val root = JSONObject(json)
