@@ -1,0 +1,176 @@
+﻿{
+    "ranAt":  "2026-11-19T14:27:58.1957624Z",
+    "results":  [
+                    {
+                        "id":  "H-pytest",
+                        "status":  "PASS",
+                        "notes":  "49 passed, 1 warning in 1.32s"
+                    },
+                    {
+                        "id":  "H-core-test",
+                        "status":  "PASS",
+                        "notes":  "AppRisk+matcher+dns+direction"
+                    },
+                    {
+                        "id":  "EMU-sync",
+                        "status":  "PASS",
+                        "notes":  "role+provision attempted"
+                    },
+                    {
+                        "id":  "A-call-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN absent from denylist"
+                    },
+                    {
+                        "id":  "A-call-inCN",
+                        "status":  "PASS",
+                        "notes":  "Reject 11-19 14:22:11.920 17772 17772 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=43 block=true"
+                    },
+                    {
+                        "id":  "A-dns-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN in denylist tlds/count"
+                    },
+                    {
+                        "id":  "A-dns-inCN",
+                        "status":  "PASS",
+                        "notes":  "Allow 11-19 14:22:40.522 17924 17924 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=45 block=false"
+                    },
+                    {
+                        "id":  "A-internet-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN in denylist tlds/count"
+                    },
+                    {
+                        "id":  "A-internet-inCN",
+                        "status":  "PASS",
+                        "notes":  "Allow 11-19 14:23:11.880 18136 18136 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=47 block=false"
+                    },
+                    {
+                        "id":  "A-call-dns-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN in denylist tlds/count"
+                    },
+                    {
+                        "id":  "A-call-dns-inCN",
+                        "status":  "PASS",
+                        "notes":  "Reject 11-19 14:23:43.149 18343 18343 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=49 block=true"
+                    },
+                    {
+                        "id":  "A-call-inet-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN in denylist tlds/count"
+                    },
+                    {
+                        "id":  "A-call-inet-inCN",
+                        "status":  "PASS",
+                        "notes":  "Reject 11-19 14:24:13.180 18477 18477 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=51 block=true"
+                    },
+                    {
+                        "id":  "A-dns-inet-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN in denylist tlds/count"
+                    },
+                    {
+                        "id":  "A-dns-inet-inCN",
+                        "status":  "PASS",
+                        "notes":  "Allow 11-19 14:24:44.742 18653 18653 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=53 block=false"
+                    },
+                    {
+                        "id":  "A-all-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN in denylist tlds/count"
+                    },
+                    {
+                        "id":  "A-all-inCN",
+                        "status":  "PASS",
+                        "notes":  "Reject 11-19 14:25:16.019 18822 18822 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=55 block=true"
+                    },
+                    {
+                        "id":  "A-disabled-denylist",
+                        "status":  "PASS",
+                        "notes":  "CN absent from denylist"
+                    },
+                    {
+                        "id":  "A-disabled-inCN",
+                        "status":  "PASS",
+                        "notes":  "Allow 11-19 14:25:50.782 19035 19035 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=57 block=false"
+                    },
+                    {
+                        "id":  "B-inCN",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:26:32.222 19290 19290 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=59 block=true |     14:26:32.223 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = ElderShield, mCallScreeningComponentName = com.eldershield/com.eldershield.service.ElderCallScreeningService]):NCSSF.dC@Eqk"
+                    },
+                    {
+                        "id":  "B-inWL",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:26:38.258 19290 19290 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=59 block=false |       14:26:38.260 - SCREENING_COMPLETED ([Allow, logged, notified, DND not determined, mCallScreeningAppName = ElderShield, mCallScreeningComponentName = com.eldershield/com.eldershield.service.ElderCallScreeningService]):NCSSF.aC@Er4"
+                    },
+                    {
+                        "id":  "B-inUS",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:26:44.405 19290 19290 I ElderCallScreen: onScreenCall dir=0 len=12 bundleVer=59 block=false |       14:26:44.407 - SCREENING_COMPLETED ([Allow, logged, notified, DND not determined, mCallScreeningAppName = ElderShield, mCallScreeningComponentName = com.eldershield/com.eldershield.service.ElderCallScreeningService]):NCSSF.aC@Exc"
+                    },
+                    {
+                        "id":  "B-in82",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:26:50.472 19290 19290 I ElderCallScreen: onScreenCall dir=0 len=13 bundleVer=59 block=true |     14:26:50.472 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = ElderShield, mCallScreeningComponentName = com.eldershield/com.eldershield.service.ElderCallScreeningService]):NCSSF.dC@E2A"
+                    },
+                    {
+                        "id":  "B-in010",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:26:56.625 19290 19290 I ElderCallScreen: onScreenCall dir=0 len=11 bundleVer=59 block=true |     14:26:56.630 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = ElderShield, mCallScreeningComponentName = com.eldershield/com.eldershield.service.ElderCallScreeningService]):NCSSF.dC@E4E"
+                    },
+                    {
+                        "id":  "B-outCN",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:27:02.719 19290 19290 I ElderCallScreen: onScreenCall dir=1 len=14 bundleVer=59 block=false | "
+                    },
+                    {
+                        "id":  "B-outKR",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:27:08.050 19290 19290 I ElderCallScreen: onScreenCall dir=1 len=3 bundleVer=59 block=false | "
+                    },
+                    {
+                        "id":  "C-ownCN-inCN",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:27:14.938 19290 19290 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=59 block=true |     14:27:14.938 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = ElderShield, mCallScreeningComponentName = com.eldershield/com.eldershield.service.ElderCallScreeningService]):NCSSF.dC@FFU"
+                    },
+                    {
+                        "id":  "C-ownCN-outKR",
+                        "status":  "PASS",
+                        "notes":  "11-19 14:27:19.592 19290 19290 I ElderCallScreen: onScreenCall dir=1 len=3 bundleVer=59 block=false"
+                    },
+                    {
+                        "id":  "D-hostname",
+                        "status":  "PASS",
+                        "notes":  "dnsConfigured=true"
+                    },
+                    {
+                        "id":  "D-nextdns",
+                        "status":  "SKIP",
+                        "notes":  "NEXTDNS_* unset"
+                    },
+                    {
+                        "id":  "E-scan-api",
+                        "status":  "PASS",
+                        "notes":  "scan roundtrip"
+                    },
+                    {
+                        "id":  "E-bank-toss",
+                        "status":  "PASS",
+                        "notes":  "monkey ok"
+                    },
+                    {
+                        "id":  "F-s22-role",
+                        "status":  "PASS",
+                        "notes":  "holders=com.eldershield (no steal this run)"
+                    },
+                    {
+                        "id":  "Z-restore",
+                        "status":  "PASS",
+                        "notes":  "CN call+dns enabled; KR call disabled"
+                    }
+                ],
+    "matrixDoc":  "docs/plans/2026-11-19-combinatorial-lab-matrix.md"
+}

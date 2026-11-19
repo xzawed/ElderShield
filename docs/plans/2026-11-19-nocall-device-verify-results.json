@@ -1,0 +1,95 @@
+﻿{
+    "ranAt":  "2026-11-19T14:45:24.7636891Z",
+    "results":  [
+                    {
+                        "id":  "N1-denylist",
+                        "status":  "PASS",
+                        "notes":  "{\"countries\": [\"CN\"], \"tlds\": [\"cn\"], \"count\": 16, \"has_baidu\": true, \"sync\": 503}"
+                    },
+                    {
+                        "id":  "N2-nextdns-sync",
+                        "status":  "SKIP",
+                        "notes":  "NEXTDNS_* unset — real .cn NXDOMAIN needs operator profile"
+                    },
+                    {
+                        "id":  "S22-vpn",
+                        "status":  "PASS",
+                        "notes":  "no ElderShield VpnService in package dump"
+                    },
+                    {
+                        "id":  "S22-dnsConfigured",
+                        "status":  "PASS",
+                        "notes":  "dnsConfigured=true after Private DNS hostname"
+                    },
+                    {
+                        "id":  "S22-cn-resolve",
+                        "status":  "SKIP",
+                        "notes":  "no NextDNS push; resolve probe not a product fail. snippet=\r\n"
+                    },
+                    {
+                        "id":  "EMU-vpn",
+                        "status":  "PASS",
+                        "notes":  "no ElderShield VpnService in package dump"
+                    },
+                    {
+                        "id":  "EMU-dnsConfigured",
+                        "status":  "PASS",
+                        "notes":  "dnsConfigured=true after Private DNS hostname"
+                    },
+                    {
+                        "id":  "EMU-cn-resolve",
+                        "status":  "SKIP",
+                        "notes":  "no NextDNS push; resolve probe not a product fail. snippet=\r\n"
+                    },
+                    {
+                        "id":  "BANK-Toss",
+                        "status":  "PASS",
+                        "notes":  ""
+                    },
+                    {
+                        "id":  "BANK-KakaoBank",
+                        "status":  "SKIP",
+                        "notes":  "not installed"
+                    },
+                    {
+                        "id":  "BANK-Shinhan",
+                        "status":  "SKIP",
+                        "notes":  "not installed"
+                    },
+                    {
+                        "id":  "BANK-KB",
+                        "status":  "PASS",
+                        "notes":  ""
+                    },
+                    {
+                        "id":  "BD-packages",
+                        "status":  "PASS",
+                        "notes":  "package:com.bitdefender.security, package:com.bitdefender.centralmgmt, package:com.bitdefender.passmanager, package:com.bitdefender.vpn"
+                    },
+                    {
+                        "id":  "BD-role-holder",
+                        "status":  "PASS",
+                        "notes":  "holders=com.eldershield (no steal this run)"
+                    },
+                    {
+                        "id":  "BD-coexist",
+                        "status":  "PASS",
+                        "notes":  "ES holds CALL_SCREENING; BD not holding (platform single-holder). DNS/scan still OK policy A"
+                    },
+                    {
+                        "id":  "BD-heartbeat-peers",
+                        "status":  "PASS",
+                        "notes":  "[{\"deviceUuid\": \"<redacted-emu>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.google.android.dialer\"], \"callScreeningEnabled\": true, \"dnsConfigured\": true}, {\"deviceUuid\": \"<redacted-s22>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.bitdefender.security\", \"com.ktcs.whowho\", \"com.samsung.android.dialer\""
+                    },
+                    {
+                        "id":  "ES-accessibility",
+                        "status":  "PASS",
+                        "notes":  "ES not in enabled_accessibility_services"
+                    },
+                    {
+                        "id":  "Z-restore",
+                        "status":  "PASS",
+                        "notes":  "CN call+dns on; KR call off"
+                    }
+                ]
+}

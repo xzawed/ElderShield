@@ -179,6 +179,27 @@ class CountryRestrictionMatcherTest {
     }
 
     @Test
+    fun `UT-A-26 outgoing direction never country-blocks even for CN destination`() {
+        val restrictions = listOf(rule(listOf("CN")))
+        assertTrue(
+            CallScreeningDecision.shouldBlock(
+                CallScreeningDecision.DIRECTION_INCOMING,
+                "+8613999999999",
+                restrictions,
+                emptyList(),
+            ),
+        )
+        assertFalse(
+            CallScreeningDecision.shouldBlock(
+                CallScreeningDecision.DIRECTION_OUTGOING,
+                "+8613999999999",
+                restrictions,
+                emptyList(),
+            ),
+        )
+    }
+
+    @Test
     fun `UT-A-25 whitelist E164 matches national KR presentation`() {
         assertTrue(matcher.isWhitelisted("01091112222", listOf("+821091112222")))
         assertFalse(

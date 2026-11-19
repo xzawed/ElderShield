@@ -1,5 +1,6 @@
-﻿# ElderShield KR-lab batch (L1–L11). Emulator = CN/gsm; S22 = USB KR handset.
+﻿# ElderShield KR-lab batch (L1–L11). Emulator = CN/gsm; S22 = USB KR handset (no auto CALL).
 # Usage: powershell -File scripts/lab-batch-verify.ps1
+# SAFETY: gsm inject only on emulator-*; physical S22 never ACTION.CALL.
 $ErrorActionPreference = "Continue"
 $Root = Split-Path -Parent $PSScriptRoot
 $Adb = Join-Path $env:LOCALAPPDATA "Android\Sdk\platform-tools\adb.exe"
@@ -78,7 +79,14 @@ function Get-LatestScreening($serial) {
   return $lines.Line
 }
 
+function Assert-EmulatorCallTarget([string]$Serial) {
+  if ($Serial -notmatch '^emulator-') {
+    throw ("Call lab refused: serial '{0}' is not an emulator." -f $Serial)
+  }
+}
+
 function Invoke-EmuCall($number) {
+  Assert-EmulatorCallTarget $Emu
   foreach ($n in @("+8613999999999", "+8613812345678", "+821098765432", "01098765432", "+12025550199")) {
     & $Adb -s $Emu emu gsm cancel $n 2>$null | Out-Null
   }
@@ -182,7 +190,7 @@ if (Ensure-Serial $S22) {
   else { Add-Result "L3-s22" "FAIL" "role=$roleS" }
 
   Add-Result "L7-s22-010" "NEED_HUMAN" "Second KR phone must dial S22 while KR restriction enabled; adb cannot inject PSTN on physical device"
-  Add-Result "L9-outgoing" "NEED_HUMAN" "Dial out from S22; CallScreening is incoming-only (expect connect)"
+  Add-Result "L9-outgoing" "SKIP" "No auto CALL on S22 (billing risk). Outgoing Allow = AVD E1/E2 / combinatorial B-out*; optional manual own-line only"
 
   # L10 bank apps
   $banks = @(
