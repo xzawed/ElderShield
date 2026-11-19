@@ -21,8 +21,9 @@ Copy `.env.example` → `.env` and set **distinct** `ADMIN_API_KEY` / `DEVICE_AP
 uvicorn app.main:app --reload
 ```
 
-Admin UI: `http://127.0.0.1:8000/admin/ui/login` (use `ADMIN_API_KEY`)  
-API base: `/api/v1`
+Admin UI (Tailwind + HTMX): `http://127.0.0.1:8000/admin/ui/login` (use `ADMIN_API_KEY`)  
+API base: `/api/v1`  
+UI notes: [`../docs/runbooks/admin-ui.md`](../docs/runbooks/admin-ui.md)
 
 ## Test
 

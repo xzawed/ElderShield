@@ -51,7 +51,7 @@
 ```mermaid
 flowchart LR
   subgraph Admin
-    W[Admin Web / HTMX]
+    W[Admin Web / HTMX + Tailwind]
   end
   subgraph Backend
     API[FastAPI /api/v1]
@@ -75,7 +75,7 @@ flowchart LR
 
 | Layer | Stack |
 |-------|--------|
-| Backend | FastAPI · SQLModel · pytest · Admin UI (HTMX) |
+| Backend | FastAPI · SQLModel · pytest · Admin UI (**HTMX + Tailwind CDN**) |
 | Android | Kotlin · minSdk 29 · `:core` (JVM domain) · `:app` (Room / WorkManager / CallScreening) |
 | Auth | Separate **device** vs **admin** `X-API-Key` (startup refuses `change-me-*`) |
 
@@ -96,6 +96,15 @@ Design SSOT: [`docs/specs/2026-11-18-eldershield-system-design.md`](docs/specs/2
 
 ---
 
+## Admin console
+
+<p align="center">
+  <img src="docs/assets/admin-ui-login.png" alt="ElderShield Admin sign-in (Tailwind)" width="720" />
+</p>
+
+Enterprise-style console: dark sidebar, panel cards, status badges — **Tailwind CSS CDN** + HTMX.  
+Details: [`docs/runbooks/admin-ui.md`](docs/runbooks/admin-ui.md)
+
 ## Quick start
 
 ### Backend
@@ -111,7 +120,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 | URL | Purpose |
 |-----|---------|
-| `http://<host>:8000/admin/ui/login` | Admin UI (HMAC session cookie — not raw key) |
+| `http://<host>:8000/admin/ui/login` | Admin UI — Tailwind console (HMAC session; not raw key). See [`docs/runbooks/admin-ui.md`](docs/runbooks/admin-ui.md) |
 | `http://<host>:8000/api/v1/...` | Device + admin JSON APIs |
 | `http://<host>:8000/health` | Liveness |
 

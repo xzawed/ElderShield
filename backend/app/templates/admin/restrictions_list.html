@@ -1,30 +1,62 @@
 {% extends "admin/base.html" %}
 {% block title %}Restrictions · ElderShield Admin{% endblock %}
+{% block page_heading %}Country restrictions{% endblock %}
+{% block page_sub %}Multi-country groups synced to devices via RuleBundle generation{% endblock %}
 {% block content %}
-<section class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem">
-    <h1 style="margin:0">Country restrictions</h1>
-    <a class="btn" href="/admin/ui/restrictions/new">New group</a>
+<section class="rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 px-6 py-5">
+    <div>
+      <h2 class="text-base font-semibold text-ink-950">Restriction groups</h2>
+      <p class="text-sm text-ink-600">Changes bump the device sync version automatically.</p>
+    </div>
+    <a href="/admin/ui/restrictions/new"
+       class="inline-flex items-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
+      New group
+    </a>
   </div>
-  <p class="muted">Multi-country groups synced to devices via RuleBundle.</p>
-  <table>
-    <thead>
-      <tr><th>Name</th><th>Countries</th><th>Apply</th><th>Ver</th><th>Enabled</th><th></th></tr>
-    </thead>
-    <tbody>
-      {% for r in rows %}
-      <tr>
-        <td>{{ r.name }}</td>
-        <td>{{ r.countries | join(", ") }}</td>
-        <td>{{ r.apply_to | join(", ") }}</td>
-        <td>{{ r.version }}</td>
-        <td>{{ r.enabled }}</td>
-        <td><a href="/admin/ui/restrictions/{{ r.id }}">Edit</a></td>
-      </tr>
-      {% else %}
-      <tr><td colspan="6" class="muted">No restrictions yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-ink-600">
+        <tr>
+          <th class="px-6 py-3">Name</th>
+          <th class="px-6 py-3">Countries</th>
+          <th class="px-6 py-3">Apply</th>
+          <th class="px-6 py-3">Ver</th>
+          <th class="px-6 py-3">Status</th>
+          <th class="px-6 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for r in rows %}
+        <tr class="hover:bg-slate-50/80">
+          <td class="px-6 py-4 font-medium text-ink-950">{{ r.name }}</td>
+          <td class="px-6 py-4">
+            <div class="flex flex-wrap gap-1.5">
+              {% for c in r.countries %}
+              <span class="inline-flex rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-ink-800">{{ c }}</span>
+              {% endfor %}
+            </div>
+          </td>
+          <td class="px-6 py-4 text-ink-600">{{ r.apply_to | join(", ") }}</td>
+          <td class="px-6 py-4 tabular-nums text-ink-600">{{ r.version }}</td>
+          <td class="px-6 py-4">
+            {% if r.enabled %}
+            <span class="inline-flex rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">Enabled</span>
+            {% else %}
+            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">Disabled</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-right">
+            <a href="/admin/ui/restrictions/{{ r.id }}" class="font-semibold text-brand-700 hover:text-brand-600">Edit</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="px-6 py-10 text-center text-ink-400">No restrictions yet. Create a group to start syncing.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 {% endblock %}

@@ -51,7 +51,7 @@
 ```mermaid
 flowchart LR
   subgraph Admin
-    W[관리자 웹 / HTMX]
+    W[관리자 웹 / HTMX + Tailwind]
   end
   subgraph Backend
     API[FastAPI /api/v1]
@@ -75,7 +75,7 @@ flowchart LR
 
 | 계층 | 스택 |
 |------|------|
-| Backend | FastAPI · SQLModel · pytest · 관리자 UI(HTMX) |
+| Backend | FastAPI · SQLModel · pytest · 관리자 UI(**HTMX + Tailwind CDN**) |
 | Android | Kotlin · minSdk 29 · `:core`(JVM 도메인) · `:app`(Room/WorkManager/CallScreening) |
 | 인증 | **기기** / **관리자** `X-API-Key` 분리 (`change-me-*` 기동 거부) |
 
@@ -97,6 +97,15 @@ flowchart LR
 
 ---
 
+## 관리자 콘솔
+
+<p align="center">
+  <img src="docs/assets/admin-ui-login.png" alt="ElderShield 관리자 로그인 (Tailwind)" width="720" />
+</p>
+
+엔터프라이즈형 콘솔: 다크 사이드바 · 패널 카드 · 상태 배지 — **Tailwind CSS CDN** + HTMX.  
+상세: [`docs/runbooks/admin-ui.md`](docs/runbooks/admin-ui.md)
+
 ## 빠른 시작
 
 ### Backend
@@ -112,7 +121,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 | URL | 용도 |
 |-----|------|
-| `http://<host>:8000/admin/ui/login` | 관리자 UI (HMAC 세션 쿠키 — 키 원문 아님) |
+| `http://<host>:8000/admin/ui/login` | 관리자 UI — Tailwind 콘솔 (HMAC 세션 · 키 원문 아님). [`docs/runbooks/admin-ui.md`](docs/runbooks/admin-ui.md) |
 | `http://<host>:8000/api/v1/...` | 기기·관리자 JSON API |
 | `http://<host>:8000/health` | 헬스체크 |
 

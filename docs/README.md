@@ -42,7 +42,7 @@ Grok Build 문서 관례를 따른다.
 
 | 경로 | 내용 |
 |------|------|
-| [runbooks/](runbooks/README.md) | 운영 런북 (M6~) |
+| [runbooks/](runbooks/README.md) | 운영 런북 (롤백 · API 키 · Admin UI · 실기기) |
 | [releases/](releases/README.md) | 릴리스 노트 (M6~) |
 
 **작성·재배치**: 2026-11-19 · **실행**: Grok 주 구현 / 오케스트레이터 리뷰 · 자동 커밋 없음
