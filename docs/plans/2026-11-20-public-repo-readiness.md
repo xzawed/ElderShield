@@ -23,8 +23,11 @@ Repo visibility at last check: may become **Public** after history purge.
 ## Done
 
 1. HEAD redaction (scripts + lab JSON)  
-2. History rewrite removing lab serial/UUID strings  
+2. History rewrite removing lab serial/UUID strings (`git filter-repo`)  
 3. Force-push rewritten `main`  
+4. **PR refs are immutable on GitHub** — old serial/UUID remained under `refs/pull/*/head`, so:
+   - Renamed old repo → [`ElderShield-private-history`](https://github.com/xzawed/ElderShield-private-history) (**keep PRIVATE**)
+   - Recreated clean [`ElderShield`](https://github.com/xzawed/ElderShield) with purged `main` only (no dirty PR refs)
 
 ## Acceptable in public OSS tree
 
