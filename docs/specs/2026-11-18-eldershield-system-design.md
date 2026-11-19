@@ -23,6 +23,18 @@
 - 관리자 전용 웹 대시보드 제어
 - Bitdefender와 병행 사용 (1차 방어 역할)
 
+#### 1.2.1 Bitdefender / CallScreening 병행 정책 (권장안 A · 확정)
+
+Android는 `ROLE_CALL_SCREENING`을 **앱 하나만** 부여한다. ElderShield와 Bitdefender(또는 Samsung Smart Call 등)가 **동시에** 수신 스크리닝할 수는 없다.
+
+| 규칙 | 내용 |
+|------|------|
+| 병행 의미 | Bitdefender는 악성코드·일반 스팸 등 **1차 방어**로 유지. ElderShield는 DNS/스캔 + **역할 보유 시에만** 국가 전화 차단 |
+| 가로채기 금지 | 역할이 비어 있지 않으면 `adb`/프로비저닝으로 **강탈하지 않음**. 부모님에게 Bitdefender를 끄라고 **지시하지 않음** |
+| 역할 미보유 시 | 국가 **전화** 차단은 비활성(`callScreeningEnabled=false`). DNS·앱 스캔·heartbeat는 정상 동작 |
+| 관리자 보고 | heartbeat에 역할 보유 여부 + (가능하면) 다른 CallScreening 구현 패키지 힌트. “BD를 제거하라” UI 금지 |
+| 역할 요청 UI | 다른 CallScreening 앱이 설치된 채 미보유면 **자동 요청하지 않음**. 관리자가 명시 탭할 때만 시스템 전환 UI(취소 가능) |
+
 ### 1.3 하드 제약 (반드시 준수)
 | 제약 | 상세 |
 |------|------|
@@ -290,6 +302,7 @@ interface AppScanner {
 - 로컬 캐시된 `CountryRestriction`의 `countries`와 매칭
 - 매칭 시 `CallResponse.Builder().setDisallowCall(true).setRejectCall(true)`
 - 알림은 최소화 또는 없음
+- **전제:** ElderShield가 `ROLE_CALL_SCREENING`을 보유할 때만 플랫폼이 이 서비스를 호출한다. 미보유(Bitdefender 등이 보유)면 §1.2.1에 따라 전화 경로는 비활성 — 병행 위반이 아님
 
 ### 5.4 동기화 (RuleSyncWorker)
 - WorkManager PeriodicWork (15분~1시간 간격, 배터리 제약 고려)
@@ -308,14 +321,42 @@ interface AppScanner {
 ## 6. 국가 제한 상세 로직
 
 ### 6.1 전화 차단
-- 전화번호에서 국가코드 추출 (`+86`, `0086`, `86` 등 정규화)
-- `CountryRestriction` 중 `applyTo`에 `"call"` 포함 + `enabled=true`인 항목의 `countries`와 매칭
-- 화이트리스트 우선 적용
+- **수신만** 대상 (`CallScreeningService`). 발신(걸기)은 플랫폼이 이 경로로 넘기지 않음.
+- 번호 정규화 → 국제 숫자열(E.164 digits, `+` 없음):
+  - `+86…` / `0086…` / `86…` (이미 국제형)
+  - **기기 기본 지역(Phase 1: KR)**: 국내 트렁크 `0…`(예: `010…`) → `82…`로 변환 후 매칭
+  - 화이트리스트 비교도 **동일 정규화** 후 전체 숫자 일치만 허용 (접두 `+86` 단독 금지)
+- `CountryRestriction` 중 `applyTo`에 `"call"` 포함 + `enabled=true`인 항목의 `countries`(ISO) ↔ calling code 접두 매칭
+- 화이트리스트(`CallRule.whitelist`) 우선. `countryCodes` / `numberPatterns`는 Phase 1에서 **차단에 미사용**(예약·표시용)
 
-### 6.2 DNS / 인터넷 차단
-- 서버에서 제한 국가의 ccTLD + 주요 도메인 리스트를 생성하거나
-- NextDNS/AdGuard에 규칙 동기화 (권장: 초기에는 수동 또는 API 연동)
-- 앱은 Private DNS 설정 상태만 모니터링하고, 잘못되면 관리자에게만 보고
+### 6.2 DNS / 인터넷 차단 (중요 · Private DNS 경로)
+
+은행 앱 호환을 위해 **VpnService 기본 비활성**을 유지한다. 국가 인터넷 차단의 **1차 구현 경로**는 Private DNS(NextDNS 권장, AdGuard 가능)이다.
+
+| 계층 | 역할 |
+|------|------|
+| Backend | `applyTo`에 `dns` 또는 `internet`이 있는 enabled `CountryRestriction` → **denylist**(ccTLD + 국가별 주요 도메인) 생성 |
+| Admin | denylist 조회·복사(NextDNS/AdGuard에 반영). 이후 **NextDNS API 자동 푸시** |
+| Android 앱 | 트래픽을 직접 차단하지 않음. Private DNS **hostname + 허용 리졸버** 여부를 `dnsConfigured`로 보고 |
+
+- `applyTo: call` → CallScreening만. `dns`/`internet` → denylist/DNS 정책만 (전화와 독립).
+- 한계(정직하게): IP 직결·DoH 우회·앱 내장 DNS는 Private DNS만으로 100% 불가. 심층 차단은 Phase 후반 VpnService **옵션**(은행 앱 회귀 후).
+- `dnsConfigured=true`: Private DNS **hostname** 모드 + specifier가 허용 호스트와 **일치/하위 도메인** (부분 문자열 삽입 금지)
+
+### 6.2.1 권장 구현 (사실 검증 2026-11-19)
+
+| 후보 | 판정 | 이유 |
+|------|------|------|
+| **NextDNS + Android Private DNS** | **채택** | SSOT·은행앱(VPN 없음)·LTE에서도 hostname만 설정. 공식 API로 `security.tlds`(cn/ru…) + `denylist` 호스트 동기화 가능 ([NextDNS API](https://nextdns.github.io/api/)) |
+| AdGuard Home 자가호스팅 | 비권장(1차) | Private DNS용 공인 인증서·상시 서버 필요, 부모 LTE에서 불리 |
+| 앱 VpnService 국가 IP 필터 | 후순위 | 하드 제약(은행 앱). 회귀 통과 후에만 옵션 |
+| denylist에 `*.cn` 문자열 | **폐기** | API는 TLD 차단을 `security.tlds`의 `cn`으로 제공. `*.cn` denylist는 비공식·오류 위험 |
+
+한계(정직): DNS 계층은 geo-IP가 아님. DoH 우회는 NextDNS Parental Control **Block bypass methods**로 완화. 하드코드 DNS·별도 VPN은 막지 못함.
+
+### 6.2.2 API (관리자)
+- `GET /api/v1/admin/dns-denylist` — `{ countries, tlds, domains }`
+- `POST /api/v1/admin/dns-denylist/sync-nextdns` — `NEXTDNS_API_KEY` + `NEXTDNS_PROFILE_ID`(전용 프로필 권장). 미설정 시 503
 
 ### 6.3 다중 선택 유지
 - DB에 `countries`를 JSON 배열 또는 별도 테이블로 저장
@@ -371,11 +412,10 @@ interface AppScanner {
 
 ---
 
-## 10. 향후 확장 (Phase 2+)
-- VpnService 기반 IP 국가 필터 (은행 앱 테스트 후)
-- NextDNS API 자동 연동
-- 더 정교한 앱 위험 점수
-- 통계 대시보드
+## 10. 향후 확장
+- **NextDNS API 자동 푸시** (denylist 슬라이스 직후 — 인터넷 차단 P0)
+- VpnService 기반 IP 국가 필터 (은행 앱 회귀 통과 후에만 옵션)
+- 더 정교한 앱 위험 점수 / 통계 대시보드
 
 ---
 

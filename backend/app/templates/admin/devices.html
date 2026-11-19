@@ -16,6 +16,7 @@
           <th class="px-6 py-3">App</th>
           <th class="px-6 py-3">DNS</th>
           <th class="px-6 py-3">Call screening</th>
+          <th class="px-6 py-3">Peers (hint)</th>
           <th class="px-6 py-3">Rule ver</th>
           <th class="px-6 py-3">Last sync</th>
           <th class="px-6 py-3"></th>
@@ -36,8 +37,17 @@
           <td class="px-6 py-4">
             {% if d.call_screening_enabled %}
             <span class="inline-flex rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">On</span>
+            <div class="mt-1 font-mono text-[11px] text-ink-600">{{ d.call_screening_held_by or "com.eldershield" }}</div>
             {% else %}
-            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">Off</span>
+            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">Off (병행 OK)</span>
+            <div class="mt-1 text-[11px] text-ink-500">역할 미보유 — BD 끄지 않음</div>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 font-mono text-[11px] text-ink-600">
+            {% if d.call_screening_peers %}
+            {{ d.call_screening_peers|join(", ") }}
+            {% else %}
+            —
             {% endif %}
           </td>
           <td class="px-6 py-4 tabular-nums">{{ d.last_rule_version }}</td>
@@ -48,7 +58,7 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="7" class="px-6 py-10 text-center text-ink-400">No devices yet. Provision an app and wait for heartbeat.</td>
+          <td colspan="8" class="px-6 py-10 text-center text-ink-400">No devices yet. Provision an app and wait for heartbeat.</td>
         </tr>
         {% endfor %}
       </tbody>

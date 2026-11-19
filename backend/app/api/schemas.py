@@ -44,6 +44,26 @@ class CountryMasterOut(BaseModel):
     calling_code: str = Field(serialization_alias="callingCode", validation_alias="callingCode")
 
 
+class DnsDenylistOut(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, ser_json_by_alias=True)
+
+    source: str
+    countries: list[str]
+    tlds: list[str] = Field(default_factory=list)
+    domains: list[str]
+    count: int
+
+
+class NextDnsSyncOut(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, ser_json_by_alias=True)
+
+    ok: bool
+    profile_id: str = Field(serialization_alias="profileId", validation_alias="profileId")
+    plan: DnsDenylistOut
+    tlds: dict
+    denylist: dict
+
+
 class CallRuleCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -71,6 +91,12 @@ class DeviceOut(BaseModel):
     app_version: str = Field(serialization_alias="appVersion")
     dns_configured: bool = Field(serialization_alias="dnsConfigured")
     call_screening_enabled: bool = Field(serialization_alias="callScreeningEnabled")
+    call_screening_held_by: Optional[str] = Field(
+        default=None, serialization_alias="callScreeningHeldBy"
+    )
+    call_screening_peers: list[str] = Field(
+        default_factory=list, serialization_alias="callScreeningPeers"
+    )
     last_rule_version: int = Field(serialization_alias="lastRuleVersion")
     last_sync_at: Optional[datetime] = Field(default=None, serialization_alias="lastSyncAt")
 

@@ -27,3 +27,12 @@ Content-Type: application/json
 - Devices fail open if cache empty and sync fails (no call block).
 - Do not expose rollback status on the parent phone UI.
 - Device key → 403. Missing snapshot / restriction → 404.
+
+## Lab cleanup (temporary KR call rule)
+
+After 010 national-format smoke on a KR handset:
+
+1. Admin → Country restrictions → disable or delete the **Lab KR call-only** row (keep CN `call`+`dns` if still needed).  
+2. Confirm `GET /api/v1/rules/latest` `version` increased and KR is absent or `enabled=false`.  
+3. Trigger device Save & sync (or wait for RuleSyncWorker); `lastRuleVersion` matches.  
+4. Do **not** tell anyone to disable Bitdefender (§1.2.1).

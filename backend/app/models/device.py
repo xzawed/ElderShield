@@ -19,6 +19,12 @@ class Device(SQLModel, table=True):
     app_version: str = "0.0.0"
     dns_configured: bool = False
     call_screening_enabled: bool = False
+    # Package that holds ROLE_CALL_SCREENING when known (usually this app); null if we do not hold it.
+    call_screening_held_by: Optional[str] = Field(default=None, max_length=256)
+    # Other installed CallScreeningService packages (hint for Bitdefender 병행 — not authoritative role holder).
+    call_screening_peers: list[str] = Field(
+        default_factory=list, sa_column=Column(JSON, nullable=False, server_default="[]")
+    )
     last_rule_version: int = 0
     last_sync_at: Optional[datetime] = None
 

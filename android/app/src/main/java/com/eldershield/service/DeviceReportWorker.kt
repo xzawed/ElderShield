@@ -1,9 +1,6 @@
 package com.eldershield.service
 
-import android.app.role.RoleManager
 import android.content.Context
-import android.os.Build
-import android.telecom.TelecomManager
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.eldershield.data.local.ElderShieldDatabase
@@ -39,12 +36,15 @@ class DeviceReportWorker(
                     .getPackageInfo(applicationContext.packageName, 0)
                     .versionName ?: "0.1.0"
 
+            val screening = CallScreeningRoleProbe.probe(applicationContext)
             val api = DeviceApi(baseUrl, apiKey)
             api.postHeartbeat(
                 deviceUuid = deviceUuid,
                 appVersion = appVersion,
                 dnsConfigured = dns.configured,
-                callScreeningEnabled = isCallScreeningEnabled(),
+                callScreeningEnabled = screening.heldByUs,
+                callScreeningHeldBy = screening.heldBy,
+                callScreeningPeers = screening.peers,
                 lastRuleVersion = lastRuleVersion,
             )
 
@@ -55,20 +55,6 @@ class DeviceReportWorker(
             Result.success()
         } catch (_: Exception) {
             Result.retry()
-        }
-    }
-
-    private fun isCallScreeningEnabled(): Boolean {
-        return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val rm = applicationContext.getSystemService(RoleManager::class.java)
-                rm?.isRoleHeld(RoleManager.ROLE_CALL_SCREENING) == true
-            } else {
-                val tm = applicationContext.getSystemService(TelecomManager::class.java)
-                tm?.defaultDialerPackage == applicationContext.packageName
-            }
-        } catch (_: Exception) {
-            false
         }
     }
 

@@ -38,7 +38,7 @@
 | 기능 | 방식 |
 |------|------|
 | 위험 국가 **전화** | `CallScreeningService` + Room 캐시 `RuleBundle` (+ `CallRule` 화이트리스트) |
-| 위험 국가 **인터넷** | Private DNS(NextDNS/AdGuard) 상태 보고 — VPN은 이후 |
+| 위험 국가 **인터넷** | Private DNS(NextDNS/AdGuard) + Admin **DNS denylist** (ccTLD·주요 도메인). 앱 VPN 없음 · API 자동 푸시는 다음 슬라이스 |
 | **사기/사이드로드 앱** | 스캔 후 **관리자 보고만** (부모 팝업 없음) |
 | **제어면** | 관리자 웹 + `X-API-Key` API + 단조 **generation** |
 

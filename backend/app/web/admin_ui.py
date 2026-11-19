@@ -16,6 +16,7 @@ from app.services.country_restriction_service import (
     delete_country_restriction,
     update_country_restriction,
 )
+from app.services.dns_denylist import build_dns_denylist
 from app.web.auth import login_redirect, logout_redirect, require_admin_ui
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
@@ -265,6 +266,67 @@ def delete_call_rule_form(
 ):
     delete_call_rule(session, rule_id)
     return RedirectResponse("/admin/ui/call-rules", status_code=303)
+
+
+def _dns_denylist_page(
+    request: Request,
+    session: Session,
+    *,
+    sync_ok: bool | None = None,
+    sync_message: str | None = None,
+) -> HTMLResponse:
+    rows = list(session.exec(select(CountryRestriction)).all())
+    payload = build_dns_denylist(rows)
+    return templates.TemplateResponse(
+        request,
+        "admin/dns_denylist.html",
+        _ctx(
+            request,
+            countries=payload["countries"],
+            tlds=payload["tlds"],
+            domains=payload["domains"],
+            sync_ok=sync_ok,
+            sync_message=sync_message,
+        ),
+    )
+
+
+@router.get("/dns-denylist", response_class=HTMLResponse)
+def dns_denylist_ui(
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> HTMLResponse:
+    return _dns_denylist_page(request, session)
+
+
+@router.post("/dns-denylist/sync-nextdns")
+def dns_denylist_sync_nextdns(
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+):
+    from app.core.config import settings
+    from app.services.nextdns_sync import NextDnsNotConfigured, NextDnsSyncError, sync_policy_to_nextdns
+
+    rows = list(session.exec(select(CountryRestriction)).all())
+    try:
+        result = sync_policy_to_nextdns(
+            rows,
+            api_key=settings.nextdns_api_key,
+            profile_id=settings.nextdns_profile_id,
+        )
+        msg = (
+            f"Synced profile {result['profileId']}: "
+            f"tlds={result['tlds'].get('desired')}, "
+            f"denylist +{len(result['denylist'].get('added', []))} "
+            f"-{len(result['denylist'].get('removed', []))}."
+        )
+        return _dns_denylist_page(request, session, sync_ok=True, sync_message=msg)
+    except NextDnsNotConfigured as exc:
+        return _dns_denylist_page(request, session, sync_ok=False, sync_message=str(exc))
+    except NextDnsSyncError as exc:
+        return _dns_denylist_page(request, session, sync_ok=False, sync_message=str(exc))
 
 
 @router.get("/devices", response_class=HTMLResponse)

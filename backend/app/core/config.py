@@ -13,6 +13,8 @@ class Settings:
     database_url: str
     admin_api_key: str
     device_api_key: str
+    nextdns_api_key: str | None = None
+    nextdns_profile_id: str | None = None
 
 
 def load_settings() -> Settings:
@@ -20,6 +22,8 @@ def load_settings() -> Settings:
         database_url=os.getenv("DATABASE_URL", "sqlite:///./eldershield.db"),
         admin_api_key=os.getenv("ADMIN_API_KEY", "change-me-admin"),
         device_api_key=os.getenv("DEVICE_API_KEY", "change-me-device"),
+        nextdns_api_key=os.getenv("NEXTDNS_API_KEY") or None,
+        nextdns_profile_id=os.getenv("NEXTDNS_PROFILE_ID") or None,
     )
 
 

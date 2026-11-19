@@ -54,8 +54,10 @@ Call screening / bank-app checks still need a real phone (S6.1). Emulator valida
 2. Base URL = origin only, e.g. `http://192.168.0.10:8000` (no `/api/v1`).  
 3. Device API key = `DEVICE_API_KEY` (not admin).  
 4. Tap **Save & sync now**.  
-5. Tap **Request call screening role** and accept the system dialog  
-   (or `adb shell cmd role add-role-holder android.app.role.CALL_SCREENING com.eldershield`).
+5. Tap **Request call screening role** only if policy allows (see §8 / SSOT §1.2).  
+   **Do not** tell the parent to uninstall or disable Bitdefender — 병행 사용이 하드 목적이다.  
+6. Allow **Contacts** (+ Call log / Phone) when prompted.  
+   **Android rule:** without `READ_CONTACTS`, numbers already in the address book are **not** passed to `CallScreeningService`.
 
 ## 3. Seed rules
 
@@ -84,6 +86,8 @@ If the device list stays empty: battery optimization, wrong key, wrong URL, or b
 | Restricted-country test number (e.g. `+86…` with CN restricted) | Rejected; **no** ElderShield parent notification |
 | Whitelisted full number | Allowed even if country restricted |
 | KR number with only CN/RU restricted | Allowed |
+| With **KR** restricted: domestic **incoming** `010…` (not whitelist) | Rejected (national trunk `0` → `82` normalization) |
+| Outgoing dial ("걸기") | Not screened — CallScreening is **incoming only** |
 | Empty cache / sync fail | Fail-open (call allowed) |
 
 ## 6. Banking-app regression
@@ -95,6 +99,32 @@ Install/open bank apps used by parents (e.g. Toss, KakaoBank). Expect normal lau
 Sideloaded non-system app with dangerous perms (e.g. `READ_SMS`) → after report worker, admin scan results show `installer` / `dangerousPermissions` / `riskScore`.  
 Empty scan list with successful heartbeat ≠ “scanner broken”; score may be below threshold.
 
+## 8. KR-lab constraint matrix (Korea location, KR handset only)
+
+CN/RU **PSTN SIM is unavailable**. Split coverage:
+
+| ID | Case | Where | How | Pass criteria |
+|----|------|-------|-----|---------------|
+| L1 | Backend unit + denylist shape | Host | `pytest -q`; `GET …/dns-denylist` | green; `tlds` includes seeded countries |
+| L2 | NextDNS auto-push | Host | `POST …/sync-nextdns` | 200 when `NEXTDNS_*` set; else **SKIP** (503 expected) |
+| L3 | Provision + reverse + heartbeat | Emulator **and** S22 USB | `adb reverse`; Save & sync | `lastRuleVersion` = bundle `version`; role true |
+| L4 | CN incoming block | **Emulator only** | `adb emu gsm call +8613999…` (not on whitelist) | Telecom `Reject` / `INCOMING_REJECTED` |
+| L5 | CN whitelist allow | Emulator | `adb emu gsm call` exact whitelist E.164 | `Allow` / keeps RINGING |
+| L6 | KR `+82` incoming block | Emulator | `adb emu gsm call +8210…` with KR `applyTo:call` | `Reject` |
+| L7 | KR national `010` block | Emulator **and** S22 | Emu: `gsm call 010…`; S22: **second KR phone** dials in | `Reject` (normalize `0`→`82`) |
+| L8 | US/other allow control | Emulator | `adb emu gsm call +1…` | `Allow` |
+| L9 | Outgoing not screened | S22 | Dial out while KR restricted | Call connects; screening N/A |
+| L10 | Bank app launch | S22 | `am start` Toss/KakaoBank (if installed) | Activity starts; no ElderShield overlay |
+| L11 | Private DNS / internet path | S22 | Settings Private DNS → trusted NextDNS host | heartbeat `dnsConfigured=true`; real `.cn` block needs NextDNS profile (**L2**) |
+
+**Do not** treat “cannot get a CN SIM in Korea” as a product fail — L4/L5 cover CN on AVD.
+
+| ID | Case | Where | Constraint |
+|----|------|-------|------------|
+| L12 | Bitdefender 병행 | S22 | Bitdefender **유지**. ElderShield must not instruct to turn off BD. Platform: only **one** `ROLE_CALL_SCREENING` holder — if BD holds it, ElderShield call-path cannot receive `onScreenCall`; report role holder to admin, keep DNS/scan paths. **Never** `cmd role add-role-holder` steal in lab without explicit test of “role already free”. |
+
+Repeatable host script: `scripts/lab-batch-verify.ps1` (emulator + USB S22 + API).
+
 ## Pass / fail log
 
 | Item | Pass? | Notes |
@@ -105,3 +135,4 @@ Empty scan list with successful heartbeat ≠ “scanner broken”; score may be
 | Whitelist allowed | | |
 | Bank apps OK | | |
 | Admin devices/scans visible | | |
+| L1–L11 KR-lab matrix | | See §8 |

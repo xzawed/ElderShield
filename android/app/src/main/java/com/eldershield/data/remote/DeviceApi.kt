@@ -20,14 +20,23 @@ class DeviceApi(
         appVersion: String,
         dnsConfigured: Boolean,
         callScreeningEnabled: Boolean,
+        callScreeningHeldBy: String?,
+        callScreeningPeers: List<String>,
         lastRuleVersion: Int,
     ) {
+        val peers = JSONArray()
+        callScreeningPeers.forEach { peers.put(it) }
         val body =
             JSONObject()
                 .put("deviceUuid", deviceUuid)
                 .put("appVersion", appVersion)
                 .put("dnsConfigured", dnsConfigured)
                 .put("callScreeningEnabled", callScreeningEnabled)
+                .put(
+                    "callScreeningHeldBy",
+                    if (callScreeningHeldBy == null) JSONObject.NULL else callScreeningHeldBy,
+                )
+                .put("callScreeningPeers", peers)
                 .put("lastRuleVersion", lastRuleVersion)
                 .toString()
                 .toRequestBody(jsonMedia)

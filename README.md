@@ -38,7 +38,7 @@
 | Capability | How it works |
 |------------|----------------|
 | Risky-country **calls** | `CallScreeningService` + Room-cached `RuleBundle` (+ `CallRule` whitelist) |
-| Risky-country **internet** | Private DNS (NextDNS / AdGuard) — status reported; VPN later |
+| Risky-country **internet** | Private DNS (NextDNS / AdGuard) + Admin **DNS denylist**; no on-device VPN; API push next |
 | **Scam / sideloaded apps** | Scan & report to admin only (no parent popups) |
 | **Control plane** | Admin web + `X-API-Key` APIs + monotonic rule **generation** |
 

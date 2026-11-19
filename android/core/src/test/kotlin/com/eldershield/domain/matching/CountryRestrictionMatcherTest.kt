@@ -165,4 +165,36 @@ class CountryRestrictionMatcherTest {
             ),
         )
     }
+
+    @Test
+    fun `UT-A-23 KR national 010 is blocked when KR restricted`() {
+        // Device call log format on KR SIMs — trunk 0 must map to +82.
+        assertTrue(matcher.shouldBlockCall("01012345678", listOf(rule(listOf("KR")))))
+        assertTrue(matcher.shouldBlockCall("010-1234-5678", listOf(rule(listOf("KR")))))
+    }
+
+    @Test
+    fun `UT-A-24 KR national 010 not blocked when only CN restricted`() {
+        assertFalse(matcher.shouldBlockCall("01012345678", listOf(rule(listOf("CN")))))
+    }
+
+    @Test
+    fun `UT-A-25 whitelist E164 matches national KR presentation`() {
+        assertTrue(matcher.isWhitelisted("01091112222", listOf("+821091112222")))
+        assertFalse(
+            CallScreeningDecision.shouldBlock(
+                "01091112222",
+                listOf(rule(listOf("KR"))),
+                listOf(
+                    CallRule(
+                        id = "cr-wl",
+                        countryCodes = emptyList(),
+                        whitelist = listOf("+821091112222"),
+                        enabled = true,
+                        version = 1,
+                    ),
+                ),
+            ),
+        )
+    }
 }

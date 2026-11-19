@@ -39,6 +39,10 @@
         <option value="{{ a }}" {% if a in selected_apply %}selected{% endif %}>{{ a }}</option>
         {% endfor %}
       </select>
+      <p class="mt-1.5 text-xs text-ink-400">
+        <code class="text-brand-700">call</code> → CallScreening.
+        <code class="text-brand-700">dns</code> / <code class="text-brand-700">internet</code> → DNS denylist (NextDNS/AdGuard; not an on-device VPN).
+      </p>
     </div>
 
     <label class="inline-flex items-center gap-2 text-sm text-ink-800">
