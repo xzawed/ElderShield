@@ -27,9 +27,9 @@
 
 ## 핵심 모델
 
-- `CountryRestriction` — `countries[]`, `applyTo`, `version`
+- `CountryRestriction` — `countries[]`, `applyTo`, `version`(행)
 - `CallRule`, `AppRiskRule`, `Device`
-- `RuleBundle` — 앱 동기화 단위 (`version` 포함)
+- `RuleBundle` — 앱 동기화 단위. **`version` = 단조 generation** (행 max 아님)
 
 상세 JSON 스키마는 설계 §3.
 
@@ -37,7 +37,7 @@
 
 - Base: `/api/v1`, 헤더 `X-API-Key` (device / admin 분리)
 - 기기: `GET /rules/latest`, `POST /devices/heartbeat`, `POST /devices/apps/scan-result`
-- 관리자: country-restrictions CRUD, countries, devices, rules rollback
+- 관리자: country-restrictions CRUD, call-rules, countries, devices, rules rollback
 
 상세는 설계 §4.
 

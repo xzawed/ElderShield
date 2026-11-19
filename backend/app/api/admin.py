@@ -9,6 +9,7 @@ from app.api.schemas import (
     CountryRestrictionCreate,
     CountryRestrictionOut,
     CountryRestrictionUpdate,
+    DeviceOut,
     RulesRollbackOut,
     RulesRollbackRequest,
 )
@@ -16,7 +17,7 @@ from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
 from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
-from app.models.device import AppScanResult
+from app.models.device import AppScanResult, Device
 from app.services.call_rule_service import create_call_rule
 from app.services.country_restriction_service import (
     create_country_restriction,
@@ -133,6 +134,11 @@ def rollback_rules(
         description=row.description,
         bundle_version=int(result["bundle_version"]),
     )
+
+
+@router.get("/devices", response_model=list[DeviceOut])
+def list_devices(session: Session = Depends(get_session)) -> list[Device]:
+    return list(session.exec(select(Device)).all())
 
 
 @router.get("/devices/{device_uuid}/scan-results")

@@ -138,6 +138,9 @@
 }
 ```
 
+**`version` (bundle generation)**: 제한 그룹·CallRule의 **내용 변경(생성/수정/삭제/롤백)마다 단조 증가**하는 동기화 키다.  
+개별 `CountryRestriction.version` / `CallRule.version`의 `max`가 아니다. 기기는 `remote.version > cached.version`일 때만 캐시를 갱신한다.
+
 ---
 
 ## 4. API 스펙
@@ -226,10 +229,20 @@ X-API-Key: device-key
 ```
 
 #### GET `/admin/devices`
-등록된 기기 목록 + 상태
+등록된 기기 목록 + 상태 (`deviceUuid`, `appVersion`, `dnsConfigured`, `callScreeningEnabled`, `lastRuleVersion`, `lastSyncAt`, …)
+
+#### GET `/admin/call-rules` / POST `/admin/call-rules`
+CallRule(화이트리스트) 목록·생성. 생성 시 RuleBundle generation 증가.
+```json
+{ "countryCodes": ["+86"], "whitelist": ["+8613812345678"], "enabled": true }
+```
 
 #### POST `/admin/rules/rollback`
-특정 버전으로 롤백
+특정 **restriction 스냅샷**을 새 row version으로 발행하고 RuleBundle generation을 올린다.
+```json
+{ "restrictionId": "<uuid>", "targetVersion": 1 }
+```
+응답에 `bundleVersion` 포함. 상세: [`../runbooks/rollback.md`](../runbooks/rollback.md)
 
 ---
 
@@ -307,17 +320,22 @@ interface AppScanner {
 ### 6.3 다중 선택 유지
 - DB에 `countries`를 JSON 배열 또는 별도 테이블로 저장
 - 관리 웹에서 멀티 셀렉트 컴포넌트 사용
-- 변경 시 `version` 자동 증가 → 앱이 다음 동기화 시 반영
+- 변경 시 **RuleBundle generation** 및 해당 행 `version` 증가 → 앱이 다음 동기화 시 반영
+
+### 6.4 Private DNS 상태 (`dnsConfigured`)
+- Private DNS **hostname** 모드이면서 specifier가 **허용 호스트**(NextDNS/AdGuard 등)와 일치할 때만 `true`
+- 임의 Private DNS hostname은 보호 성공으로 보지 않음
 
 ---
 
 ## 7. 보안 및 운영
 
-- 기기 API Key와 관리자 API Key 분리
-- HTTPS 필수
-- 규칙 변경 이력 보관 (감사 로그)
+- 기기 API Key와 관리자 API Key 분리 (`change-me-*` 기본값은 기동 거부; 로컬만 `ELDERSHIELD_ALLOW_INSECURE_DEFAULTS=1`)
+- HTTPS 필수. Admin UI 쿠키는 **HMAC 세션 토큰**(API 키 원문 금지). 운영 HTTPS에서는 `COOKIE_SECURE=1`
+- 규칙 변경 이력 보관 (restriction version 스냅샷 + 롤백)
 - 민감 정보(전화번호 원문 등) 최소화 저장
 - Play Store 내부 테스트 트랙으로 앱 배포 → 자동 업데이트
+- 원격 규칙 sync 실패 시 기기는 캐시/EmptyNoBlock(차단 안 함)을 유지하되 WorkManager는 **retry**
 
 ---
 

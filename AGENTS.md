@@ -39,16 +39,16 @@
 
 ## 인증
 
-- `X-API-Key` — **기기용 / 관리자용 키 분리**
+- `X-API-Key` — **기기용 / 관리자용 키 분리** (`change-me-*` 기동 거부)
 - HTTPS 필수. 전화번호 원문 등 민감 정보 최소화
 
 ## 핵심 모델
 
-- `CountryRestriction`: `countries[]` (ISO alpha-2), `applyTo` (`call`|`dns`|`internet`), `version`
-- `CallRule`, `AppRiskRule`, `Device`, `RuleBundle` (동기화 단위, versioned)
+- `CountryRestriction`: `countries[]` (ISO alpha-2), `applyTo` (`call`|`dns`|`internet`), `version`(행)
+- `CallRule`, `AppRiskRule`, `Device`, `RuleBundle` (**`version` = 단조 generation**)
 
 기기 API: `GET /rules/latest`, `POST /devices/heartbeat`, `POST /devices/apps/scan-result`  
-관리자 API: country-restrictions CRUD, countries 마스터, devices, rules rollback  
+관리자 API: country-restrictions CRUD, call-rules, countries, devices, rules rollback  
 Base: `/api/v1`
 
 ## Android 패키지

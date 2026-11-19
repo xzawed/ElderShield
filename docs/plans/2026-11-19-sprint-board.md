@@ -33,7 +33,7 @@
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
-| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial — runbook+rollback API; device checklist pending |
+| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial — rollback/call-rules/devices API+docs; device checklist pending |
 
 ## S1 slices
 
@@ -76,7 +76,7 @@
 | Slice | Deliverable | Notes |
 |-------|-------------|-------|
 | S6.1 | Device checklist (bank apps, call block) | User device |
-| S6.2 | Play internal track + rollback runbook | Runbook + `POST /admin/rules/rollback` (API done); Play track pending |
+| S6.2 | Play internal track + rollback runbook | Runbook+rollback/call-rules/devices; SSOT docs synced; Play track pending |
 
 ## Doc budget
 

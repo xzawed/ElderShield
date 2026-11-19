@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -59,6 +60,19 @@ class CallRuleOut(BaseModel):
     whitelist: list[str]
     enabled: bool
     version: int
+
+
+class DeviceOut(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True, ser_json_by_alias=True)
+
+    device_uuid: str = Field(serialization_alias="deviceUuid")
+    name: Optional[str] = None
+    model: Optional[str] = None
+    app_version: str = Field(serialization_alias="appVersion")
+    dns_configured: bool = Field(serialization_alias="dnsConfigured")
+    call_screening_enabled: bool = Field(serialization_alias="callScreeningEnabled")
+    last_rule_version: int = Field(serialization_alias="lastRuleVersion")
+    last_sync_at: Optional[datetime] = Field(default=None, serialization_alias="lastSyncAt")
 
 
 class RulesRollbackRequest(BaseModel):
