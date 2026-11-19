@@ -81,3 +81,31 @@ def test_ut_b_15_missing_or_bad_admin_key(client) -> None:
 def test_ut_b_16_device_key_forbidden_on_admin(client) -> None:
     r = client.get("/api/v1/admin/countries", headers=DEVICE)
     assert r.status_code == 403
+
+
+def test_ut_b_04_http_rejects_countries_string(client) -> None:
+    r = client.post(
+        "/api/v1/admin/country-restrictions",
+        headers=ADMIN,
+        json={
+            "name": "bad",
+            "countries": "CN",
+            "applyTo": ["call"],
+            "enabled": True,
+        },
+    )
+    assert r.status_code == 422
+
+
+def test_ut_b_05_http_rejects_empty_countries_when_enabled(client) -> None:
+    r = client.post(
+        "/api/v1/admin/country-restrictions",
+        headers=ADMIN,
+        json={
+            "name": "empty",
+            "countries": [],
+            "applyTo": ["call"],
+            "enabled": True,
+        },
+    )
+    assert r.status_code == 422

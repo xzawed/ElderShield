@@ -19,6 +19,8 @@ class HeartbeatIn(BaseModel):
     app_version: str = Field(alias="appVersion")
     dns_configured: bool = Field(alias="dnsConfigured")
     call_screening_enabled: bool = Field(alias="callScreeningEnabled")
+    call_screening_held_by: str | None = Field(default=None, alias="callScreeningHeldBy")
+    call_screening_peers: list[str] = Field(default_factory=list, alias="callScreeningPeers")
     last_rule_version: int = Field(alias="lastRuleVersion")
 
 
@@ -62,6 +64,8 @@ def heartbeat(body: HeartbeatIn, session: Session = Depends(get_session)) -> Dev
     device.app_version = body.app_version
     device.dns_configured = body.dns_configured
     device.call_screening_enabled = body.call_screening_enabled
+    device.call_screening_held_by = body.call_screening_held_by
+    device.call_screening_peers = list(body.call_screening_peers)
     device.last_rule_version = body.last_rule_version
     device.last_sync_at = now
     session.add(device)

@@ -39,7 +39,7 @@
 | 영역 | 도구 | 위치(권장) | 실행 |
 |------|------|------------|------|
 | Backend | pytest, httpx/AsyncClient, SQLite in-memory | `backend/tests/` | `pytest -q` |
-| Android 순수 로직 | JUnit5, (필요 시) Robolectric 최소화 | `android/app/src/test/` | `./gradlew test` |
+| Android 순수 로직 | JUnit5 | `android/core/src/test/` (`:core` JVM) | `./gradlew :core:test` |
 | CI (추후) | 위 두 명령 | PR 게이트 | M1부터 Backend, M3부터 Android |
 
 **테스트 더블**: 네트워크·PackageManager·CallScreening은 인터페이스로 격리 후 fake.

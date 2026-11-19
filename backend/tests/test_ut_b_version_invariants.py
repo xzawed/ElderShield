@@ -85,6 +85,9 @@ def test_ut_b_05_empty_countries_when_enabled_rejected(session: Session) -> None
 
 def test_ut_b_06_rollback_publishes_new_version(session: Session) -> None:
     from app.services.rule_bundle_service import publish_rollback
+    from app.services.rule_bundle_builder import build_rule_bundle
+    from app.models.country_restriction import CountryRestrictionVersion
+    from sqlmodel import select
 
     row = create_country_restriction(
         session,
@@ -94,8 +97,67 @@ def test_ut_b_06_rollback_publishes_new_version(session: Session) -> None:
         enabled=True,
     )
     update_country_restriction(session, row.id, countries=["CN", "RU"])
-    # Snapshot at version 1 content, publish as new bundle version
+    before_bundle = build_rule_bundle(session)["version"]
     result = publish_rollback(session, target_restriction_version=1, restriction_id=row.id)
     assert result["restriction"].countries == ["CN"]
     assert result["restriction"].version == 3  # new version, history preserved
-    assert result["bundle_version"] >= 1
+    assert result["bundle_version"] > before_bundle
+    # history rows kept (v1, v2, v3)
+    snaps = list(
+        session.exec(
+            select(CountryRestrictionVersion).where(
+                CountryRestrictionVersion.restriction_id == row.id
+            )
+        ).all()
+    )
+    assert len(snaps) == 3
+    after = build_rule_bundle(session)
+    assert after["version"] == result["bundle_version"]
+    assert after["countryRestrictions"][0]["countries"] == ["CN"]
+
+
+ADMIN = {"X-API-Key": "test-admin-key"}
+DEVICE = {"X-API-Key": "test-device-key"}
+
+
+def test_ut_b_06_rollback_http_api(client) -> None:
+    created = client.post(
+        "/api/v1/admin/country-restrictions",
+        headers=ADMIN,
+        json={
+            "name": "고위험",
+            "countries": ["CN"],
+            "applyTo": ["call"],
+            "enabled": True,
+        },
+    ).json()
+    client.put(
+        f"/api/v1/admin/country-restrictions/{created['id']}",
+        headers=ADMIN,
+        json={"countries": ["CN", "RU"]},
+    )
+    before = client.get("/api/v1/rules/latest", headers=DEVICE).json()
+    r = client.post(
+        "/api/v1/admin/rules/rollback",
+        headers=ADMIN,
+        json={"restrictionId": created["id"], "targetVersion": 1},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["countries"] == ["CN"]
+    assert body["version"] == 3
+    assert body["bundleVersion"] > before["version"]
+    latest = client.get("/api/v1/rules/latest", headers=DEVICE).json()
+    assert latest["version"] == body["bundleVersion"]
+    assert latest["countryRestrictions"][0]["countries"] == ["CN"]
+
+
+def test_ut_b_06_rollback_requires_admin_key(client) -> None:
+    assert (
+        client.post(
+            "/api/v1/admin/rules/rollback",
+            headers=DEVICE,
+            json={"restrictionId": "x", "targetVersion": 1},
+        ).status_code
+        == 403
+    )

@@ -6,24 +6,25 @@ Package: `com.eldershield` · minSdk 29
 
 | Module | Role |
 |--------|------|
-| `:core` | Pure JVM domain (RuleBundle, RuleSyncPolicy) + UT-A-30..33 |
-| `:app` | Room cache, RuleSyncWorker, minimal MainActivity |
+| `:core` | Pure JVM domain (matcher, sync, scorer, DNS) + unit tests |
+| `:app` | Room, WorkManager, CallScreening, admin provisioning UI |
 
-## Test (no Android SDK required)
-
-Requires JDK 17+ (21 recommended). Set `JAVA_HOME` then:
+## Test (no device)
 
 ```bash
 cd android
 ./gradlew :core:test
 ```
 
-UT-A-30..33 live in `:core` (`RuleSyncPolicyTest`).
+## Debug APK
 
-## App build (requires Android SDK)
+1. `local.properties` → `sdk.dir=...`
+2. `./gradlew :app:assembleDebug`
+3. Device steps: [`../docs/runbooks/device-test.md`](../docs/runbooks/device-test.md)
 
-1. Copy `local.properties.example` → `local.properties` and set `sdk.dir`
-2. Ensure `include(":app")` in `settings.gradle.kts`
-3. `./gradlew :app:assembleDebug`
+| Build | Cleartext HTTP |
+|-------|----------------|
+| `debug` | Allowed (LAN lab) |
+| `release` | Disabled |
 
-VpnService / Overlay / Accessibility / Device Admin are **not** used.
+Hard constraints: no VpnService / Overlay / Accessibility / Device Admin.

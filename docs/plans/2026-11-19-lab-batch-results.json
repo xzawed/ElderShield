@@ -1,0 +1,23 @@
+﻿{
+  "ranAt": "2026-11-19T12:06:00Z",
+  "constraint": "Korea location; KR handset only — CN PSTN via emulator gsm",
+  "bundleVersion": 15,
+  "note": "2026-11-19 follow-up: §1.2.1 A shipped; Lab KR call disabled (cleanup); nextdns/play runbooks added",
+  "results": [
+    {"id": "L1-pytest", "status": "PASS", "notes": "47 passed"},
+    {"id": "L1-denylist", "status": "PASS", "notes": "tlds=[cn], domains=15+, countries=[CN]"},
+    {"id": "L2-nextdns", "status": "SKIP", "notes": "NEXTDNS_API_KEY/PROFILE_ID unset → 503"},
+    {"id": "L3-apk", "status": "PASS", "notes": "assembleDebug"},
+    {"id": "L3-emu", "status": "PASS", "notes": "role held; device ec7b001e lastRuleVersion=13"},
+    {"id": "L3-s22", "status": "PASS", "notes": "role held; synced earlier at v11; pattern lock blocked Save for v13 pull — unlock then Save"},
+    {"id": "L4-cn-block", "status": "PASS", "notes": "+8613999999999 Reject/INCOMING_REJECTED"},
+    {"id": "L5-cn-whitelist", "status": "PASS", "notes": "+8613812345678 Allow"},
+    {"id": "L6-kr82", "status": "PASS", "notes": "+821098765432 Reject"},
+    {"id": "L7-emu-010", "status": "PASS", "notes": "01098765432 Reject (0→82 normalize)"},
+    {"id": "L7-s22-010", "status": "NEED_HUMAN", "notes": "Unlock S22 pattern; second KR phone dials S22 while Lab KR call enabled"},
+    {"id": "L8-us-allow", "status": "PASS", "notes": "+12025550199 Allow"},
+    {"id": "L9-outgoing", "status": "NEED_HUMAN", "notes": "From S22 dial out — expect connect (incoming-only screening)"},
+    {"id": "L10-bank", "status": "PASS", "notes": "Toss launch_ok; KakaoBank/Shinhan not installed"},
+    {"id": "L11-dns", "status": "SKIP", "notes": "private_dns_mode=opportunistic; needs hostname + L2"}
+  ]
+}

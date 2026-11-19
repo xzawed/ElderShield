@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+{% block title %}DNS denylist · ElderShield Admin{% endblock %}
+{% block page_heading %}DNS / internet policy{% endblock %}
+{% block page_sub %}NextDNS security.tlds + denylist hosts from applyTo dns/internet{% endblock %}
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-5">
+  <section class="lg:col-span-3 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 space-y-6">
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-base font-semibold text-ink-950">Generated policy</h2>
+      <p class="text-sm text-ink-600">
+        Countries: {% if countries %}{{ countries | join(", ") }}{% else %}<span class="text-ink-400">none</span>{% endif %}
+        · TLDs: {% if tlds %}{{ tlds | join(", ") }}{% else %}<span class="text-ink-400">—</span>{% endif %}
+        · Hosts: {{ domains | length }}
+      </p>
+    </div>
+    <div class="px-6 space-y-4">
+      <div>
+        <h3 class="text-sm font-semibold text-ink-800">NextDNS security.tlds</h3>
+        <p class="text-xs text-ink-400 mb-2">Official API blocks whole ccTLDs (e.g. cn, ru) — preferred over fake *.cn denylist rows.</p>
+        <textarea readonly rows="3" class="w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2.5 font-mono text-xs shadow-sm ring-1 ring-inset ring-slate-200">{% if tlds %}{{ tlds | join("\n") }}{% endif %}</textarea>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-ink-800">Denylist hosts (non-ccTLD seeds)</h3>
+        <textarea readonly rows="12" class="w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2.5 font-mono text-xs shadow-sm ring-1 ring-inset ring-slate-200">{% if domains %}{{ domains | join("\n") }}{% endif %}</textarea>
+      </div>
+    </div>
+    <div class="border-t border-slate-100 px-6 py-5 flex flex-wrap gap-3">
+      <form method="post" action="/admin/ui/dns-denylist/sync-nextdns">
+        <button type="submit"
+                class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
+          Sync to NextDNS
+        </button>
+      </form>
+      {% if sync_message %}
+      <p class="text-sm {% if sync_ok %}text-brand-700{% else %}text-red-700{% endif %} self-center">{{ sync_message }}</p>
+      {% endif %}
+    </div>
+  </section>
+  <section class="lg:col-span-2 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 h-fit">
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-base font-semibold text-ink-950">Recommended path (verified)</h2>
+    </div>
+    <div class="px-6 py-5 text-sm text-ink-700 space-y-3">
+      <p><strong>Best under bank-app constraints:</strong> Android Private DNS → dedicated NextDNS profile (no VpnService).</p>
+      <ol class="list-decimal list-inside space-y-2 text-ink-600">
+        <li>Create a <em>dedicated</em> NextDNS profile for ElderShield.</li>
+        <li>Set <code class="text-brand-700">NEXTDNS_API_KEY</code> + <code class="text-brand-700">NEXTDNS_PROFILE_ID</code> on the backend.</li>
+        <li>Mark restrictions with <code class="text-brand-700">dns</code>/<code class="text-brand-700">internet</code>, then Sync.</li>
+        <li>Phone: Private DNS hostname = <code class="text-brand-700">PROFILE.dns.nextdns.io</code>.</li>
+        <li>Enable NextDNS Parental Control → Block bypass methods (DoH).</li>
+      </ol>
+      <p class="text-xs text-ink-400">Not geo-IP. Limits: hard-coded DNS, VPNs, some apps. AdGuard Home needs self-hosted DoT certs — worse for LTE parents.</p>
+      <p class="text-xs text-ink-500">Full steps: <code class="text-brand-700">docs/runbooks/nextdns-setup.md</code>. Bitdefender stays installed (§1.2.1).</p>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 package com.eldershield.domain.matching
 
+import com.eldershield.domain.model.CallRule
 import com.eldershield.domain.model.CountryRestriction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -131,5 +132,69 @@ class CountryRestrictionMatcherTest {
     fun `UT-A-22 whitelist only no country restriction`() {
         assertFalse(matcher.shouldBlockCall("+821012345678", emptyList()))
         assertTrue(matcher.isWhitelisted("+821011112222", listOf("+821011112222")))
+    }
+
+    @Test
+    fun `whitelist requires full number match not country prefix`() {
+        assertFalse(matcher.isWhitelisted("+8613812345678", listOf("+86")))
+        assertFalse(matcher.isWhitelisted("+8613812345678", listOf("")))
+        assertFalse(matcher.isWhitelisted("+8613812345678", listOf("+")))
+    }
+
+    @Test
+    fun `screening decision uses CallRule whitelist before country block`() {
+        val restrictions = listOf(rule(listOf("CN")))
+        val callRules =
+            listOf(
+                CallRule(
+                    id = "cr-1",
+                    countryCodes = listOf("+86"),
+                    whitelist = listOf("+8613812345678"),
+                    enabled = true,
+                    version = 1,
+                ),
+            )
+        assertFalse(CallScreeningDecision.shouldBlock("+8613812345678", restrictions, callRules))
+        assertTrue(CallScreeningDecision.shouldBlock("+8613999999999", restrictions, callRules))
+        // disabled CallRule → whitelist ignored → CN blocked
+        assertTrue(
+            CallScreeningDecision.shouldBlock(
+                "+8613812345678",
+                restrictions,
+                listOf(callRules[0].copy(enabled = false)),
+            ),
+        )
+    }
+
+    @Test
+    fun `UT-A-23 KR national 010 is blocked when KR restricted`() {
+        // Device call log format on KR SIMs — trunk 0 must map to +82.
+        assertTrue(matcher.shouldBlockCall("01012345678", listOf(rule(listOf("KR")))))
+        assertTrue(matcher.shouldBlockCall("010-1234-5678", listOf(rule(listOf("KR")))))
+    }
+
+    @Test
+    fun `UT-A-24 KR national 010 not blocked when only CN restricted`() {
+        assertFalse(matcher.shouldBlockCall("01012345678", listOf(rule(listOf("CN")))))
+    }
+
+    @Test
+    fun `UT-A-25 whitelist E164 matches national KR presentation`() {
+        assertTrue(matcher.isWhitelisted("01091112222", listOf("+821091112222")))
+        assertFalse(
+            CallScreeningDecision.shouldBlock(
+                "01091112222",
+                listOf(rule(listOf("KR"))),
+                listOf(
+                    CallRule(
+                        id = "cr-wl",
+                        countryCodes = emptyList(),
+                        whitelist = listOf("+821091112222"),
+                        enabled = true,
+                        version = 1,
+                    ),
+                ),
+            ),
+        )
     }
 }

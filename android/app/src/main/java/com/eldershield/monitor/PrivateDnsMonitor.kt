@@ -10,12 +10,13 @@ class PrivateDnsMonitor(
 ) {
     fun read(): DnsStatus {
         val resolver = context.contentResolver
+        // AOSP/Samsung store PRIVATE_DNS_MODE as a string (off/opportunistic/hostname).
+        val modeString = Settings.Global.getString(resolver, "private_dns_mode")
         val mode =
-            Settings.Global.getInt(
-                resolver,
-                "private_dns_mode",
-                1,
-            )
+            modeString
+                ?: runCatching {
+                    Settings.Global.getInt(resolver, "private_dns_mode", 1).toString()
+                }.getOrDefault("1")
         val specifier = Settings.Global.getString(resolver, "private_dns_specifier")
         return DnsStatusEvaluator.fromAndroidSettings(mode, specifier)
     }

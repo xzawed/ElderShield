@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from sqlmodel import Session
 
 from app.models.country_restriction import CountryRestriction, CountryRestrictionVersion
+from app.services.bundle_version import bump_bundle_version
 
 _MUTABLE = {"name", "countries", "apply_to", "enabled", "description"}
 
@@ -61,6 +62,7 @@ def create_country_restriction(
     )
     session.add(row)
     save_version_snapshot(session, row)
+    bump_bundle_version(session)
     session.commit()
     session.refresh(row)
     return row
@@ -91,6 +93,17 @@ def update_country_restriction(
     row.updated_at = datetime.now(timezone.utc)
     session.add(row)
     save_version_snapshot(session, row)
+    bump_bundle_version(session)
     session.commit()
     session.refresh(row)
     return row
+
+
+def delete_country_restriction(session: Session, id: str) -> bool:
+    row = session.get(CountryRestriction, id)
+    if row is None:
+        return False
+    session.delete(row)
+    bump_bundle_version(session)
+    session.commit()
+    return True

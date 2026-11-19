@@ -33,7 +33,7 @@
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
-| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Pending |
+| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial 2026-11-19 — on PR #9 (`6a25260`); NextDNS/Play = operator; merge after review |
 
 ## S1 slices
 
@@ -75,8 +75,9 @@
 
 | Slice | Deliverable | Notes |
 |-------|-------------|-------|
-| S6.1 | Device checklist (bank apps, call block) | User device |
-| S6.2 | Play internal track + rollback runbook | `docs/runbooks/rollback.md` |
+| S6.1 | Device checklist (bank apps, call block) | §1.2.1 A + heldBy/peers; L7-S22 human; lab KR cleanup in rollback.md |
+| S6.2 | Play internal track + rollback runbook | `play-internal.md` + rollback lab cleanup; **Play Console upload = operator** |
+| S6.3 | Country internet via DNS denylist | Denylist Pass; `nextdns-setup.md`; sync **keys = operator** |
 
 ## Doc budget
 

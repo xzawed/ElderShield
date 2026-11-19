@@ -18,6 +18,7 @@
 - 부모님 불편 제로: 알림/팝업 최소화, 무인지 규칙·앱 업데이트
 - 은행 앱 호환: **VpnService 기본 비활성**. Overlay / Accessibility / Device Admin **사용 금지**
 - 합법적 방어만 (역공격·강제 삭제 없음)
+- Bitdefender 병행 (SSOT §1.2.1): CallScreening 역할 강탈·BD 비활성 지시 금지. 미보유 시 전화 경로만 Off + 관리자 보고
 - 배터리·WorkManager 제약 준수
 - 제한 국가는 **다중 선택 유지** (`countries`는 항상 배열)
 
@@ -39,16 +40,16 @@
 
 ## 인증
 
-- `X-API-Key` — **기기용 / 관리자용 키 분리**
+- `X-API-Key` — **기기용 / 관리자용 키 분리** (`change-me-*` 기동 거부)
 - HTTPS 필수. 전화번호 원문 등 민감 정보 최소화
 
 ## 핵심 모델
 
-- `CountryRestriction`: `countries[]` (ISO alpha-2), `applyTo` (`call`|`dns`|`internet`), `version`
-- `CallRule`, `AppRiskRule`, `Device`, `RuleBundle` (동기화 단위, versioned)
+- `CountryRestriction`: `countries[]` (ISO alpha-2), `applyTo` (`call`|`dns`|`internet`), `version`(행)
+- `CallRule`, `AppRiskRule`, `Device`, `RuleBundle` (**`version` = 단조 generation**)
 
 기기 API: `GET /rules/latest`, `POST /devices/heartbeat`, `POST /devices/apps/scan-result`  
-관리자 API: country-restrictions CRUD, countries 마스터, devices, rules rollback  
+관리자 API: country-restrictions CRUD, call-rules, countries, devices, rules rollback  
 Base: `/api/v1`
 
 ## Android 패키지
@@ -65,3 +66,4 @@ minSdk 29. 대상: Note 10+ / Tab 계열. 테스트: S22 Ultra.
 - Backend → Android 순. 규칙 모델·API를 먼저 고정
 - 매칭/차단 로직은 단위 테스트 필수
 - 부모님 UI에 상태/알림을 노출하지 말 것 (관리자 보고만)
+- **구현 전 검증 룰**: 서술·가정은 공식 문서/실측으로 사실 확인 → 대안 대비 **최적·권장안**인지 판정 → 그다음에만 코드. 추측으로 API/제품 경로를 고정하지 말 것

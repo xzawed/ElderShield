@@ -3,6 +3,7 @@ package com.eldershield.data
 import com.eldershield.data.local.RuleBundleDao
 import com.eldershield.data.local.RuleBundleEntity
 import com.eldershield.data.remote.RulesApi
+import com.eldershield.domain.model.CallRule
 import com.eldershield.domain.model.CountryRestriction
 import com.eldershield.domain.model.RuleBundle
 import com.eldershield.domain.repository.RuleRepository
@@ -44,9 +45,21 @@ class RuleRepositoryImpl(
                     .put("description", r.description),
             )
         }
+        val callRules = JSONArray()
+        bundle.callRules.forEach { c ->
+            callRules.put(
+                JSONObject()
+                    .put("id", c.id)
+                    .put("countryCodes", JSONArray(c.countryCodes))
+                    .put("whitelist", JSONArray(c.whitelist))
+                    .put("enabled", c.enabled)
+                    .put("version", c.version),
+            )
+        }
         return JSONObject()
             .put("version", bundle.version)
             .put("countryRestrictions", restrictions)
+            .put("callRules", callRules)
             .put("updatedAt", bundle.updatedAt)
             .toString()
     }
@@ -70,9 +83,25 @@ class RuleRepositoryImpl(
                     description = if (o.isNull("description")) null else o.optString("description"),
                 )
         }
+        val callRules = mutableListOf<CallRule>()
+        val callArr = root.optJSONArray("callRules") ?: JSONArray()
+        for (i in 0 until callArr.length()) {
+            val o = callArr.getJSONObject(i)
+            val codes = o.optJSONArray("countryCodes") ?: JSONArray()
+            val wl = o.optJSONArray("whitelist") ?: JSONArray()
+            callRules +=
+                CallRule(
+                    id = o.getString("id"),
+                    countryCodes = (0 until codes.length()).map { codes.getString(it) },
+                    whitelist = (0 until wl.length()).map { wl.getString(it) },
+                    enabled = o.optBoolean("enabled", true),
+                    version = o.optInt("version", 1),
+                )
+        }
         return RuleBundle(
             version = root.optInt("version", 0),
             countryRestrictions = list,
+            callRules = callRules,
             updatedAt = if (root.isNull("updatedAt")) null else root.optString("updatedAt"),
         )
     }

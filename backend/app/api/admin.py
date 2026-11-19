@@ -3,19 +3,33 @@ from sqlmodel import Session, select
 
 from app.api.deps import require_admin
 from app.api.schemas import (
+    CallRuleCreate,
+    CallRuleOut,
     CountryMasterOut,
     CountryRestrictionCreate,
     CountryRestrictionOut,
     CountryRestrictionUpdate,
+    DeviceOut,
+    DnsDenylistOut,
+    NextDnsSyncOut,
+    RulesRollbackOut,
+    RulesRollbackRequest,
 )
 from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
+from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
-from app.models.device import AppScanResult
+from app.models.device import AppScanResult, Device
+from app.services.call_rule_service import create_call_rule
 from app.services.country_restriction_service import (
     create_country_restriction,
+    delete_country_restriction,
     update_country_restriction,
 )
+from app.core.config import settings
+from app.services.dns_denylist import build_dns_denylist
+from app.services.nextdns_sync import NextDnsNotConfigured, NextDnsSyncError, sync_policy_to_nextdns
+from app.services.rule_bundle_service import publish_rollback
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -76,12 +90,91 @@ def put_restriction(
 def delete_restriction(
     restriction_id: str, session: Session = Depends(get_session)
 ) -> Response:
-    row = session.get(CountryRestriction, restriction_id)
-    if row is None:
+    if not delete_country_restriction(session, restriction_id):
         raise HTTPException(status_code=404, detail="Not found")
-    session.delete(row)
-    session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/call-rules", response_model=list[CallRuleOut])
+def list_call_rules(session: Session = Depends(get_session)) -> list[CallRule]:
+    return list(session.exec(select(CallRule)).all())
+
+
+@router.post("/call-rules", response_model=CallRuleOut, status_code=status.HTTP_201_CREATED)
+def post_call_rule(
+    body: CallRuleCreate, session: Session = Depends(get_session)
+) -> CallRule:
+    try:
+        return create_call_rule(
+            session,
+            country_codes=body.country_codes,
+            whitelist=body.whitelist,
+            enabled=body.enabled,
+        )
+    except TypeError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/rules/rollback", response_model=RulesRollbackOut)
+def rollback_rules(
+    body: RulesRollbackRequest, session: Session = Depends(get_session)
+) -> RulesRollbackOut:
+    try:
+        result = publish_rollback(
+            session,
+            target_restriction_version=body.target_version,
+            restriction_id=body.restriction_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    row = result["restriction"]
+    assert isinstance(row, CountryRestriction)
+    return RulesRollbackOut(
+        id=row.id,
+        name=row.name,
+        countries=list(row.countries),
+        apply_to=list(row.apply_to),
+        enabled=row.enabled,
+        version=row.version,
+        description=row.description,
+        bundle_version=int(result["bundle_version"]),
+    )
+
+
+@router.get("/dns-denylist", response_model=DnsDenylistOut)
+def get_dns_denylist(session: Session = Depends(get_session)) -> DnsDenylistOut:
+    """NextDNS security.tlds + denylist hosts from applyTo dns|internet restrictions."""
+    rows = list(session.exec(select(CountryRestriction)).all())
+    payload = build_dns_denylist(rows)
+    return DnsDenylistOut(**payload)
+
+
+@router.post("/dns-denylist/sync-nextdns", response_model=NextDnsSyncOut)
+def sync_dns_denylist_nextdns(session: Session = Depends(get_session)) -> NextDnsSyncOut:
+    """Push policy to a dedicated NextDNS profile (requires NEXTDNS_* env)."""
+    rows = list(session.exec(select(CountryRestriction)).all())
+    try:
+        result = sync_policy_to_nextdns(
+            rows,
+            api_key=settings.nextdns_api_key,
+            profile_id=settings.nextdns_profile_id,
+        )
+    except NextDnsNotConfigured as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except NextDnsSyncError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return NextDnsSyncOut(
+        ok=True,
+        profile_id=str(result["profileId"]),
+        plan=DnsDenylistOut(**result["plan"]),
+        tlds=result["tlds"],
+        denylist=result["denylist"],
+    )
+
+
+@router.get("/devices", response_model=list[DeviceOut])
+def list_devices(session: Session = Depends(get_session)) -> list[Device]:
+    return list(session.exec(select(Device)).all())
 
 
 @router.get("/devices/{device_uuid}/scan-results")

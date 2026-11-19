@@ -12,6 +12,8 @@ data class AppRiskResult(
     val riskScore: Int,
     val suspicious: Boolean,
     val reasons: List<String>,
+    val installerPackage: String? = null,
+    val dangerousPermissions: List<String> = emptyList(),
 )
 
 object AppRiskScorer {
@@ -76,6 +78,8 @@ object AppRiskScorer {
             riskScore = score,
             suspicious = score >= THRESHOLD,
             reasons = reasons,
+            installerPackage = input.installerPackage,
+            dangerousPermissions = dangerousHits,
         )
     }
 

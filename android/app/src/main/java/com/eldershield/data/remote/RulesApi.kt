@@ -1,5 +1,6 @@
 package com.eldershield.data.remote
 
+import com.eldershield.domain.model.CallRule
 import com.eldershield.domain.model.CountryRestriction
 import com.eldershield.domain.model.RuleBundle
 import okhttp3.OkHttpClient
@@ -44,9 +45,23 @@ class RulesApi(
                     description = if (o.isNull("description")) null else o.optString("description"),
                 )
         }
+        val callRules = mutableListOf<CallRule>()
+        val callArr: JSONArray = json.optJSONArray("callRules") ?: JSONArray()
+        for (i in 0 until callArr.length()) {
+            val o = callArr.getJSONObject(i)
+            callRules +=
+                CallRule(
+                    id = o.getString("id"),
+                    countryCodes = (o.optJSONArray("countryCodes") ?: JSONArray()).toStringList(),
+                    whitelist = (o.optJSONArray("whitelist") ?: JSONArray()).toStringList(),
+                    enabled = o.optBoolean("enabled", true),
+                    version = o.optInt("version", 1),
+                )
+        }
         return RuleBundle(
             version = json.optInt("version", 0),
             countryRestrictions = restrictions,
+            callRules = callRules,
             updatedAt = if (json.isNull("updatedAt")) null else json.optString("updatedAt"),
         )
     }
