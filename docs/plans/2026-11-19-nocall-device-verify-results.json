@@ -79,7 +79,7 @@
                     {
                         "id":  "BD-heartbeat-peers",
                         "status":  "PASS",
-                        "notes":  "[{\"deviceUuid\": \"<redacted-emu>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.google.android.dialer\"], \"callScreeningEnabled\": true, \"dnsConfigured\": true}, {\"deviceUuid\": \"<redacted-s22>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.bitdefender.security\", \"com.ktcs.whowho\", \"com.samsung.android.dialer\""
+                        "notes":  "[{\"deviceUuid\": \"<redacted-emu>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.google.android.dialer\"], \"callScreeningEnabled\": true, \"dnsConfigured\": true}, {\"deviceUuid\": \"<redacted-s22>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.bitdefender.security\", \"com.ktcs.whowho\", \"com.samsung.android.dialer\"]}]"
                     },
                     {
                         "id":  "ES-accessibility",

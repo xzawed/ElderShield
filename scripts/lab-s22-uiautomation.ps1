@@ -4,7 +4,7 @@
 $ErrorActionPreference = "Continue"
 $Root = Split-Path -Parent $PSScriptRoot
 $Adb = Join-Path $env:LOCALAPPDATA "Android\Sdk\platform-tools\adb.exe"
-$S22 = "CHANGEME_S22_SERIAL"
+$S22 = if ($env:ELDERSHIELD_S22_SERIAL) { $env:ELDERSHIELD_S22_SERIAL } else { "CHANGEME_S22_SERIAL" }
 $Emu = "emulator-5554"
 $Pkg = "com.eldershield"
 $Apk = Join-Path $Root "android\app\build\outputs\apk\debug\app-debug.apk"

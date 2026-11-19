@@ -62,6 +62,21 @@ Details: [`docs/runbooks/admin-api-keys.md`](docs/runbooks/admin-api-keys.md)
 
 ---
 
+## Making the repository public
+
+Before switching GitHub visibility to **Public**, confirm:
+
+| Check | Status expectation |
+|-------|--------------------|
+| `backend/.env` / NextDNS keys | **Never** committed (gitignored) |
+| Lab scripts device serial | Use `ELDERSHIELD_S22_SERIAL` env — no real serial in tree |
+| Lab result JSON | Device UUID / serial **redacted** |
+| Git history | Purge any past serial/UUID commits (`git filter-repo` / BFG) **before** first public push, or accept residual exposure |
+| Operator secrets | Rotate `ADMIN_API_KEY` / `DEVICE_API_KEY` / `NEXTDNS_*` if they ever leaked in chat/logs |
+| Issues / Discussions | Prefer private Security Advisories for vulns |
+
+Local `backend/.env` and `*.log` stay on the operator machine only.
+
 ## Reporting a vulnerability
 
 1. **Do not** file a public GitHub issue with exploit steps.  
