@@ -39,5 +39,10 @@ Sync pushes `security.tlds` (e.g. `cn`) + denylist hosts from enabled `applyTo: 
 |-------|--------|
 | `GET /api/v1/admin/dns-denylist` | `tlds` / `domains` match policy |
 | sync-nextdns | 200 |
-| Admin devices | `dnsConfigured=true` after report worker |
+| Admin devices | `dnsConfigured=true` after report worker (`{id}.dns.nextdns.io` is trusted via `.dns.nextdns.io` suffix) |
 | Browser on device | Restricted ccTLD/host fails resolve (NextDNS), bank apps still work (no VPN) |
+
+## 6. Operator gate (blocks M6 internet DoD)
+
+Without `NEXTDNS_*`, engineering can only prove denylist **shape** + Private DNS **reporting**.  
+Real overseas domain/IP block (NXDOMAIN for `.cn` / seeded hosts) requires this section 1–4 on a **dedicated** profile. Do not reuse a personal NextDNS profile.
