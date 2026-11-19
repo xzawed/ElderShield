@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Required for AppCompatActivity (provisioning MainActivity). -->
+    <style name="Theme.ElderShield" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#0F766E</item>
+        <item name="colorPrimaryDark">#115E59</item>
+        <item name="colorAccent">#0D9488</item>
+        <item name="android:statusBarColor">#115E59</item>
+        <item name="android:navigationBarColor">#F8FAFC</item>
+        <item name="android:windowBackground">#F8FAFC</item>
+    </style>
+</resources>

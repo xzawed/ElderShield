@@ -33,3 +33,13 @@ def create_call_rule(
     session.commit()
     session.refresh(row)
     return row
+
+
+def delete_call_rule(session: Session, id: str) -> bool:
+    row = session.get(CallRule, id)
+    if row is None:
+        return False
+    session.delete(row)
+    bump_bundle_version(session)
+    session.commit()
+    return True

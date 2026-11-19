@@ -33,7 +33,7 @@
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
-| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial — rollback/call-rules/devices API+docs; device checklist pending |
+| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial 2026-11-19 — Admin Call rules UI + emulator provision/heartbeat; real-device call/bank pending |
 
 ## S1 slices
 

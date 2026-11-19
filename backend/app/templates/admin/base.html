@@ -54,6 +54,10 @@
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/restrictions') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
           Country restrictions
         </a>
+        <a href="/admin/ui/call-rules"
+           class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/call-rules') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+          Call rules
+        </a>
         <a href="/admin/ui/devices"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/devices') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
           Devices

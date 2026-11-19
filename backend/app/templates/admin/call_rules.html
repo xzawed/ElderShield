@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+{% block title %}Call rules · ElderShield Admin{% endblock %}
+{% block page_heading %}Call rules{% endblock %}
+{% block page_sub %}Whitelist numbers for CallScreening (exact E.164 match){% endblock %}
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-5">
+  <section class="lg:col-span-3 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-base font-semibold text-ink-950">Active rules</h2>
+      <p class="text-sm text-ink-600">Synced in RuleBundle <code class="text-brand-700">callRules</code>.</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-ink-600">
+          <tr>
+            <th class="px-6 py-3">Whitelist</th>
+            <th class="px-6 py-3">Country codes</th>
+            <th class="px-6 py-3">Status</th>
+            <th class="px-6 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for r in rows %}
+          <tr class="hover:bg-slate-50/80">
+            <td class="px-6 py-4">
+              <div class="flex flex-wrap gap-1.5">
+                {% for w in r.whitelist %}
+                <span class="inline-flex rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-ink-800">{{ w }}</span>
+                {% else %}
+                <span class="text-ink-400">—</span>
+                {% endfor %}
+              </div>
+            </td>
+            <td class="px-6 py-4 text-ink-600">{{ r.country_codes | join(", ") or "—" }}</td>
+            <td class="px-6 py-4">
+              {% if r.enabled %}
+              <span class="inline-flex rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">Enabled</span>
+              {% else %}
+              <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">Disabled</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 text-right">
+              <form method="post" action="/admin/ui/call-rules/{{ r.id }}/delete" onsubmit="return confirm('Delete this call rule?');">
+                <button type="submit" class="text-sm font-semibold text-red-700 hover:text-red-600">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-ink-400">No call rules yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="lg:col-span-2 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 h-fit">
+    <div class="border-b border-slate-100 px-6 py-5">
+      <h2 class="text-base font-semibold text-ink-950">Add whitelist rule</h2>
+    </div>
+    <form method="post" action="/admin/ui/call-rules" class="px-6 py-6 space-y-4">
+      {% if error %}
+      <p class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-100">{{ error }}</p>
+      {% endif %}
+      <div>
+        <label for="whitelist" class="block text-sm font-medium text-ink-800">Whitelist numbers</label>
+        <textarea id="whitelist" name="whitelist" rows="5" required placeholder="+8613812345678&#10;+821011112222"
+                  class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2.5 font-mono text-sm shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">{{ whitelist_text or "" }}</textarea>
+        <p class="mt-1.5 text-xs text-ink-400">One full E.164 number per line. Prefix-only entries are ignored by the matcher.</p>
+      </div>
+      <div>
+        <label for="country_codes" class="block text-sm font-medium text-ink-800">Country codes (optional)</label>
+        <input id="country_codes" name="country_codes" type="text" value="{{ country_codes_text or "" }}" placeholder="+86, +7"
+               class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2.5 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">
+        <p class="mt-1.5 text-xs text-ink-400">Informational for now — blocking uses Country restrictions.</p>
+      </div>
+      <label class="inline-flex items-center gap-2 text-sm text-ink-800">
+        <input type="checkbox" name="enabled" checked class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+        Enabled
+      </label>
+      <button type="submit"
+              class="w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
+        Create call rule
+      </button>
+    </form>
+  </section>
+</div>
+{% endblock %}

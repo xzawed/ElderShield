@@ -7,8 +7,10 @@ from sqlmodel import Session, select
 
 from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
+from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
 from app.models.device import AppScanResult, Device
+from app.services.call_rule_service import create_call_rule, delete_call_rule
 from app.services.country_restriction_service import (
     create_country_restriction,
     delete_country_restriction,
@@ -198,6 +200,71 @@ def delete_restriction_form(
 ):
     delete_country_restriction(session, restriction_id)
     return RedirectResponse("/admin/ui/restrictions", status_code=303)
+
+
+def _parse_lines(raw: str) -> list[str]:
+    return [line.strip() for line in raw.replace(",", "\n").splitlines() if line.strip()]
+
+
+@router.get("/call-rules", response_class=HTMLResponse)
+def list_call_rules_ui(
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> HTMLResponse:
+    rows = list(session.exec(select(CallRule)).all())
+    return templates.TemplateResponse(
+        request,
+        "admin/call_rules.html",
+        _ctx(request, rows=rows, error=None, whitelist_text="", country_codes_text=""),
+    )
+
+
+@router.post("/call-rules")
+def create_call_rule_form(
+    request: Request,
+    whitelist: str = Form(...),
+    country_codes: str = Form(""),
+    enabled: str | None = Form(None),
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+):
+    wl = _parse_lines(whitelist)
+    codes = _parse_lines(country_codes)
+    try:
+        if not wl:
+            raise ValueError("whitelist requires at least one full number")
+        create_call_rule(
+            session,
+            country_codes=codes,
+            whitelist=wl,
+            enabled=enabled is not None,
+        )
+    except (TypeError, ValueError) as exc:
+        rows = list(session.exec(select(CallRule)).all())
+        return templates.TemplateResponse(
+            request,
+            "admin/call_rules.html",
+            _ctx(
+                request,
+                rows=rows,
+                error=str(exc),
+                whitelist_text=whitelist,
+                country_codes_text=country_codes,
+            ),
+            status_code=422,
+        )
+    return RedirectResponse("/admin/ui/call-rules", status_code=303)
+
+
+@router.post("/call-rules/{rule_id}/delete")
+def delete_call_rule_form(
+    rule_id: str,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+):
+    delete_call_rule(session, rule_id)
+    return RedirectResponse("/admin/ui/call-rules", status_code=303)
 
 
 @router.get("/devices", response_class=HTMLResponse)

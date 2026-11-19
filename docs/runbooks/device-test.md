@@ -37,6 +37,17 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 Debug APK allows cleartext HTTP. Do **not** use this path for production release testing.
 
+### Emulator lab (optional, pre-device)
+
+| Step | Detail |
+|------|--------|
+| Backend | `uvicorn … --host 127.0.0.1 --port 8765` (or 8000) with non-`change-me` keys |
+| Port forward | `adb reverse tcp:8765 tcp:8765` then Base URL `http://127.0.0.1:8765` |
+| Alt host | Without reverse, emulator may use `http://10.0.2.2:8765` |
+| Expect | After **Save & sync now**, `GET /api/v1/admin/devices` shows a heartbeat row; WorkManager logs `RuleSyncWorker` / `DeviceReportWorker` **SUCCESS** |
+
+Call screening / bank-app checks still need a real phone (S6.1). Emulator validates provision + sync + heartbeat only.
+
 ## 2. Provision on device
 
 1. Open **ElderShield** (admin provisioning screen).  

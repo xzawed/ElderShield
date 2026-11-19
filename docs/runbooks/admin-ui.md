@@ -20,6 +20,7 @@ Brand tokens (Tailwind `theme.extend`): `brand.*` teal, `ink.*` slate/navy — n
 | `/admin/ui/login` | Admin API key → session |
 | `/admin/ui/restrictions` | Country restriction groups |
 | `/admin/ui/restrictions/new` · `/{id}` | Create / edit (multi-select `countries`) |
+| `/admin/ui/call-rules` | Call whitelist rules (exact E.164 lines → `callRules`) |
 | `/admin/ui/devices` | Heartbeat status |
 | `/admin/ui/devices/{uuid}/scans` | Scan results |
 
@@ -37,9 +38,10 @@ Then open `/admin/ui/login` in a browser (or Cursor browser / Playwright MCP):
 
 1. Confirm Tailwind styles load (sidebar/card spacing, not unstyled HTML).  
 2. Sign in with admin key → restrictions list.  
-3. Open Devices → empty or heartbeat rows with badges.
+3. Open **Call rules** → add a full E.164 whitelist line → row appears; `GET /api/v1/rules/latest` includes `callRules`.  
+4. Open Devices → empty or heartbeat rows with badges.
 
-Automated regression for multi-select: `pytest -q tests/test_admin_ui_multiselect.py`
+Automated regression: `pytest -q tests/test_admin_ui_multiselect.py tests/test_admin_ui_call_rules.py`
 
 ## Phase note
 
