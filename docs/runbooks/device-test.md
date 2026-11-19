@@ -88,7 +88,7 @@ If the device list stays empty: battery optimization, wrong key, wrong URL, or b
 | KR number with only CN/RU restricted | Allowed |
 | With **KR** restricted: domestic **incoming** `010…` (not whitelist) | Rejected (national trunk `0` → `82` normalization) |
 | Outgoing dial ("걸기") | Not screened — CallScreening is **incoming only** |
-| Empty cache / sync fail | Fail-open (call allowed) |
+| Empty cache / sync fail | Fail-open (call allowed); no ES Toast/Notification (`scripts/lab-failopen-silent-verify.ps1`) |
 
 ## 6. Banking-app regression
 

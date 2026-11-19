@@ -4,14 +4,11 @@ import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.util.Log
 import com.eldershield.data.ActiveRuleBundleCache
+import com.eldershield.data.RuleBundleJson
 import com.eldershield.data.local.ElderShieldDatabase
 import com.eldershield.domain.matching.CallScreeningDecision
-import com.eldershield.domain.model.CallRule
-import com.eldershield.domain.model.CountryRestriction
 import com.eldershield.domain.model.RuleBundle
 import kotlinx.coroutines.runBlocking
-import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * Blocks calls matching restricted countries from cached RuleBundle.
@@ -60,58 +57,14 @@ class ElderCallScreeningService : CallScreeningService() {
 
     private fun loadCachedBundle(): RuleBundle? {
         ActiveRuleBundleCache.bundle?.let { return it }
+        // Cold path only — Application + RuleSyncWorker warm the cache to avoid this.
         val fromDb =
             runBlocking {
                 val entity = ElderShieldDatabase.get(applicationContext).ruleBundleDao().get()
                     ?: return@runBlocking null
-                decode(entity.payloadJson)
+                RuleBundleJson.decode(entity.payloadJson)
             }
-        if (fromDb != null) {
-            ActiveRuleBundleCache.bundle = fromDb
-        }
-        return fromDb
-    }
-
-    private fun decode(json: String): RuleBundle {
-        val root = JSONObject(json)
-        val arr = root.optJSONArray("countryRestrictions") ?: JSONArray()
-        val list = mutableListOf<CountryRestriction>()
-        for (i in 0 until arr.length()) {
-            val o = arr.getJSONObject(i)
-            val countries = o.getJSONArray("countries")
-            val applyTo = o.getJSONArray("applyTo")
-            list +=
-                CountryRestriction(
-                    id = o.getString("id"),
-                    name = o.getString("name"),
-                    countries = (0 until countries.length()).map { countries.getString(it) },
-                    applyTo = (0 until applyTo.length()).map { applyTo.getString(it) },
-                    enabled = o.optBoolean("enabled", true),
-                    version = o.optInt("version", 1),
-                    description = if (o.isNull("description")) null else o.optString("description"),
-                )
-        }
-        val callRules = mutableListOf<CallRule>()
-        val callArr = root.optJSONArray("callRules") ?: JSONArray()
-        for (i in 0 until callArr.length()) {
-            val o = callArr.getJSONObject(i)
-            val codes = o.optJSONArray("countryCodes") ?: JSONArray()
-            val wl = o.optJSONArray("whitelist") ?: JSONArray()
-            callRules +=
-                CallRule(
-                    id = o.getString("id"),
-                    countryCodes = (0 until codes.length()).map { codes.getString(it) },
-                    whitelist = (0 until wl.length()).map { wl.getString(it) },
-                    enabled = o.optBoolean("enabled", true),
-                    version = o.optInt("version", 1),
-                )
-        }
-        return RuleBundle(
-            version = root.optInt("version", 0),
-            countryRestrictions = list,
-            callRules = callRules,
-            updatedAt = if (root.isNull("updatedAt")) null else root.optString("updatedAt"),
-        )
+        return ActiveRuleBundleCache.publishIfNewer(fromDb)
     }
 
     companion object {

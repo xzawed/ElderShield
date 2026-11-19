@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.eldershield.R
@@ -78,8 +79,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun enqueueImmediateWork() {
         val wm = WorkManager.getInstance(this)
-        wm.enqueue(OneTimeWorkRequestBuilder<RuleSyncWorker>().build())
-        wm.enqueue(OneTimeWorkRequestBuilder<DeviceReportWorker>().build())
+        // Unique names — avoid parallel sync racing ActiveRuleBundleCache / Room.
+        wm.enqueueUniqueWork(
+            "${RuleSyncWorker.UNIQUE_NAME}-now",
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<RuleSyncWorker>().build(),
+        )
+        wm.enqueueUniqueWork(
+            "${DeviceReportWorker.UNIQUE_NAME}-now",
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<DeviceReportWorker>().build(),
+        )
     }
 
     /**

@@ -5,7 +5,6 @@ from sqlmodel import Session, SQLModel, create_engine
 
 import app.models  # noqa: F401 — register tables on SQLModel.metadata
 from app.core.config import settings
-import app.models  # noqa: F401 — register metadata
 
 connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
 engine = create_engine(settings.database_url, echo=False, connect_args=connect_args)

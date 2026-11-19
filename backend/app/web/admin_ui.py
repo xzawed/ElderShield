@@ -40,9 +40,15 @@ def login_page(request: Request) -> HTMLResponse:
 
 @router.post("/login")
 def login_submit(api_key: str = Form(...)) -> RedirectResponse:
+    import hmac
+
     from app.core.config import settings
 
-    if api_key != settings.admin_api_key:
+    expected = settings.admin_api_key or ""
+    left = api_key.encode("utf-8")
+    right = expected.encode("utf-8")
+    # compare_digest requires equal length; unequal → reject without raising.
+    if len(left) != len(right) or not hmac.compare_digest(left, right):
         return RedirectResponse("/admin/ui/login?error=1", status_code=303)
     return login_redirect(api_key)
 
