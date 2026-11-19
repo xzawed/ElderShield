@@ -1,0 +1,20 @@
+﻿{
+  "ranAt": "2026-11-19T15:25:00Z",
+  "device": "emulator-5554",
+  "policy": {
+    "emptyCacheOrCorruptPlusOutage": "CallScreening Allow (fail-open)",
+    "staleCachePlusOutage": "Last good rules kept (UsedCache) — no parent UI",
+    "parentMessages": "No Toast/Snackbar/NotificationRecord from com.eldershield"
+  },
+  "results": [
+    {"id": "F0-notif-perm", "status": "PASS", "notes": "no POST_NOTIFICATIONS"},
+    {"id": "F1-home-dialog", "status": "PASS", "notes": "no failure dialog on home"},
+    {"id": "F1-notifications", "status": "PASS", "notes": "NotificationRecord for eldershield = 0"},
+    {"id": "F1-toast", "status": "PASS", "notes": "no ElderShield Toast/Snackbar"},
+    {"id": "F1-empty-cache-allow", "status": "PASS", "notes": "ElderCallScreen: bundleVer=-1 block=false; telecom SCREENING_COMPLETED Allow (system dialer ring OK; not ES error UI)"},
+    {"id": "F2-corrupt-path", "status": "PASS", "notes": "outage path uses EmptyNoBlock/Allow; exception path Log.w fail-open"},
+    {"id": "F3-silent-restore", "status": "PASS", "notes": "restore sync without ES notifications"}
+  ],
+  "evidenceLogcat": "11-19 15:24:47.118 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=-1 block=false",
+  "noteTelecomNotifiedField": "SCREENING_COMPLETED '... notified ...' is Android Telecom allowing the normal incoming-call UI from the Dialer — not an ElderShield status toast."
+}

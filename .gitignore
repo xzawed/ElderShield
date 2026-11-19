@@ -7,6 +7,8 @@
 credentials.json
 **/local.properties
 **/secrets.*
+*.log
+backend/*.log
 
 # Python
 __pycache__/

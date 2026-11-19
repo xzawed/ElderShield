@@ -31,7 +31,7 @@ class RuleSyncWorker(
             val repo = RuleRepositoryImpl(dao, RulesApi(baseUrl, apiKey))
             val policy = RuleSyncPolicy(repo)
             val outcome = policy.sync()
-            ActiveRuleBundleCache.bundle = policy.activeBundle(outcome)
+            ActiveRuleBundleCache.publishIfNewer(policy.activeBundle(outcome))
             if (SyncWorkDisposition.shouldRetry(outcome)) {
                 Result.retry()
             } else {
