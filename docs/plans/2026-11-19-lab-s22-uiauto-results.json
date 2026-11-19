@@ -1,14 +1,14 @@
 ﻿{
   "ranAt": "2026-11-19T13:44:00Z",
   "method": "USB adb + UIAutomator substitute for operator device checks",
-  "device": "CHANGEME_S22_SERIAL (lab-s22-model)",
+  "device": "lab-s22 (serial redacted)",
   "constraint": "Pattern lock may block UI taps; prefs/settings/monkey/role via adb still work. Physical incoming PSTN inject N/A → emulator gsm substitute.",
   "results": [
     {"id": "U0-unlock", "status": "WARN", "notes": "Pattern/PIN lock — adb-capable steps continued"},
     {"id": "U1-role", "status": "PASS", "notes": "DefaultCallScreeningApp=com.eldershield (no role steal)"},
     {"id": "U2-sync", "status": "PASS", "notes": "bundle=15 in devices heartbeat"},
     {"id": "U3-dns-settings", "status": "PASS", "notes": "settings put hostname dns.nextdns.io"},
-    {"id": "U4-dnsConfigured", "status": "PASS", "notes": "After force-stop relaunch: dnsConfigured=true (device <redacted-s22>…)"},
+    {"id": "U4-dnsConfigured", "status": "PASS", "notes": "After force-stop relaunch: dnsConfigured=true (device uuid redacted)"},
     {"id": "U5-outgoing", "status": "PASS", "notes": "am start CALL tel:114 + ENDCALL; mCallState active then ended"},
     {"id": "U6-bank", "status": "PASS", "notes": "Toss monkey launch ok; KakaoBank/Shinhan not installed"},
     {"id": "U7-nextdns-api", "status": "SKIP", "notes": "NEXTDNS_* unset → 503; settings path covers L11 reporting"},
