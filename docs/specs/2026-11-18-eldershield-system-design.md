@@ -321,7 +321,8 @@ interface AppScanner {
 ## 6. 국가 제한 상세 로직
 
 ### 6.1 전화 차단
-- **수신만** 대상 (`CallScreeningService`). 발신(걸기)은 플랫폼이 이 경로로 넘기지 않음.
+- **수신만** 국가 차단 (`Call.Details.DIRECTION_INCOMING`).  
+  플랫폼은 발신에도 `CallScreeningService`를 호출할 수 있으나(발신자 표시용), ElderShield는 **발신(DIRECTION_OUTGOING)에 대해 국가 차단하지 않는다**.
 - 번호 정규화 → 국제 숫자열(E.164 digits, `+` 없음):
   - `+86…` / `0086…` / `86…` (이미 국제형)
   - **기기 기본 지역(Phase 1: KR)**: 국내 트렁크 `0…`(예: `010…`) → `82…`로 변환 후 매칭

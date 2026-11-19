@@ -29,6 +29,7 @@ class ElderCallScreeningService : CallScreeningService() {
                 val bundle = loadCachedBundle()
                 val block =
                     CallScreeningDecision.shouldBlock(
+                        direction,
                         number,
                         bundle?.countryRestrictions.orEmpty(),
                         bundle?.callRules.orEmpty(),

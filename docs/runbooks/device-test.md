@@ -111,19 +111,34 @@ CN/RU **PSTN SIM is unavailable**. Split coverage:
 | L4 | CN incoming block | **Emulator only** | `adb emu gsm call +8613999…` (not on whitelist) | Telecom `Reject` / `INCOMING_REJECTED` |
 | L5 | CN whitelist allow | Emulator | `adb emu gsm call` exact whitelist E.164 | `Allow` / keeps RINGING |
 | L6 | KR `+82` incoming block | Emulator | `adb emu gsm call +8210…` with KR `applyTo:call` | `Reject` |
-| L7 | KR national `010` block | Emulator **and** S22 | Emu: `gsm call 010…`; S22: **second KR phone** dials in | `Reject` (normalize `0`→`82`) |
+| L7 | KR national `010` block | **Emulator required**; S22 optional manual | Emu: `gsm call 010…`. S22: only if operator uses a **second own KR phone** (no script auto-dial) | `Reject` (normalize `0`→`82`) |
 | L8 | US/other allow control | Emulator | `adb emu gsm call +1…` | `Allow` |
-| L9 | Outgoing not screened | S22 | Dial out while KR restricted | Call connects; screening N/A |
+| L9 | Outgoing not country-blocked | **Emulator only** (canonical) | AVD `ACTION.CALL` / combinatorial B-out* / E1–E2. **Do not** auto-dial on S22; no `+86` on physical SIM | `block=false` / dir=OUTGOING Allow (§6.1) |
 | L10 | Bank app launch | S22 | `am start` Toss/KakaoBank (if installed) | Activity starts; no ElderShield overlay |
 | L11 | Private DNS / internet path | S22 | Settings Private DNS → trusted NextDNS host | heartbeat `dnsConfigured=true`; real `.cn` block needs NextDNS profile (**L2**) |
+| E0 | Set AVD own line to CN | Emulator | `adb emu phonenumber 8613…` (**no** `+` prefix) | Console `OK` (not a block trigger by itself) |
+| E1 | Own=CN, dial KR service | Emulator | After E0: `am start … CALL tel:114` **on AVD only** | Allow / ACTIVE (own MSISDN ≠ match key) |
+| E2 | Dial CN destination | Emulator | `CALL tel:+8613…` with CN restricted **on AVD only** | **Allow** (outgoing; §6.1) |
+| E3 | Inbound CN CLI | Emulator | `adb emu gsm call +8613…` | **Reject** (canonical country block) |
 
-**Do not** treat “cannot get a CN SIM in Korea” as a product fail — L4/L5 cover CN on AVD.
+**Call safety (lab):**
+- `emu gsm call` / AVD `ACTION.CALL` = OK (no PSTN).
+- Physical handset: scripts must **not** issue `ACTION.CALL` or inject GSM. Use `ACTION.DIAL` (dialer UI only) or skip.
+- Optional human checks on S22: short call to a **known own** second line only — never scripted `+86` / public service numbers.
+- After any KR `applyTo:call` lab, restore KR call **disabled** so family `010` is not blocked in daily use.
+
+**Logic note (lab):** “한국에 CN SIM 없음” ≠ “외국 발신자 CLI 재현 불가”. AVD는 `phonenumber`(내 번호) + `gsm call`(수신 CLI)로 재현한다. 내 번호를 외국으로 바꾼 뒤 **걸기**가 되는 것은 정상(발신·또는 목적지가 비제한). 차단 검증의 SSOT 기준은 **E3 수신**이다.
+
+**Do not** treat “cannot get a CN SIM in Korea” as a product fail — L4/L5/E0–E3 cover CN on AVD.
 
 | ID | Case | Where | Constraint |
 |----|------|-------|------------|
 | L12 | Bitdefender 병행 | S22 | Bitdefender **유지**. ElderShield must not instruct to turn off BD. Platform: only **one** `ROLE_CALL_SCREENING` holder — if BD holds it, ElderShield call-path cannot receive `onScreenCall`; report role holder to admin, keep DNS/scan paths. **Never** `cmd role add-role-holder` steal in lab without explicit test of “role already free”. |
 
-Repeatable host script: `scripts/lab-batch-verify.ps1` (emulator + USB S22 + API).
+Repeatable host scripts:
+- `scripts/lab-batch-verify.ps1` — emulator + USB S22 + API (L1–L11); S22 L9 = SKIP (no auto CALL)
+- `scripts/lab-s22-uiautomation.ps1` — USB UIAutomator (sync, DNS→`dnsConfigured`, **DIAL-only** outgoing UI, bank monkey); call place = AVD
+- `scripts/lab-combinatorial-matrix.ps1` — call×DNS×app matrix; gsm/`ACTION.CALL` hard-gated to `emulator-*`
 
 ## Pass / fail log
 
