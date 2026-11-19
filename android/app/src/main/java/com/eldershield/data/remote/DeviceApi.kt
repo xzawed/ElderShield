@@ -40,11 +40,16 @@ class DeviceApi(
     ) {
         val arr = JSONArray()
         apps.forEach { a ->
+            val perms = JSONArray()
+            a.dangerousPermissions.forEach { perms.put(it) }
             arr.put(
                 JSONObject()
                     .put("packageName", a.packageName)
-                    .put("installer", JSONObject.NULL)
-                    .put("dangerousPermissions", JSONArray())
+                    .put(
+                        "installer",
+                        if (a.installerPackage == null) JSONObject.NULL else a.installerPackage,
+                    )
+                    .put("dangerousPermissions", perms)
                     .put("riskScore", a.riskScore),
             )
         }

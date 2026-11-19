@@ -21,7 +21,11 @@ class RuleSyncWorker(
         return try {
             val prefs = applicationContext.getSharedPreferences("eldershield", Context.MODE_PRIVATE)
             val baseUrl = prefs.getString("base_url", DEFAULT_BASE_URL) ?: DEFAULT_BASE_URL
-            val apiKey = prefs.getString("device_api_key", DEFAULT_DEVICE_KEY) ?: DEFAULT_DEVICE_KEY
+            val apiKey = prefs.getString("device_api_key", null).orEmpty()
+            if (apiKey.isBlank()) {
+                // No provisioned key — retry later; never fall back to insecure defaults.
+                return Result.retry()
+            }
             val dao = ElderShieldDatabase.get(applicationContext).ruleBundleDao()
             val repo = RuleRepositoryImpl(dao, RulesApi(baseUrl, apiKey))
             when (RuleSyncPolicy(repo).sync()) {
@@ -40,6 +44,5 @@ class RuleSyncWorker(
     companion object {
         const val UNIQUE_NAME = "eldershield-rule-sync"
         const val DEFAULT_BASE_URL = "https://example.invalid"
-        const val DEFAULT_DEVICE_KEY = "change-me-device"
     }
 }

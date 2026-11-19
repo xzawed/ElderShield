@@ -2,10 +2,10 @@
 
 from datetime import datetime, timezone
 
-from sqlalchemy import func
 from sqlmodel import Session, select
 
 from app.models.country_restriction import CountryRestriction, CountryRestrictionVersion
+from app.services.bundle_version import bump_bundle_version
 from app.services.country_restriction_service import save_version_snapshot
 
 
@@ -37,8 +37,8 @@ def publish_rollback(
     row.updated_at = datetime.now(timezone.utc)
     session.add(row)
     save_version_snapshot(session, row)
+    bundle_version = bump_bundle_version(session)
     session.commit()
     session.refresh(row)
 
-    bundle_version = session.exec(select(func.max(CountryRestriction.version))).one()
-    return {"restriction": row, "bundle_version": int(bundle_version or 0)}
+    return {"restriction": row, "bundle_version": bundle_version}

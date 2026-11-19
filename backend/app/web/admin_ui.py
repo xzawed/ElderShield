@@ -11,6 +11,7 @@ from app.models.country_restriction import CountryRestriction
 from app.models.device import AppScanResult, Device
 from app.services.country_restriction_service import (
     create_country_restriction,
+    delete_country_restriction,
     update_country_restriction,
 )
 from app.web.auth import login_redirect, logout_redirect, require_admin_ui
@@ -195,10 +196,7 @@ def delete_restriction_form(
     _: str = Depends(require_admin_ui),
     session: Session = Depends(get_session),
 ):
-    row = session.get(CountryRestriction, restriction_id)
-    if row is not None:
-        session.delete(row)
-        session.commit()
+    delete_country_restriction(session, restriction_id)
     return RedirectResponse("/admin/ui/restrictions", status_code=303)
 
 

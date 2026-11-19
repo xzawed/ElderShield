@@ -39,7 +39,11 @@ class DefaultCountryRestrictionMatcher(
     fun isWhitelisted(phoneNumber: String, whitelist: List<String>): Boolean {
         val digits = normalizeDigits(phoneNumber)
         if (digits.isEmpty()) return false
-        return whitelist.any { normalizeDigits(it) == digits || digits.startsWith(normalizeDigits(it)) }
+        // Exact E.164 digit match only — prefix entries like "+86" must not pass whole countries.
+        return whitelist.any { entry ->
+            val w = normalizeDigits(entry)
+            w.isNotEmpty() && w == digits
+        }
     }
 
     private fun matchCountryIso(digits: String, restrictedIso: Set<String>): String? {

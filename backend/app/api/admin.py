@@ -3,19 +3,27 @@ from sqlmodel import Session, select
 
 from app.api.deps import require_admin
 from app.api.schemas import (
+    CallRuleCreate,
+    CallRuleOut,
     CountryMasterOut,
     CountryRestrictionCreate,
     CountryRestrictionOut,
     CountryRestrictionUpdate,
+    RulesRollbackOut,
+    RulesRollbackRequest,
 )
 from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
+from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
 from app.models.device import AppScanResult
+from app.services.call_rule_service import create_call_rule
 from app.services.country_restriction_service import (
     create_country_restriction,
+    delete_country_restriction,
     update_country_restriction,
 )
+from app.services.rule_bundle_service import publish_rollback
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -76,12 +84,55 @@ def put_restriction(
 def delete_restriction(
     restriction_id: str, session: Session = Depends(get_session)
 ) -> Response:
-    row = session.get(CountryRestriction, restriction_id)
-    if row is None:
+    if not delete_country_restriction(session, restriction_id):
         raise HTTPException(status_code=404, detail="Not found")
-    session.delete(row)
-    session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/call-rules", response_model=list[CallRuleOut])
+def list_call_rules(session: Session = Depends(get_session)) -> list[CallRule]:
+    return list(session.exec(select(CallRule)).all())
+
+
+@router.post("/call-rules", response_model=CallRuleOut, status_code=status.HTTP_201_CREATED)
+def post_call_rule(
+    body: CallRuleCreate, session: Session = Depends(get_session)
+) -> CallRule:
+    try:
+        return create_call_rule(
+            session,
+            country_codes=body.country_codes,
+            whitelist=body.whitelist,
+            enabled=body.enabled,
+        )
+    except TypeError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/rules/rollback", response_model=RulesRollbackOut)
+def rollback_rules(
+    body: RulesRollbackRequest, session: Session = Depends(get_session)
+) -> RulesRollbackOut:
+    try:
+        result = publish_rollback(
+            session,
+            target_restriction_version=body.target_version,
+            restriction_id=body.restriction_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    row = result["restriction"]
+    assert isinstance(row, CountryRestriction)
+    return RulesRollbackOut(
+        id=row.id,
+        name=row.name,
+        countries=list(row.countries),
+        apply_to=list(row.apply_to),
+        enabled=row.enabled,
+        version=row.version,
+        description=row.description,
+        bundle_version=int(result["bundle_version"]),
+    )
 
 
 @router.get("/devices/{device_uuid}/scan-results")

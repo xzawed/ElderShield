@@ -3,12 +3,15 @@ from typing import Any
 
 from sqlmodel import Session, select
 
+from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
+from app.services.bundle_version import get_bundle_version
 
 
 def build_rule_bundle(session: Session) -> dict[str, Any]:
     rows = list(session.exec(select(CountryRestriction)).all())
-    version = max((r.version for r in rows), default=0)
+    call_rows = list(session.exec(select(CallRule)).all())
+    version = get_bundle_version(session)
     return {
         "version": version,
         "countryRestrictions": [
@@ -23,7 +26,16 @@ def build_rule_bundle(session: Session) -> dict[str, Any]:
             }
             for r in rows
         ],
-        "callRules": [],
+        "callRules": [
+            {
+                "id": c.id,
+                "countryCodes": list(c.country_codes),
+                "whitelist": list(c.whitelist),
+                "enabled": c.enabled,
+                "version": c.version,
+            }
+            for c in call_rows
+        ],
         "appRiskRules": [],
         "updatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }

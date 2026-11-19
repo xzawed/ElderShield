@@ -4,12 +4,14 @@ from fastapi import FastAPI
 
 from app.api.admin import router as admin_router
 from app.api.devices import router as device_router
+from app.core.config import assert_secure_settings, settings
 from app.db import init_db
 from app.web.admin_ui import router as admin_ui_router
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    assert_secure_settings(settings)
     init_db()
     yield
 

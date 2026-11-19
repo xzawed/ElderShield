@@ -21,7 +21,10 @@ class DeviceReportWorker(
         return try {
             val prefs = applicationContext.getSharedPreferences("eldershield", Context.MODE_PRIVATE)
             val baseUrl = prefs.getString("base_url", RuleSyncWorker.DEFAULT_BASE_URL) ?: RuleSyncWorker.DEFAULT_BASE_URL
-            val apiKey = prefs.getString("device_api_key", RuleSyncWorker.DEFAULT_DEVICE_KEY) ?: RuleSyncWorker.DEFAULT_DEVICE_KEY
+            val apiKey = prefs.getString("device_api_key", null).orEmpty()
+            if (apiKey.isBlank()) {
+                return Result.retry()
+            }
             var deviceUuid = prefs.getString("device_uuid", null)
             if (deviceUuid.isNullOrBlank()) {
                 deviceUuid = UUID.randomUUID().toString()
