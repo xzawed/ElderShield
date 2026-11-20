@@ -7,7 +7,7 @@ Zero-touch Play release는 **HTTPS** `eldershield.baseUrl`이 필요합니다.
 
 1. Railway에서 프로젝트 생성 (예: `ElderShield`) 또는 GitHub `xzawed/ElderShield` 연결.  
 2. 빌드 (둘 중 하나):
-   - **권장**: Root Directory `/backend` + Railpack (현재 `main`에 Dockerfile 없어도 동작). Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+   - **권장**: Root Directory `/backend` + Railpack/Dockerfile. Start는 **셸 경유** 필수: `sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"` (`$PORT` 리터럴이면 기동 실패).
    - **대안**: 저장소 루트 `Dockerfile` + `railway.toml` (`builder = DOCKERFILE`).
 3. Volume: mount `/data` (sqlite 영속).  
 4. Public domain 발급 (`*.up.railway.app`), healthcheck `/health`.  

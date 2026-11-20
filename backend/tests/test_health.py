@@ -8,3 +8,16 @@ def test_health_ok(client) -> None:
     assert "bundleVersion" in body
     assert "lastSeenAt" in body
     assert "syncLagSeconds" in body
+
+
+def test_root_redirects_to_admin_login(client) -> None:
+    response = client.get("/", follow_redirects=False)
+    assert response.status_code == 302
+    assert response.headers["location"] == "/admin/ui/login"
+
+
+def test_admin_shortcuts_redirect_to_login(client) -> None:
+    for path in ("/admin", "/admin/ui"):
+        response = client.get(path, follow_redirects=False)
+        assert response.status_code == 302
+        assert response.headers["location"] == "/admin/ui/login"
