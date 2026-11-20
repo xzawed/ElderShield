@@ -111,13 +111,14 @@ def heartbeat(body: HeartbeatIn, session: Session = Depends(get_session)) -> Dev
     )
     session.add(device)
 
-    if prev_screening and not body.call_screening_enabled:
-        peers = ",".join(body.call_screening_peers) if body.call_screening_peers else ""
+    # Spec §2.4 / C4: role_lost only when we lose screening and peers hint coexistence.
+    if prev_screening and not body.call_screening_enabled and body.call_screening_peers:
+        peers = ",".join(body.call_screening_peers)
         session.add(
             DeviceHealthEvent(
                 device_uuid=body.device_uuid,
                 type="role_lost",
-                detail=f"peers={peers}" if peers else None,
+                detail=f"peers={peers}",
                 created_at=now,
             )
         )
@@ -128,6 +129,9 @@ def heartbeat(body: HeartbeatIn, session: Session = Depends(get_session)) -> Dev
     return device
 
 
+_ALLOWED_HEALTH_TYPES = frozenset({"dns_drift", "role_lost", "sync_failed"})
+
+
 @router.post("/devices/health-events")
 def health_events(body: HealthEventsIn, session: Session = Depends(get_session)) -> dict:
     if session.get(Device, body.device_uuid) is None:
@@ -135,6 +139,8 @@ def health_events(body: HealthEventsIn, session: Session = Depends(get_session))
         session.commit()
     saved = 0
     for ev in body.events:
+        if ev.type not in _ALLOWED_HEALTH_TYPES:
+            continue
         at = ev.at or datetime.now(timezone.utc)
         session.add(
             DeviceHealthEvent(

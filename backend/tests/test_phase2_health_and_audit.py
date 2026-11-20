@@ -43,14 +43,26 @@ def test_role_lost_health_event_on_transition(client) -> None:
         "callScreeningHeldBy": "com.eldershield",
         "callScreeningPeers": [],
     }
-    off = {
+    off_no_peers = {
+        **base,
+        "callScreeningEnabled": False,
+        "callScreeningHeldBy": None,
+        "callScreeningPeers": [],
+    }
+    off_with_peers = {
         **base,
         "callScreeningEnabled": False,
         "callScreeningHeldBy": None,
         "callScreeningPeers": ["com.bitdefender.security"],
     }
     assert client.post("/api/v1/devices/heartbeat", headers=DEVICE, json=on).status_code == 200
-    assert client.post("/api/v1/devices/heartbeat", headers=DEVICE, json=off).status_code == 200
+    assert client.post("/api/v1/devices/heartbeat", headers=DEVICE, json=off_no_peers).status_code == 200
+    detail = client.get("/api/v1/admin/devices/dev-p2-role", headers=ADMIN).json()
+    assert "role_lost" not in [e["type"] for e in detail["healthEvents"]]
+
+    # Re-enable then lose role while peers present (Bitdefender coexistence).
+    assert client.post("/api/v1/devices/heartbeat", headers=DEVICE, json=on).status_code == 200
+    assert client.post("/api/v1/devices/heartbeat", headers=DEVICE, json=off_with_peers).status_code == 200
     detail = client.get("/api/v1/admin/devices/dev-p2-role", headers=ADMIN).json()
     types = [e["type"] for e in detail["healthEvents"]]
     assert "role_lost" in types
