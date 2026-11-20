@@ -10,7 +10,8 @@ Zero-touch Play release는 **HTTPS** `eldershield.baseUrl`이 필요합니다.
    - **권장**: Root Directory `/backend` + Railpack (현재 `main`에 Dockerfile 없어도 동작). Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
    - **대안**: 저장소 루트 `Dockerfile` + `railway.toml` (`builder = DOCKERFILE`).
 3. Volume: mount `/data` (sqlite 영속).  
-4. Public domain 발급 (`*.up.railway.app`), healthcheck `/health`.
+4. Public domain 발급 (`*.up.railway.app`), healthcheck `/health`.  
+   **주의:** 도메인 `targetPort`는 컨테이너가 실제로 listen하는 `$PORT`와 같아야 함 (Railpack 기본 8080, Dockerfile 기본 8000). 불일치 시 외부 502.
 
 ## 2. 필수 변수
 
