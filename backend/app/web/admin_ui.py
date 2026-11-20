@@ -1,15 +1,17 @@
 from pathlib import Path
+import time
 
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
 from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
-from app.models.device import AppScanResult, Device
+from app.models.device import AppAllowlist, AppScanResult, AuditLog, Device, DeviceHealthEvent
+from app.services.audit import record_audit
 from app.services.call_rule_service import create_call_rule, delete_call_rule
 from app.services.country_restriction_service import (
     create_country_restriction,
@@ -23,6 +25,26 @@ router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parents[1] / "templates"))
 APPLY_OPTIONS = ["call", "dns", "internet"]
 
+# Phase 2A — in-memory login rate limit (per process).
+_LOGIN_FAILURES: dict[str, list[float]] = {}
+_LOGIN_WINDOW_SEC = 600
+_LOGIN_MAX_FAILURES = 10
+
+
+def _client_ip(request: Request) -> str:
+    return request.client.host if request.client else "unknown"
+
+
+def _login_blocked(ip: str) -> bool:
+    now = time.time()
+    stamps = [t for t in _LOGIN_FAILURES.get(ip, []) if now - t < _LOGIN_WINDOW_SEC]
+    _LOGIN_FAILURES[ip] = stamps
+    return len(stamps) >= _LOGIN_MAX_FAILURES
+
+
+def _record_login_failure(ip: str) -> None:
+    _LOGIN_FAILURES.setdefault(ip, []).append(time.time())
+
 
 def _ctx(request: Request, **kwargs):
     return {"request": request, "admin_authed": True, **kwargs}
@@ -30,7 +52,13 @@ def _ctx(request: Request, **kwargs):
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request) -> HTMLResponse:
-    error = "Invalid API key" if request.query_params.get("error") else None
+    err = request.query_params.get("error")
+    if err == "rate":
+        error = "Too many failed attempts. Try again later."
+    elif err:
+        error = "Invalid API key"
+    else:
+        error = None
     return templates.TemplateResponse(
         request,
         "admin/login.html",
@@ -39,17 +67,23 @@ def login_page(request: Request) -> HTMLResponse:
 
 
 @router.post("/login")
-def login_submit(api_key: str = Form(...)) -> RedirectResponse:
+def login_submit(request: Request, api_key: str = Form(...)) -> Response:
     import hmac
 
     from app.core.config import settings
+
+    ip = _client_ip(request)
+    if _login_blocked(ip):
+        return RedirectResponse("/admin/ui/login?error=rate", status_code=303)
 
     expected = settings.admin_api_key or ""
     left = api_key.encode("utf-8")
     right = expected.encode("utf-8")
     # compare_digest requires equal length; unequal → reject without raising.
     if len(left) != len(right) or not hmac.compare_digest(left, right):
+        _record_login_failure(ip)
         return RedirectResponse("/admin/ui/login?error=1", status_code=303)
+    _LOGIN_FAILURES.pop(ip, None)
     return login_redirect(api_key)
 
 
@@ -126,6 +160,14 @@ def create_restriction_form(
             ),
             status_code=422,
         )
+    record_audit(
+        session,
+        action="create",
+        resource_type="country_restriction",
+        resource_id=row.id,
+        detail=row.name,
+        commit=True,
+    )
     return RedirectResponse(f"/admin/ui/restrictions/{row.id}", status_code=303)
 
 
@@ -196,6 +238,13 @@ def update_restriction_form(
             ),
             status_code=422,
         )
+    record_audit(
+        session,
+        action="update",
+        resource_type="country_restriction",
+        resource_id=restriction_id,
+        commit=True,
+    )
     return RedirectResponse(f"/admin/ui/restrictions/{restriction_id}", status_code=303)
 
 
@@ -205,7 +254,14 @@ def delete_restriction_form(
     _: str = Depends(require_admin_ui),
     session: Session = Depends(get_session),
 ):
-    delete_country_restriction(session, restriction_id)
+    if delete_country_restriction(session, restriction_id):
+        record_audit(
+            session,
+            action="delete",
+            resource_type="country_restriction",
+            resource_id=restriction_id,
+            commit=True,
+        )
     return RedirectResponse("/admin/ui/restrictions", status_code=303)
 
 
@@ -241,11 +297,18 @@ def create_call_rule_form(
     try:
         if not wl:
             raise ValueError("whitelist requires at least one full number")
-        create_call_rule(
+        row = create_call_rule(
             session,
             country_codes=codes,
             whitelist=wl,
             enabled=enabled is not None,
+        )
+        record_audit(
+            session,
+            action="create",
+            resource_type="call_rule",
+            resource_id=row.id,
+            commit=True,
         )
     except (TypeError, ValueError) as exc:
         rows = list(session.exec(select(CallRule)).all())
@@ -270,7 +333,14 @@ def delete_call_rule_form(
     _: str = Depends(require_admin_ui),
     session: Session = Depends(get_session),
 ):
-    delete_call_rule(session, rule_id)
+    if delete_call_rule(session, rule_id):
+        record_audit(
+            session,
+            action="delete",
+            resource_type="call_rule",
+            resource_id=rule_id,
+            commit=True,
+        )
     return RedirectResponse("/admin/ui/call-rules", status_code=303)
 
 
@@ -328,6 +398,13 @@ def dns_denylist_sync_nextdns(
             f"denylist +{len(result['denylist'].get('added', []))} "
             f"-{len(result['denylist'].get('removed', []))}."
         )
+        record_audit(
+            session,
+            action="sync_nextdns",
+            resource_type="dns_denylist",
+            resource_id=str(result["profileId"]),
+            commit=True,
+        )
         return _dns_denylist_page(request, session, sync_ok=True, sync_message=msg)
     except NextDnsNotConfigured as exc:
         return _dns_denylist_page(request, session, sync_ok=False, sync_message=str(exc))
@@ -342,8 +419,58 @@ def list_devices(
     session: Session = Depends(get_session),
 ) -> HTMLResponse:
     devices = list(session.exec(select(Device)).all())
+    role_lost = set(
+        session.exec(
+            select(DeviceHealthEvent.device_uuid).where(DeviceHealthEvent.type == "role_lost")
+        ).all()
+    )
     return templates.TemplateResponse(
-        request, "admin/devices.html", _ctx(request, devices=devices)
+        request,
+        "admin/devices.html",
+        _ctx(request, devices=devices, role_lost=role_lost),
+    )
+
+
+@router.get("/devices/{device_uuid}", response_class=HTMLResponse)
+def device_detail(
+    device_uuid: str,
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> HTMLResponse:
+    device = session.get(Device, device_uuid)
+    if device is None:
+        return RedirectResponse("/admin/ui/devices", status_code=303)
+    events = list(
+        session.exec(
+            select(DeviceHealthEvent)
+            .where(DeviceHealthEvent.device_uuid == device_uuid)
+            .order_by(col(DeviceHealthEvent.created_at).desc())
+            .limit(50)
+        ).all()
+    )
+    scans = list(
+        session.exec(
+            select(AppScanResult)
+            .where(AppScanResult.device_uuid == device_uuid)
+            .order_by(col(AppScanResult.created_at).desc())
+            .limit(50)
+        ).all()
+    )
+    allow = {
+        r.package_name
+        for r in session.exec(select(AppAllowlist)).all()
+    }
+    return templates.TemplateResponse(
+        request,
+        "admin/device_detail.html",
+        _ctx(
+            request,
+            device=device,
+            events=events,
+            scans=scans,
+            allowlist=allow,
+        ),
     )
 
 
@@ -361,4 +488,74 @@ def device_scans(
         request,
         "admin/scans.html",
         _ctx(request, device_uuid=device_uuid, scans=scans),
+    )
+
+
+@router.get("/allowlist", response_class=HTMLResponse)
+def allowlist_page(
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> HTMLResponse:
+    rows = list(session.exec(select(AppAllowlist)).all())
+    return templates.TemplateResponse(
+        request, "admin/allowlist.html", _ctx(request, rows=rows, error=None)
+    )
+
+
+@router.post("/allowlist")
+def allowlist_add(
+    package_name: str = Form(...),
+    note: str = Form(""),
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> RedirectResponse:
+    pkg = package_name.strip()
+    row = session.get(AppAllowlist, pkg)
+    if row is None:
+        row = AppAllowlist(package_name=pkg, note=note or None)
+    else:
+        row.note = note or None
+    session.add(row)
+    record_audit(
+        session,
+        action="upsert",
+        resource_type="app_allowlist",
+        resource_id=pkg,
+        detail=note or None,
+    )
+    session.commit()
+    return RedirectResponse("/admin/ui/allowlist", status_code=303)
+
+
+@router.post("/allowlist/{package_name}/delete")
+def allowlist_delete(
+    package_name: str,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> RedirectResponse:
+    row = session.get(AppAllowlist, package_name)
+    if row is not None:
+        session.delete(row)
+        record_audit(
+            session,
+            action="delete",
+            resource_type="app_allowlist",
+            resource_id=package_name,
+        )
+        session.commit()
+    return RedirectResponse("/admin/ui/allowlist", status_code=303)
+
+
+@router.get("/audit", response_class=HTMLResponse)
+def audit_page(
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> HTMLResponse:
+    rows = list(
+        session.exec(select(AuditLog).order_by(col(AuditLog.created_at).desc()).limit(100)).all()
+    )
+    return templates.TemplateResponse(
+        request, "admin/audit.html", _ctx(request, rows=rows)
     )

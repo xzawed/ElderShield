@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% block title %}App allowlist · ElderShield Admin{% endblock %}
+{% block page_heading %}App allowlist{% endblock %}
+{% block page_sub %}Suppress false-positive risk packages (report still stored){% endblock %}
+{% block content %}
+<section class="mb-6 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 p-6">
+  <form method="post" action="/admin/ui/allowlist" class="flex flex-wrap gap-3 items-end">
+    <label class="block text-sm">
+      <span class="text-ink-600">Package</span>
+      <input name="package_name" required class="mt-1 block w-72 rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" placeholder="com.example.app">
+    </label>
+    <label class="block text-sm flex-1 min-w-[12rem]">
+      <span class="text-ink-600">Note</span>
+      <input name="note" class="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+    </label>
+    <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Add</button>
+  </form>
+</section>
+<section class="rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">
+  <ul class="divide-y divide-slate-100 text-sm">
+    {% for r in rows %}
+    <li class="px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p class="font-mono text-xs">{{ r.package_name }}</p>
+        <p class="text-ink-500 text-xs">{{ r.note or "—" }}</p>
+      </div>
+      <form method="post" action="/admin/ui/allowlist/{{ r.package_name }}/delete">
+        <button type="submit" class="text-sm font-semibold text-amber-800 hover:text-amber-950">Remove</button>
+      </form>
+    </li>
+    {% else %}
+    <li class="px-6 py-10 text-center text-ink-400">Empty allowlist.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

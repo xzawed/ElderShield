@@ -5,7 +5,8 @@ import pytest
 from app.core.config import Settings, assert_secure_settings
 
 
-def test_rejects_insecure_default_keys() -> None:
+def test_rejects_insecure_default_keys(monkeypatch) -> None:
+    monkeypatch.delenv("ELDERSHIELD_ALLOW_INSECURE_DEFAULTS", raising=False)
     s = Settings(
         database_url="sqlite://",
         admin_api_key="change-me-admin",
@@ -15,7 +16,8 @@ def test_rejects_insecure_default_keys() -> None:
         assert_secure_settings(s)
 
 
-def test_rejects_identical_admin_and_device_keys() -> None:
+def test_rejects_identical_admin_and_device_keys(monkeypatch) -> None:
+    monkeypatch.delenv("ELDERSHIELD_ALLOW_INSECURE_DEFAULTS", raising=False)
     s = Settings(
         database_url="sqlite://",
         admin_api_key="same-secret",
@@ -25,7 +27,8 @@ def test_rejects_identical_admin_and_device_keys() -> None:
         assert_secure_settings(s)
 
 
-def test_accepts_distinct_non_default_keys() -> None:
+def test_accepts_distinct_non_default_keys(monkeypatch) -> None:
+    monkeypatch.delenv("ELDERSHIELD_ALLOW_INSECURE_DEFAULTS", raising=False)
     s = Settings(
         database_url="sqlite://",
         admin_api_key="test-admin-key",

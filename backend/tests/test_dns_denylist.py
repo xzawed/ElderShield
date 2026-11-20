@@ -1,5 +1,6 @@
 """DNS/internet policy derived from CountryRestriction applyTo dns|internet."""
 
+from app.data.threat_hosts import THREAT_HOSTS
 from app.services.dns_denylist import build_dns_denylist
 
 
@@ -16,10 +17,12 @@ def test_cn_dns_restriction_includes_tld_and_major_hosts():
     assert "*.cn" not in out["domains"]
     assert "baidu.com" in out["domains"]
     assert "CN" in out["countries"]
-    assert out["source"] == "country_restrictions"
+    assert out["source"] == "country_restrictions+threat_hosts"
+    assert "scam-ad-landing.example" in out["domains"]
+    assert set(out["threatHosts"]) == set(THREAT_HOSTS)
 
 
-def test_call_only_restriction_does_not_contribute_domains():
+def test_call_only_restriction_does_not_contribute_country_policy():
     rows = [
         {
             "countries": ["CN"],
@@ -28,9 +31,11 @@ def test_call_only_restriction_does_not_contribute_domains():
         }
     ]
     out = build_dns_denylist(rows)
-    assert out["domains"] == []
     assert out["tlds"] == []
     assert out["countries"] == []
+    # Threat hosts still apply as baseline P3 feed
+    assert "scam-ad-landing.example" in out["domains"]
+    assert "baidu.com" not in out["domains"]
 
 
 def test_disabled_or_internet_apply_to():

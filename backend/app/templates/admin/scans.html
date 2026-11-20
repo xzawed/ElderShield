@@ -17,6 +17,7 @@
           <th class="px-6 py-3">Package</th>
           <th class="px-6 py-3">Installer</th>
           <th class="px-6 py-3">Permissions</th>
+          <th class="px-6 py-3">Reasons</th>
           <th class="px-6 py-3">Score</th>
           <th class="px-6 py-3">At</th>
         </tr>
@@ -27,6 +28,7 @@
           <td class="px-6 py-4 font-medium text-ink-950">{{ s.package_name }}</td>
           <td class="px-6 py-4 text-ink-600">{{ s.installer or "—" }}</td>
           <td class="px-6 py-4 text-ink-600">{{ s.dangerous_permissions | join(", ") }}</td>
+          <td class="px-6 py-4 text-ink-600">{{ (s.reasons or []) | join(", ") or "—" }}</td>
           <td class="px-6 py-4">
             <span class="inline-flex rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-900 ring-1 ring-inset ring-amber-100">{{ s.risk_score }}</span>
           </td>
@@ -34,7 +36,7 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="5" class="px-6 py-10 text-center text-ink-400">No scan results.</td>
+          <td colspan="6" class="px-6 py-10 text-center text-ink-400">No scan results.</td>
         </tr>
         {% endfor %}
       </tbody>

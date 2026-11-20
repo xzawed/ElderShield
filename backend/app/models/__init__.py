@@ -2,7 +2,13 @@
 
 from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction, CountryRestrictionVersion
-from app.models.device import AppScanResult, Device
+from app.models.device import (
+    AppAllowlist,
+    AppScanResult,
+    AuditLog,
+    Device,
+    DeviceHealthEvent,
+)
 from app.models.rule_bundle_meta import RuleBundleMeta
 
 __all__ = [
@@ -11,5 +17,8 @@ __all__ = [
     "CallRule",
     "Device",
     "AppScanResult",
+    "DeviceHealthEvent",
+    "AppAllowlist",
+    "AuditLog",
     "RuleBundleMeta",
 ]
