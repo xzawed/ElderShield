@@ -16,7 +16,7 @@ class DeviceReportWorker(
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         return try {
-            val prefs = applicationContext.getSharedPreferences("eldershield", Context.MODE_PRIVATE)
+            val prefs = applicationContext.getSharedPreferences(RuleSyncWorker.PREFS, Context.MODE_PRIVATE)
             val baseUrl = prefs.getString("base_url", RuleSyncWorker.DEFAULT_BASE_URL) ?: RuleSyncWorker.DEFAULT_BASE_URL
             val apiKey = prefs.getString("device_api_key", null).orEmpty()
             if (apiKey.isBlank()) {
@@ -37,6 +37,12 @@ class DeviceReportWorker(
                     .versionName ?: "0.1.0"
 
             val screening = CallScreeningRoleProbe.probe(applicationContext)
+            val lastSyncOk = prefs.getBoolean(RuleSyncWorker.PREF_LAST_SYNC_OK, true)
+            val lastSyncError = prefs.getString(RuleSyncWorker.PREF_LAST_SYNC_ERROR, null)
+            val prevDns = prefs.getBoolean(PREF_PREV_DNS_CONFIGURED, dns.configured)
+            val degraded =
+                !dns.configured || !screening.heldByUs || !lastSyncOk
+
             val api = DeviceApi(baseUrl, apiKey)
             api.postHeartbeat(
                 deviceUuid = deviceUuid,
@@ -46,7 +52,20 @@ class DeviceReportWorker(
                 callScreeningHeldBy = screening.heldBy,
                 callScreeningPeers = screening.peers,
                 lastRuleVersion = lastRuleVersion,
+                dnsHostClass = dns.hostClass,
+                lastSyncOk = lastSyncOk,
+                lastSyncErrorCode = lastSyncError,
+                cachedBundleVersion = lastRuleVersion,
+                protectionDegraded = degraded,
             )
+
+            if (prevDns && !dns.configured) {
+                api.postHealthEvents(
+                    deviceUuid,
+                    listOf("dns_drift" to "host_class=${dns.hostClass}"),
+                )
+            }
+            prefs.edit().putBoolean(PREF_PREV_DNS_CONFIGURED, dns.configured).apply()
 
             val suspicious = PackageAppScanner(applicationContext).scanSuspicious()
             if (suspicious.isNotEmpty()) {
@@ -60,5 +79,6 @@ class DeviceReportWorker(
 
     companion object {
         const val UNIQUE_NAME = "eldershield-device-report"
+        const val PREF_PREV_DNS_CONFIGURED = "prev_dns_configured"
     }
 }

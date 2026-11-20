@@ -14,7 +14,8 @@ class PackageAppScanner(
 ) {
     fun scanSuspicious(): List<AppRiskResult> {
         val pm = context.packageManager
-        val apps = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+        val flags = PackageManager.GET_PERMISSIONS or PackageManager.GET_SERVICES
+        val apps = pm.getInstalledPackages(flags)
         val inputs =
             apps.map { pkg ->
                 val installer =
@@ -29,13 +30,25 @@ class PackageAppScanner(
                         pm.getInstallerPackageName(pkg.packageName)
                     }
                 val perms = pkg.requestedPermissions?.toList().orEmpty()
-                val flags = pkg.applicationInfo?.flags ?: 0
-                val system = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                val flagsApp = pkg.applicationInfo?.flags ?: 0
+                val system = (flagsApp and ApplicationInfo.FLAG_SYSTEM) != 0
+                val overlay =
+                    perms.any {
+                        it == AppRiskScorer.OVERLAY_PERM ||
+                            it == "SYSTEM_ALERT_WINDOW"
+                    }
+                val a11yService =
+                    pkg.services?.any { svc ->
+                        val perm = svc.permission
+                        perm == "android.permission.BIND_ACCESSIBILITY_SERVICE"
+                    } == true
                 AppScanInput(
                     packageName = pkg.packageName,
                     installerPackage = installer,
                     permissions = perms,
                     isSystemApp = system,
+                    hasOverlayPermission = overlay,
+                    hasAccessibilityService = a11yService,
                 )
             }
         return AppRiskScorer.scoreAll(inputs, context.packageName)

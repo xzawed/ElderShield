@@ -8,6 +8,8 @@ import com.eldershield.data.RuleRepositoryImpl
 import com.eldershield.data.local.ElderShieldDatabase
 import com.eldershield.data.remote.RulesApi
 import com.eldershield.domain.sync.RuleSyncPolicy
+import com.eldershield.domain.sync.SyncErrorCodes
+import com.eldershield.domain.sync.SyncOutcome
 import com.eldershield.domain.sync.SyncWorkDisposition
 
 /**
@@ -19,8 +21,8 @@ class RuleSyncWorker(
     params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
+        val prefs = applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         return try {
-            val prefs = applicationContext.getSharedPreferences("eldershield", Context.MODE_PRIVATE)
             val baseUrl = prefs.getString("base_url", DEFAULT_BASE_URL) ?: DEFAULT_BASE_URL
             val apiKey = prefs.getString("device_api_key", null).orEmpty()
             if (apiKey.isBlank()) {
@@ -32,12 +34,32 @@ class RuleSyncWorker(
             val policy = RuleSyncPolicy(repo)
             val outcome = policy.sync()
             ActiveRuleBundleCache.publishIfNewer(policy.activeBundle(outcome))
+            val syncFailed =
+                outcome is SyncOutcome.UsedCache || outcome is SyncOutcome.EmptyNoBlock
+            if (syncFailed) {
+                prefs
+                    .edit()
+                    .putBoolean(PREF_LAST_SYNC_OK, false)
+                    .putString(PREF_LAST_SYNC_ERROR, SyncErrorCodes.fromThrowable(policy.lastError))
+                    .apply()
+            } else {
+                prefs
+                    .edit()
+                    .putBoolean(PREF_LAST_SYNC_OK, true)
+                    .remove(PREF_LAST_SYNC_ERROR)
+                    .apply()
+            }
             if (SyncWorkDisposition.shouldRetry(outcome)) {
                 Result.retry()
             } else {
                 Result.success()
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            prefs
+                .edit()
+                .putBoolean(PREF_LAST_SYNC_OK, false)
+                .putString(PREF_LAST_SYNC_ERROR, SyncErrorCodes.fromThrowable(e))
+                .apply()
             // Never crash the process; retry later with backoff.
             Result.retry()
         }
@@ -46,5 +68,8 @@ class RuleSyncWorker(
     companion object {
         const val UNIQUE_NAME = "eldershield-rule-sync"
         const val DEFAULT_BASE_URL = "https://example.invalid"
+        const val PREFS = "eldershield"
+        const val PREF_LAST_SYNC_OK = "last_sync_ok"
+        const val PREF_LAST_SYNC_ERROR = "last_sync_error_code"
     }
 }
