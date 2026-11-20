@@ -33,14 +33,15 @@
 | **제품** | ElderShield(실버실드) — 부모님 폰/태블릿용 **무인지** 방어 계층 |
 | **조작 주체** | **관리자만** (웹 + API). 부모님은 설치·권한 후 추가 조작 없음 |
 | **Phase 1** | 전화 스크리닝 · Private DNS 상태 · 앱 위험 스캔 보고 · 버전 규칙 동기화 |
-| **Phase 1 아님** | 기본 `VpnService`, Overlay, Accessibility Service, Device Admin, 역공격 |
+| **Phase 2** | 기기 health · 오버레이/접근성 **가능 앱**(P3) · threat DNS · audit/notify/`/health` |
+| **비범위** | 기본 `VpnService`, ElderShield Overlay/Accessibility/Device Admin, 역공격, 다조직(B) |
 
 | 기능 | 방식 |
 |------|------|
-| 위험 국가 **전화** | `CallScreeningService` + Room 캐시 `RuleBundle` (+ `CallRule` 화이트리스트) |
-| 위험 국가 **인터넷** | Private DNS(NextDNS/AdGuard) + Admin **DNS denylist** (ccTLD·주요 도메인). 앱 VPN 없음 · API 자동 푸시는 다음 슬라이스 |
-| **사기/사이드로드 앱** | 스캔 후 **관리자 보고만** (부모 팝업 없음) |
-| **제어면** | 관리자 웹 + `X-API-Key` API + 단조 **generation** |
+| 위험 국가 **전화** | `CallScreeningService` + Room 캐시 `RuleBundle` (+ `CallRule` 화이트리스트); `role_lost`는 관리자 경보만 |
+| 위험 국가 **인터넷** | Private DNS(NextDNS/AdGuard) + Admin **DNS denylist** + threat-host. 앱 VPN 없음 |
+| **사기/사이드로드 앱** | 스캔·오버레이 가능 신호 포함 **관리자 보고만** (부모 팝업 없음) |
+| **제어면** | 관리자 웹 + `X-API-Key` API + 단조 **generation** + audit |
 
 > 일반 백신 제품을 **대체하지 않고** 보완합니다.
 
