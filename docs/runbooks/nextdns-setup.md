@@ -25,7 +25,14 @@ Restart uvicorn after change.
 
 Expect **200** with tlds/domains applied. Without env → **503** (lab OK).
 
-Sync pushes `security.tlds` (e.g. `cn`) + denylist hosts from enabled `applyTo: dns|internet` restrictions.
+Sync pushes `security.tlds` (e.g. `cn`) + denylist hosts from enabled `applyTo: dns|internet` restrictions  
+**plus** production threat hosts (never `*.example` lab seeds).
+
+### Threat hosts (Phase 2)
+
+1. Copy `backend/app/data/threat_hosts.local.example.json` → `threat_hosts.local.json` (gitignored).
+2. Replace entries with real scam-ad / phishing FQDNs you curate.
+3. Re-sync NextDNS. Lab `*.example` hosts are excluded from push and removed if previously synced.
 
 ## 4. Parent phone Private DNS
 

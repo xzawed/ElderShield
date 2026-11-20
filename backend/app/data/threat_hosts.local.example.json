@@ -1,0 +1,6 @@
+{
+  "hosts": [
+    "replace-with-real-scam-landing.example.com"
+  ],
+  "_comment": "Copy to threat_hosts.local.json (gitignored). Use real FQDNs only — never commit secrets or live PII."
+}

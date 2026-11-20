@@ -20,10 +20,14 @@
 
 ## Operator residual
 
-- Replace `.example` threat hosts before production NextDNS sync
-- Set `ADMIN_NOTIFY_WEBHOOK_URL` / `NEXTDNS_*` as needed
-- Lab device smoke (S22 banks / nocall) when convenient
-- Public repo visibility still operator choice
+| Item | Status |
+|------|--------|
+| NextDNS sync (`NEXTDNS_*`) | Pass 2026-11-20 — live sync OK; `*.example` excluded from push |
+| Threat hosts local overlay | Template `threat_hosts.local.example.json` — fill real FQDNs (gitignored) |
+| Play internal AAB | Version **0.2.0** + `keystore.properties` template — Console upload = operator |
+| `ADMIN_NOTIFY_WEBHOOK_URL` | Optional |
+| Lab device smoke | Operator when convenient |
+| Public GitHub visibility | Still PRIVATE — flip = explicit operator decision |
 
 ## Notes
 

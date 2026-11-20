@@ -23,6 +23,10 @@ dist/
 build/
 backend/*.db
 backend/.env
+backend/app/data/threat_hosts.local.json
+android/keystore.properties
+android/*.jks
+android/*.keystore
 
 # Android / Gradle
 **/.gradle/
