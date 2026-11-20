@@ -28,7 +28,8 @@
 | **A 운영 품질** | Audit · Admin notify · `/health` 메트릭 · login rate-limit · backup/key-rotation 런북 | Pass (PR #2/#3) |
 | **비범위** | B 다조직/테넌트 · P4 화면 읽기 · VpnService · 스미싱 리스너 | 유지 |
 
-운영자 잔여: NextDNS 프로필·threat host 실도메인·`ADMIN_NOTIFY_WEBHOOK_URL` · Play AAB — [`nextdns-setup.md`](runbooks/nextdns-setup.md) · [`play-internal.md`](runbooks/play-internal.md) · [`backup-restore.md`](runbooks/backup-restore.md)
+운영자 잔여: `threat_hosts.local.json` 실도메인 채우기 · Play Console AAB 업로드 · (선택) webhook / Public 전환 — [`nextdns-setup.md`](runbooks/nextdns-setup.md) · [`play-internal.md`](runbooks/play-internal.md) · [`backup-restore.md`](runbooks/backup-restore.md)  
+NextDNS 전용 프로필 sync는 2026-11-20 실측 Pass (`*.example` 미푸시).
 
 ## Phase 3+ (후순위)
 

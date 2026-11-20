@@ -56,6 +56,11 @@ class DnsDenylistOut(BaseModel):
         serialization_alias="threatHosts",
         validation_alias=AliasChoices("threatHosts", "threat_hosts"),
     )
+    threat_hosts_lab: list[str] = Field(
+        default_factory=list,
+        serialization_alias="threatHostsLab",
+        validation_alias=AliasChoices("threatHostsLab", "threat_hosts_lab"),
+    )
     count: int
 
 
