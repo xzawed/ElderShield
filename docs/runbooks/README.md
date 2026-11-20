@@ -9,5 +9,7 @@
 | [`device-test.md`](device-test.md) | S6.1 — 실기기·KR-lab §8 · L12 Bitdefender 병행 |
 | [`nextdns-setup.md`](nextdns-setup.md) | S6.3 — NextDNS 프로필·sync·Private DNS |
 | [`play-internal.md`](play-internal.md) | S6.2 — Play internal track 체크리스트 |
+| [`play-console-while-waiting.md`](play-console-while-waiting.md) | 계정 인증 대기 중 병행 작업 · Data safety 초안 |
+| [`../legal/privacy-policy.md`](../legal/privacy-policy.md) | 스토어용 개인정보처리방침 초안 |
 | [`admin-ui.md`](admin-ui.md) | Admin 콘솔 (Tailwind) · 브라우저 검증 |
 | [`backup-restore.md`](backup-restore.md) | Phase 2A — SQLite·NextDNS 백업/복구 |

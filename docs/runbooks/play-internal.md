@@ -2,6 +2,8 @@
 
 Operator-owned Console steps. Engineering preconditions below.
 
+**계정 인증 대기 중**이면 앱 생성이 막힙니다 → 그동안 [`play-console-while-waiting.md`](play-console-while-waiting.md) · [`../legal/privacy-policy.md`](../legal/privacy-policy.md).
+
 ## Preconditions (engineering)
 
 | Item | Requirement |
