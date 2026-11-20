@@ -13,16 +13,17 @@ Operator-owned Console steps. Engineering preconditions below.
 | VpnService | Default **off**; no `BIND_VPN_SERVICE` |
 | Privacy | Minimize phone-number logging |
 
-### Unsigned lab smoke
+### Signed AAB (local)
 
-Without keystore: `assembleRelease` still builds (unsigned). Play Console requires a **signed** AAB.
+With gitignored `android/keystore.properties` + `upload-keystore.jks`:
 
 ```bash
 cd android
-# optional: copy keystore.properties.example → keystore.properties and fill
 ./gradlew :app:bundleRelease
 # out: app/build/outputs/bundle/release/app-release.aab
 ```
+
+Without keystore, `assembleRelease` still builds unsigned APK; Play requires the **signed** AAB above.
 
 ## Operator checklist (Play Console)
 

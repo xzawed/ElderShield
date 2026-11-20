@@ -28,8 +28,8 @@
 | **A 운영 품질** | Audit · Admin notify · `/health` 메트릭 · login rate-limit · backup/key-rotation 런북 | Pass (PR #2/#3) |
 | **비범위** | B 다조직/테넌트 · P4 화면 읽기 · VpnService · 스미싱 리스너 | 유지 |
 
-운영자 잔여: `threat_hosts.local.json` 실도메인 채우기 · Play Console AAB 업로드 · (선택) webhook / Public 전환 — [`nextdns-setup.md`](runbooks/nextdns-setup.md) · [`play-internal.md`](runbooks/play-internal.md) · [`backup-restore.md`](runbooks/backup-restore.md)  
-NextDNS 전용 프로필 sync는 2026-11-20 실측 Pass (`*.example` 미푸시).
+운영 잔여(2026-11-20 handoff): Play Console에 signed AAB 업로드 · (선택) `ADMIN_NOTIFY_WEBHOOK_URL` · 실기기 스모크 — [`play-internal.md`](runbooks/play-internal.md) · [`nextdns-setup.md`](runbooks/nextdns-setup.md).  
+완료: NextDNS sync + local threat overlay · GitHub **PUBLIC** · 로컬 signed `app-release.aab` 생성.
 
 ## Phase 3+ (후순위)
 

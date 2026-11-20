@@ -1,6 +1,6 @@
 ﻿# Public-repo readiness — 5-pass verification (2026-11-20)
 
-Repo visibility at last check: **PRIVATE** (`xzawed/ElderShield`). History-purged `main` is ready; Public flip is operator choice.
+Repo visibility at last check: **PUBLIC** (`xzawed/ElderShield`, 2026-11-20). History-purged `main`; archive deleted.
 
 ## Pass matrix
 

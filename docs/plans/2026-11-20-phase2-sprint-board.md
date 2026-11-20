@@ -22,12 +22,12 @@
 
 | Item | Status |
 |------|--------|
-| NextDNS sync (`NEXTDNS_*`) | Pass 2026-11-20 — live sync OK; `*.example` excluded from push |
-| Threat hosts local overlay | Template `threat_hosts.local.example.json` — fill real FQDNs (gitignored) |
-| Play internal AAB | Version **0.2.0** + `keystore.properties` template — Console upload = operator |
-| `ADMIN_NOTIFY_WEBHOOK_URL` | Optional |
-| Lab device smoke | Operator when convenient |
-| Public GitHub visibility | Still PRIVATE — flip = explicit operator decision |
+| NextDNS sync (`NEXTDNS_*`) | Pass 2026-11-20 — denylist stable (country + curated local threats); `*.example` excluded; 429 backoff |
+| Threat hosts local overlay | Pass 2026-11-20 — `threat_hosts.local.json` (gitignored) from PhishDestroy primary_active, brand-FP filtered, capped |
+| Play signed AAB | Pass build 2026-11-20 — local `upload-keystore.jks` + `app-release.aab` (gitignored). **Play Console upload** still needs Google login |
+| `ADMIN_NOTIFY_WEBHOOK_URL` | Optional (unset) |
+| Lab device smoke | Optional |
+| Public GitHub visibility | **PUBLIC** as of 2026-11-20 (authority handoff) |
 
 ## Notes
 

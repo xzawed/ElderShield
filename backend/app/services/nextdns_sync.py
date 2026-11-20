@@ -8,7 +8,8 @@ Uses a dedicated profile — denylist PUT replace is avoided to reduce collatera
 
 from __future__ import annotations
 
-from typing import Any, Callable
+import time
+from typing import Any
 
 import httpx
 
@@ -16,6 +17,8 @@ from app.data.dns_country_domains import COUNTRY_CCTLD
 from app.services.dns_denylist import build_dns_denylist, managed_seed_domains
 
 API_BASE = "https://api.nextdns.io"
+_DENYLIST_PAUSE_SEC = 0.35
+_RATE_LIMIT_RETRIES = 5
 
 
 class NextDnsNotConfigured(Exception):
@@ -101,24 +104,57 @@ def _sync_denylist(
     added: list[str] = []
     removed: list[str] = []
     for host in sorted(desired - current):
-        pr = http.post(
+        pr = _denylist_mutate(
+            http,
+            "POST",
             f"/profiles/{profile_id}/denylist",
-            headers=_headers(api_key),
-            json={"id": host},
+            api_key,
+            json_body={"id": host},
+            label=f"POST denylist {host}",
         )
-        # 204 success; 200 with errors possible per NextDNS docs
-        if pr.status_code >= 400:
-            raise NextDnsSyncError(
-                f"POST denylist {host} failed: {pr.status_code} {pr.text}",
-                status_code=pr.status_code,
-            )
         added.append(host)
+        time.sleep(_DENYLIST_PAUSE_SEC)
     for host in sorted((current & managed) - desired):
-        dr = http.delete(f"/profiles/{profile_id}/denylist/{host}", headers=_headers(api_key))
-        if dr.status_code >= 400:
-            raise NextDnsSyncError(
-                f"DELETE denylist {host} failed: {dr.status_code} {dr.text}",
-                status_code=dr.status_code,
-            )
+        _denylist_mutate(
+            http,
+            "DELETE",
+            f"/profiles/{profile_id}/denylist/{host}",
+            api_key,
+            json_body=None,
+            label=f"DELETE denylist {host}",
+        )
         removed.append(host)
+        time.sleep(_DENYLIST_PAUSE_SEC)
     return {"added": added, "removed": removed, "desiredCount": len(desired)}
+
+
+def _denylist_mutate(
+    http: httpx.Client,
+    method: str,
+    path: str,
+    api_key: str,
+    *,
+    json_body: dict[str, Any] | None,
+    label: str,
+) -> httpx.Response:
+    delay = 1.0
+    last: httpx.Response | None = None
+    for _ in range(_RATE_LIMIT_RETRIES):
+        if method == "POST":
+            last = http.post(path, headers=_headers(api_key), json=json_body)
+        else:
+            last = http.delete(path, headers=_headers(api_key))
+        if last.status_code != 429 and last.status_code < 400:
+            return last
+        if last.status_code != 429:
+            raise NextDnsSyncError(
+                f"{label} failed: {last.status_code} {last.text}",
+                status_code=last.status_code,
+            )
+        time.sleep(delay)
+        delay = min(delay * 2, 20.0)
+    assert last is not None
+    raise NextDnsSyncError(
+        f"{label} failed after retries: {last.status_code} {last.text}",
+        status_code=last.status_code,
+    )
