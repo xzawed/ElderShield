@@ -9,6 +9,7 @@ from app.models.device import (
     Device,
     DeviceHealthEvent,
     EnrollmentWindow,
+    UsedIntegrityToken,
 )
 from app.models.rule_bundle_meta import RuleBundleMeta
 
@@ -22,5 +23,6 @@ __all__ = [
     "AppAllowlist",
     "AuditLog",
     "EnrollmentWindow",
+    "UsedIntegrityToken",
     "RuleBundleMeta",
 ]

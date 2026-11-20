@@ -19,6 +19,8 @@ class Settings:
     enroll_skip_integrity: bool = False
     play_integrity_enabled: bool = False
     play_package_name: str = "com.eldershield"
+    enroll_max_per_window: int = 10
+    enroll_rate_limit_per_minute: int = 20
 
 
 def load_settings() -> Settings:
@@ -32,12 +34,20 @@ def load_settings() -> Settings:
         enroll_skip_integrity=os.getenv("ELDERSHIELD_ENROLL_SKIP_INTEGRITY") == "1",
         play_integrity_enabled=os.getenv("PLAY_INTEGRITY_ENABLED") == "1",
         play_package_name=os.getenv("PLAY_PACKAGE_NAME", "com.eldershield"),
+        enroll_max_per_window=int(os.getenv("ENROLL_MAX_PER_WINDOW", "10")),
+        enroll_rate_limit_per_minute=int(os.getenv("ENROLL_RATE_LIMIT_PER_MINUTE", "20")),
     )
 
 
 def assert_secure_settings(settings: Settings, *, allow_insecure: bool = False) -> None:
-    """Refuse known placeholder keys and identical admin/device keys (startup gate)."""
-    if allow_insecure or os.getenv("ELDERSHIELD_ALLOW_INSECURE_DEFAULTS") == "1":
+    """Refuse known placeholder keys, identical keys, and production Integrity skip."""
+    allow = allow_insecure or os.getenv("ELDERSHIELD_ALLOW_INSECURE_DEFAULTS") == "1"
+    if settings.enroll_skip_integrity and not allow:
+        raise RuntimeError(
+            "ELDERSHIELD_ENROLL_SKIP_INTEGRITY requires "
+            "ELDERSHIELD_ALLOW_INSECURE_DEFAULTS=1 (lab only)"
+        )
+    if allow:
         return
     if (
         settings.admin_api_key in INSECURE_DEFAULT_KEYS
