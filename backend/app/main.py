@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from sqlmodel import Session, func, select
 
 from app.api.admin import router as admin_router
@@ -27,6 +28,18 @@ app.include_router(admin_router)
 app.include_router(device_router)
 app.include_router(enroll_router)
 app.include_router(admin_ui_router)
+
+
+@app.get("/")
+def root() -> RedirectResponse:
+    """Public Railway / GitHub About URL → admin UI login."""
+    return RedirectResponse(url="/admin/ui/login", status_code=302)
+
+
+@app.get("/admin")
+@app.get("/admin/ui")
+def admin_entry() -> RedirectResponse:
+    return RedirectResponse(url="/admin/ui/login", status_code=302)
 
 
 @app.get("/health")
