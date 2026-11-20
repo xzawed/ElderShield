@@ -25,6 +25,7 @@ class EnrollIn(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     integrity_token: str | None = Field(default=None, alias="integrityToken")
+    integrity_nonce: str | None = Field(default=None, alias="integrityNonce")
     app_version: str = Field(default="0.0.0", alias="appVersion")
     model: str | None = Field(default=None, alias="model")
 
@@ -58,7 +59,10 @@ def enroll_device(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="enrollment_cap",
         )
-    if not verify_integrity_token(body.integrity_token):
+    if not verify_integrity_token(
+        body.integrity_token,
+        expected_nonce=body.integrity_nonce,
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="integrity_failed",

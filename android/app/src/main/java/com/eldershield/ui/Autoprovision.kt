@@ -27,7 +27,11 @@ object Autoprovision {
         data class Failed(val reason: String) : Outcome()
     }
 
-    suspend fun ensure(context: Context, integrityToken: String? = null): Outcome =
+    suspend fun ensure(
+        context: Context,
+        integrityToken: String? = null,
+        integrityNonce: String? = null,
+    ): Outcome =
         withContext(Dispatchers.IO) {
             val store = ProvisionStore(context)
             if (store.hasToken()) {
@@ -50,6 +54,7 @@ object Autoprovision {
                 val result =
                     EnrollClient(baseUrl).enroll(
                         integrityToken = integrityToken,
+                        integrityNonce = integrityNonce,
                         appVersion = BuildConfig.VERSION_NAME,
                         model = Build.MODEL,
                     )

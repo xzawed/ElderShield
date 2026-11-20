@@ -19,6 +19,7 @@ class EnrollClient(
 ) {
     fun enroll(
         integrityToken: String?,
+        integrityNonce: String?,
         appVersion: String,
         model: String?,
     ): EnrollResult {
@@ -26,6 +27,7 @@ class EnrollClient(
             JSONObject()
                 .put("appVersion", appVersion)
                 .put("integrityToken", integrityToken ?: JSONObject.NULL)
+                .put("integrityNonce", integrityNonce ?: JSONObject.NULL)
                 .put("model", model ?: JSONObject.NULL)
         val body = payload.toString().toRequestBody(JSON_MEDIA)
         val req =

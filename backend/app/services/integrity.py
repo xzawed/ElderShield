@@ -1,6 +1,7 @@
 """Play Integrity verification for device enroll.
 
-Production: fail closed unless skip flag or Google decode confirms MEETS_DEVICE_INTEGRITY.
+Production: fail closed unless skip flag or Google decode confirms MEETS_DEVICE_INTEGRITY
+and (when provided) requestDetails.nonce matches the client nonce.
 Lab/pytest: ELDERSHIELD_ENROLL_SKIP_INTEGRITY=1.
 """
 
@@ -14,15 +15,23 @@ from app.core import config as config_module
 logger = logging.getLogger(__name__)
 
 
-def verify_integrity_token(integrity_token: str | None) -> bool:
+def verify_integrity_token(
+    integrity_token: str | None,
+    *,
+    expected_nonce: str | None = None,
+) -> bool:
     if config_module.settings.enroll_skip_integrity:
         return True
     if not integrity_token:
         return False
-    return _google_play_integrity_ok(integrity_token)
+    return _google_play_integrity_ok(integrity_token, expected_nonce=expected_nonce)
 
 
-def _google_play_integrity_ok(integrity_token: str) -> bool:
+def _google_play_integrity_ok(
+    integrity_token: str,
+    *,
+    expected_nonce: str | None,
+) -> bool:
     """Decode via Play Integrity API when enabled; otherwise fail closed."""
     if not config_module.settings.play_integrity_enabled:
         logger.warning("Play Integrity path requested but PLAY_INTEGRITY_ENABLED!=1")
@@ -36,16 +45,18 @@ def _google_play_integrity_ok(integrity_token: str) -> bool:
     except Exception:
         logger.exception("Play Integrity decode failed")
         return False
-    return _meets_device_integrity(payload)
+    if not _meets_device_integrity(payload):
+        return False
+    if not _package_matches(payload, package):
+        return False
+    if expected_nonce and not _nonce_matches(payload, expected_nonce):
+        logger.warning("Play Integrity nonce mismatch")
+        return False
+    return True
 
 
 def _decode_integrity_token(integrity_token: str, package_name: str) -> dict[str, Any]:
-    """Call Google Play Integrity decodeIntegrityToken.
-
-    Requires Application Default Credentials (e.g. GOOGLE_APPLICATION_CREDENTIALS)
-    with Play Integrity API access for the Cloud project linked to the Play app.
-    Optional dependency: google-api-python-client, google-auth.
-    """
+    """Call Google Play Integrity decodeIntegrityToken."""
     try:
         from google.auth import default as google_auth_default
         from googleapiclient.discovery import build
@@ -80,3 +91,18 @@ def _meets_device_integrity(payload: dict[str, Any]) -> bool:
     if isinstance(verdicts, str):
         verdicts = [verdicts]
     return "MEETS_DEVICE_INTEGRITY" in verdicts
+
+
+def _package_matches(payload: dict[str, Any], package_name: str) -> bool:
+    details = payload.get("requestDetails") or payload.get("request_details") or {}
+    reported = details.get("requestPackageName") or details.get("request_package_name")
+    if not reported:
+        # Some lab/stub payloads omit requestDetails — require when present.
+        return True
+    return reported == package_name
+
+
+def _nonce_matches(payload: dict[str, Any], expected_nonce: str) -> bool:
+    details = payload.get("requestDetails") or payload.get("request_details") or {}
+    reported = details.get("nonce")
+    return isinstance(reported, str) and reported == expected_nonce
