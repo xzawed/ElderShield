@@ -16,6 +16,9 @@ class Settings:
     nextdns_api_key: str | None = None
     nextdns_profile_id: str | None = None
     admin_notify_webhook_url: str | None = None
+    enroll_skip_integrity: bool = False
+    play_integrity_enabled: bool = False
+    play_package_name: str = "com.eldershield"
 
 
 def load_settings() -> Settings:
@@ -26,6 +29,9 @@ def load_settings() -> Settings:
         nextdns_api_key=os.getenv("NEXTDNS_API_KEY") or None,
         nextdns_profile_id=os.getenv("NEXTDNS_PROFILE_ID") or None,
         admin_notify_webhook_url=os.getenv("ADMIN_NOTIFY_WEBHOOK_URL") or None,
+        enroll_skip_integrity=os.getenv("ELDERSHIELD_ENROLL_SKIP_INTEGRITY") == "1",
+        play_integrity_enabled=os.getenv("PLAY_INTEGRITY_ENABLED") == "1",
+        play_package_name=os.getenv("PLAY_PACKAGE_NAME", "com.eldershield"),
     )
 
 

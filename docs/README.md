@@ -29,6 +29,7 @@ Grok Build 문서 관례를 따른다.
 |------|------|
 | [2026-11-18-eldershield-system-design.md](specs/2026-11-18-eldershield-system-design.md) | 시스템 상세 설계 **SSOT** |
 | [2026-11-20-phase2-ac-depth-quality-design.md](specs/2026-11-20-phase2-ac-depth-quality-design.md) | Phase 2 A+C (C→A) 설계 addendum |
+| [2026-11-20-zero-touch-enroll-design.md](specs/2026-11-20-zero-touch-enroll-design.md) | 부모님 입력 제로 설치 · Play Integrity · 기기 토큰 |
 | [2026-11-19-unit-test-design.md](specs/2026-11-19-unit-test-design.md) | 단위 테스트 설계·케이스 ID |
 
 ## plans/ (구현 서사)
@@ -37,6 +38,7 @@ Grok Build 문서 관례를 따른다.
 |------|------|
 | [2026-11-19-sprint-board.md](plans/2026-11-19-sprint-board.md) | Phase 1 Sprint 게이트·TDD·실측 (얇은 보드) |
 | [2026-11-20-phase2-sprint-board.md](plans/2026-11-20-phase2-sprint-board.md) | Phase 2 C→A 스프린트 보드 |
+| [2026-11-20-zero-touch-enroll-implementation.md](plans/2026-11-20-zero-touch-enroll-implementation.md) | Zero-touch enroll 구현 계획 |
 | [2026-11-19-phase1-schedule-wbs.md](plans/2026-11-19-phase1-schedule-wbs.md) | Phase 1 일정·WBS |
 | [2026-11-19-development-plan-and-review.md](plans/2026-11-19-development-plan-and-review.md) | 개발 기획·검토 게이트 |
 
@@ -47,4 +49,4 @@ Grok Build 문서 관례를 따른다.
 | [runbooks/](runbooks/README.md) | 운영 런북 (롤백 · API 키 · Admin UI · 백업 · 실기기) |
 | [releases/](releases/README.md) | 릴리스 노트 (`v0.1.0` · `v0.2.0`) |
 
-**갱신**: 2026-11-20 (Phase 2 `main` 반영) · **실행**: Grok 주 구현 / 오케스트레이터 리뷰 · 자동 커밋 없음 · PR 단위 머지
+**갱신**: 2026-11-20 (Phase 2 + zero-touch enroll 스펙/코드) · **실행**: Grok 주 구현 / 오케스트레이터 리뷰 · 자동 커밋 없음 · PR 단위 머지

@@ -9,6 +9,8 @@ config_module.settings = config_module.Settings(
     database_url="sqlite://",
     admin_api_key="test-admin-key",
     device_api_key="test-device-key",
+    enroll_skip_integrity=True,
+    play_integrity_enabled=False,
 )
 
 

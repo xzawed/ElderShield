@@ -3,6 +3,34 @@
 {% block page_heading %}Devices{% endblock %}
 {% block page_sub %}Heartbeat, health, and scan status from parent devices{% endblock %}
 {% block content %}
+<section class="mb-6 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">
+  <div class="border-b border-slate-100 px-6 py-5">
+    <h2 class="text-base font-semibold text-ink-950">Enrollment window</h2>
+    <p class="text-sm text-ink-600">
+      Open briefly before a parent installs from Play (no URL/key typing). Closed by default.
+    </p>
+  </div>
+  <div class="flex flex-wrap items-center gap-4 px-6 py-5">
+    {% if enrollment_open %}
+    <span class="inline-flex rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">Open</span>
+    <span class="text-sm text-ink-600">Expires {{ enrollment_expires_at or "—" }}</span>
+    {% else %}
+    <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">Closed</span>
+    {% endif %}
+    <form method="post" action="/admin/ui/devices/enrollment-window" class="flex flex-wrap items-center gap-3">
+      {% if enrollment_open %}
+      <input type="hidden" name="enabled" value="0" />
+      <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Close window</button>
+      {% else %}
+      <input type="hidden" name="enabled" value="1" />
+      <label class="text-sm text-ink-600">TTL minutes
+        <input type="number" name="ttl_minutes" value="30" min="1" max="240" class="ml-2 w-20 rounded border border-slate-200 px-2 py-1" />
+      </label>
+      <button type="submit" class="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600">Open for enroll</button>
+      {% endif %}
+    </form>
+  </div>
+</section>
 <section class="rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">
   <div class="border-b border-slate-100 px-6 py-5">
     <h2 class="text-base font-semibold text-ink-950">Registered devices</h2>

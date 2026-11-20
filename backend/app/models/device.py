@@ -33,6 +33,19 @@ class Device(SQLModel, table=True):
     last_sync_error_code: Optional[str] = Field(default=None, max_length=64)
     cached_bundle_version: int = 0
     protection_degraded: bool = False
+    # Per-device API token (SHA-256 hex). Null = lab shared DEVICE_API_KEY only.
+    api_token_hash: Optional[str] = Field(default=None, max_length=64, index=True)
+    token_revoked_at: Optional[datetime] = None
+
+
+class EnrollmentWindow(SQLModel, table=True):
+    """Singleton row id='default' — admin opens briefly so parents can enroll without typing a key."""
+
+    __tablename__ = "enrollment_window"
+
+    id: str = Field(default="default", primary_key=True, max_length=32)
+    enabled: bool = False
+    expires_at: Optional[datetime] = None
 
 
 class AppScanResult(SQLModel, table=True):

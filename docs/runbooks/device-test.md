@@ -50,14 +50,34 @@ Call screening / bank-app checks still need a real phone (S6.1). Emulator valida
 
 ## 2. Provision on device
 
-1. Open **ElderShield** (admin provisioning screen).  
+### 2a. Debug / lab (manual)
+
+1. Open **ElderShield** (debug shows admin provision form).  
 2. Base URL = origin only, e.g. `http://192.168.0.10:8000` (no `/api/v1`).  
-3. Device API key = `DEVICE_API_KEY` (not admin).  
+3. Device API key = shared `DEVICE_API_KEY` (not admin) **or** open enrollment window and use release autoprovision.  
 4. Tap **Save & sync now**.  
 5. Tap **Request call screening role** only if policy allows (see §8 / SSOT §1.2).  
    **Do not** tell the parent to uninstall or disable Bitdefender — 병행 사용이 하드 목적이다.  
 6. Allow **Contacts** (+ Call log / Phone) when prompted.  
    **Android rule:** without `READ_CONTACTS`, numbers already in the address book are **not** passed to `CallScreeningService`.
+
+### 2b. Play release / parent (zero typing)
+
+1. Admin: **Devices → Open enrollment window** (TTL e.g. 30 min).  
+2. Parent installs from Play Internal; grants system permissions only.  
+3. App enrolls (`POST /devices/enroll`) → per-device token in EncryptedSharedPreferences → heartbeat.  
+4. Long-press title (release) for admin CallScreening controls when on-site.  
+5. No URL/API key fields for parents.
+
+### 2c. Lab USB enroll helper
+
+With backend on `8765` + `ELDERSHIELD_ENROLL_SKIP_INTEGRITY=1`:
+
+```powershell
+pwsh scripts/lab-enroll-device.ps1 -Serial <adb-serial>
+```
+
+Pushes enrolled token to the device prefs, triggers sync, then closes the enrollment window.
 
 ## 3. Seed rules
 

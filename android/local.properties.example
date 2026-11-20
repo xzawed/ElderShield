@@ -1,2 +1,8 @@
-## Copy to local.properties (gitignored) and set your SDK path.
-sdk.dir=C\:\\Users\\YOU\\AppData\\Local\\Android\\Sdk
+## Copy to local.properties (gitignored) and fill in.
+## sdk.dir is usually auto-written by Android Studio.
+
+# sdk.dir=C\:\\Users\\YOU\\AppData\\Local\\Android\\Sdk
+
+# Production / Play release embeds (no DEVICE_API_KEY in the APK):
+# eldershield.baseUrl=https://your-backend.example.com
+# eldershield.playCloudProjectNumber=123456789012

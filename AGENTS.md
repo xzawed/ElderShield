@@ -48,9 +48,9 @@
 - `CountryRestriction`: `countries[]` (ISO alpha-2), `applyTo` (`call`|`dns`|`internet`), `version`(행)
 - `CallRule`, `AppRiskRule`, `Device`, `RuleBundle` (**`version` = 단조 generation**)
 
-기기 API: `GET /rules/latest`, `POST /devices/heartbeat`, `POST /devices/apps/scan-result`  
-관리자 API: country-restrictions CRUD, call-rules, countries, devices, rules rollback  
-Base: `/api/v1`
+기기 API: `POST /devices/enroll`, `GET /rules/latest`, `POST /devices/heartbeat`, `POST /devices/apps/scan-result`  
+관리자 API: country-restrictions CRUD, call-rules, countries, devices, enrollment-window, token revoke, rules rollback  
+Base: `/api/v1` · Play release는 APK에 장기 device key 금지 (zero-touch enroll 스펙)
 
 ## Android 패키지
 

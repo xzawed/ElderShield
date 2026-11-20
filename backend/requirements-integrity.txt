@@ -1,0 +1,3 @@
+# Optional — only needed when PLAY_INTEGRITY_ENABLED=1
+google-api-python-client>=2.150.0
+google-auth>=2.36.0
