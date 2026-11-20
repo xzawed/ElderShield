@@ -1,28 +1,28 @@
 {% extends "admin/base.html" %}
-{% block title %}Restrictions · ElderShield Admin{% endblock %}
-{% block page_heading %}Country restrictions{% endblock %}
-{% block page_sub %}Multi-country groups synced to devices via RuleBundle generation{% endblock %}
+{% block title %}{{ t('restrictions.heading') }} · ElderShield Admin{% endblock %}
+{% block page_heading %}{{ t('restrictions.heading') }}{% endblock %}
+{% block page_sub %}{{ t('restrictions.sub') }}{% endblock %}
 {% block content %}
 <section class="rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">
   <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 px-6 py-5">
     <div>
-      <h2 class="text-base font-semibold text-ink-950">Restriction groups</h2>
-      <p class="text-sm text-ink-600">Changes bump the device sync version automatically.</p>
+      <h2 class="text-base font-semibold text-ink-950">{{ t('restrictions.heading') }}</h2>
+      <p class="text-sm text-ink-600">{{ t('restrictions.sub') }}</p>
     </div>
     <a href="/admin/ui/restrictions/new"
        class="inline-flex items-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
-      New group
+      {{ t('restrictions.new') }}
     </a>
   </div>
   <div class="overflow-x-auto">
     <table class="min-w-full text-sm">
       <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-ink-600">
         <tr>
-          <th class="px-6 py-3">Name</th>
-          <th class="px-6 py-3">Countries</th>
-          <th class="px-6 py-3">Apply</th>
+          <th class="px-6 py-3">{{ t('restrictions.col_name') }}</th>
+          <th class="px-6 py-3">{{ t('restrictions.col_countries') }}</th>
+          <th class="px-6 py-3">{{ t('restrictions.col_apply') }}</th>
           <th class="px-6 py-3">Ver</th>
-          <th class="px-6 py-3">Status</th>
+          <th class="px-6 py-3">{{ t('restrictions.col_enabled') }}</th>
           <th class="px-6 py-3"></th>
         </tr>
       </thead>
@@ -41,18 +41,18 @@
           <td class="px-6 py-4 tabular-nums text-ink-600">{{ r.version }}</td>
           <td class="px-6 py-4">
             {% if r.enabled %}
-            <span class="inline-flex rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">Enabled</span>
+            <span class="inline-flex rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">{{ t('yes') }}</span>
             {% else %}
-            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">Disabled</span>
+            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-ink-600 ring-1 ring-inset ring-slate-200">{{ t('no') }}</span>
             {% endif %}
           </td>
           <td class="px-6 py-4 text-right">
-            <a href="/admin/ui/restrictions/{{ r.id }}" class="font-semibold text-brand-700 hover:text-brand-600">Edit</a>
+            <a href="/admin/ui/restrictions/{{ r.id }}" class="font-semibold text-brand-700 hover:text-brand-600">{{ t('restrictions.edit') }}</a>
           </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="6" class="px-6 py-10 text-center text-ink-400">No restrictions yet. Create a group to start syncing.</td>
+          <td colspan="6" class="px-6 py-10 text-center text-ink-400">{{ t('restrictions.empty') }}</td>
         </tr>
         {% endfor %}
       </tbody>

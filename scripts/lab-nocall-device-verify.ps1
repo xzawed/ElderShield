@@ -8,9 +8,9 @@ $Emu = "emulator-5554"
 $Pkg = "com.eldershield"
 $Apk = Join-Path $Root "android\app\build\outputs\apk\debug\app-debug.apk"
 $Py = Join-Path $Root "backend\.venv\Scripts\python.exe"
-$Base = "http://127.0.0.1:8765"
-$AdminKey = "test-admin-key"
-$DeviceKey = "test-device-key"
+$Base = if ($env:ELDERSHIELD_LAB_URL) { $env:ELDERSHIELD_LAB_URL } else { "http://127.0.0.1:8765" }
+$AdminKey = if ($env:ADMIN_API_KEY) { $env:ADMIN_API_KEY } else { "test-admin-key" }
+$DeviceKey = if ($env:DEVICE_API_KEY) { $env:DEVICE_API_KEY } else { "test-device-key" }
 $Results = [System.Collections.Generic.List[object]]::new()
 
 function Add-R([string]$Id, [string]$Status, [string]$Notes) {
@@ -74,9 +74,12 @@ function Test-DeviceDnsAndVpn([string]$Serial, [string]$Label) {
     Add-R "$Label-vpn" "PASS" "no ElderShield VpnService in package dump"
   }
 
-  # Private DNS hostname (trusted) → dnsConfigured
+  # Preserve operator Private DNS, then ensure a trusted hostname for dnsConfigured probe
+  $prevMode = ((& $Adb -s $Serial shell settings get global private_dns_mode 2>$null) -join "").Trim()
+  $prevHost = ((& $Adb -s $Serial shell settings get global private_dns_specifier 2>$null) -join "").Trim()
+  $probeHost = if ($prevHost -match '\S' -and $prevHost -ne "null") { $prevHost } else { "dns.nextdns.io" }
   & $Adb -s $Serial shell settings put global private_dns_mode hostname
-  & $Adb -s $Serial shell settings put global private_dns_specifier "dns.nextdns.io"
+  & $Adb -s $Serial shell settings put global private_dns_specifier $probeHost
   & $Adb -s $Serial shell am force-stop $Pkg
   & $Adb -s $Serial shell am start -n "$Pkg/.ui.MainActivity" | Out-Null
   Start-Sleep -Seconds 16
@@ -100,9 +103,15 @@ function Test-DeviceDnsAndVpn([string]$Serial, [string]$Label) {
     Add-R "$Label-cn-resolve" "SKIP" ("no NextDNS push; resolve probe not a product fail. snippet={0}" -f $snip)
   }
 
-  # restore opportunistic DNS
-  & $Adb -s $Serial shell settings put global private_dns_mode opportunistic
-  & $Adb -s $Serial shell settings delete global private_dns_specifier 2>$null | Out-Null
+  # Restore prior Private DNS (do not wipe operator NextDNS profile)
+  if ($prevMode -match '\S' -and $prevMode -ne "null") {
+    & $Adb -s $Serial shell settings put global private_dns_mode $prevMode
+  } else {
+    & $Adb -s $Serial shell settings put global private_dns_mode opportunistic
+  }
+  if ($prevHost -match '\S' -and $prevHost -ne "null") {
+    & $Adb -s $Serial shell settings put global private_dns_specifier $prevHost
+  }
 }
 
 Test-DeviceDnsAndVpn $S22 "S22"
@@ -115,7 +124,11 @@ if (Online $S22) {
     @{ pkg = "viva.republica.toss"; name = "Toss" },
     @{ pkg = "com.kakaobank.channel"; name = "KakaoBank" },
     @{ pkg = "com.shinhan.sbanking"; name = "Shinhan" },
-    @{ pkg = "com.kbcard.cxh.appcard"; name = "KB" }
+    @{ pkg = "com.shinhan.stax"; name = "ShinhanSOL" },
+    @{ pkg = "com.kbcard.cxh.appcard"; name = "KBCard" },
+    @{ pkg = "com.kbstar.kbbank"; name = "KBBank" },
+    @{ pkg = "com.wooribank.smart.npib"; name = "Woori" },
+    @{ pkg = "nh.smart.banking"; name = "NH" }
   )) {
     $path = & $Adb -s $S22 shell pm path $b.pkg 2>$null
     if ("$path" -match "package:") {

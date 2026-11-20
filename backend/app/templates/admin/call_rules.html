@@ -1,7 +1,7 @@
 {% extends "admin/base.html" %}
-{% block title %}Call rules · ElderShield Admin{% endblock %}
-{% block page_heading %}Call rules{% endblock %}
-{% block page_sub %}Whitelist numbers for CallScreening (exact E.164 match){% endblock %}
+{% block title %}{{ t('call_rules.heading') }} · ElderShield Admin{% endblock %}
+{% block page_heading %}{{ t('call_rules.heading') }}{% endblock %}
+{% block page_sub %}{{ t('call_rules.sub') }}{% endblock %}
 {% block content %}
 <div class="grid gap-6 lg:grid-cols-5">
   <section class="lg:col-span-3 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">

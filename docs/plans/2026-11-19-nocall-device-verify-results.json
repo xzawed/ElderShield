@@ -1,15 +1,15 @@
 ﻿{
-    "ranAt":  "2026-11-19T14:45:24.7636891Z",
+    "ranAt":  "2026-11-20T16:48:33.2785163Z",
     "results":  [
                     {
                         "id":  "N1-denylist",
                         "status":  "PASS",
-                        "notes":  "{\"countries\": [\"CN\"], \"tlds\": [\"cn\"], \"count\": 16, \"has_baidu\": true, \"sync\": 503}"
+                        "notes":  "{\"countries\": [\"CN\"], \"tlds\": [\"cn\"], \"count\": 96, \"has_baidu\": true, \"sync\": 200}"
                     },
                     {
                         "id":  "N2-nextdns-sync",
-                        "status":  "SKIP",
-                        "notes":  "NEXTDNS_* unset — real .cn NXDOMAIN needs operator profile"
+                        "status":  "PASS",
+                        "notes":  "sync 200"
                     },
                     {
                         "id":  "S22-vpn",
@@ -23,8 +23,8 @@
                     },
                     {
                         "id":  "S22-cn-resolve",
-                        "status":  "SKIP",
-                        "notes":  "no NextDNS push; resolve probe not a product fail. snippet=\r\n"
+                        "status":  "WARN",
+                        "notes":  "sync ok but resolve still open: \r\n"
                     },
                     {
                         "id":  "EMU-vpn",
@@ -38,13 +38,13 @@
                     },
                     {
                         "id":  "EMU-cn-resolve",
-                        "status":  "SKIP",
-                        "notes":  "no NextDNS push; resolve probe not a product fail. snippet=\r\n"
+                        "status":  "WARN",
+                        "notes":  "sync ok but resolve still open: \r\n"
                     },
                     {
                         "id":  "BANK-Toss",
                         "status":  "PASS",
-                        "notes":  ""
+                        "notes":  "    topResumedActivity=ActivityRecord{227578638 u0 viva.republica.toss/im.toss.features.main.ui.MainActivity t24046}"
                     },
                     {
                         "id":  "BANK-KakaoBank",
@@ -57,9 +57,29 @@
                         "notes":  "not installed"
                     },
                     {
-                        "id":  "BANK-KB",
+                        "id":  "BANK-ShinhanSOL",
                         "status":  "PASS",
-                        "notes":  ""
+                        "notes":  "    topResumedActivity=ActivityRecord{223536299 u0 com.shinhan.stax/.main.IntroActivity t24047}"
+                    },
+                    {
+                        "id":  "BANK-KBCard",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{234807874 u0 com.kbcard.cxh.appcard/.screen.intro.LaunchControlActivity t24048}"
+                    },
+                    {
+                        "id":  "BANK-KBBank",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{79843234 u0 com.kbstar.kbbank/.implementation.presentation.MainActivity t24049}"
+                    },
+                    {
+                        "id":  "BANK-Woori",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{236926631 u0 com.wooribank.smart.npib/.main.ui.MainWebActivity t24050}"
+                    },
+                    {
+                        "id":  "BANK-NH",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{164512169 u0 nh.smart.banking/com.smart.banking.popup.AccessPermisPopupActivity t24051}"
                     },
                     {
                         "id":  "BD-packages",
@@ -79,7 +99,7 @@
                     {
                         "id":  "BD-heartbeat-peers",
                         "status":  "PASS",
-                        "notes":  "[{\"deviceUuid\": \"<redacted-emu>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.google.android.dialer\"], \"callScreeningEnabled\": true, \"dnsConfigured\": true}, {\"deviceUuid\": \"<redacted-s22>\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.bitdefender.security\", \"com.ktcs.whowho\", \"com.samsung.android.dialer\"]}]"
+                        "notes":  "[{\"deviceUuid\": \"2409ff2a-21f6-4b70-9c24-a3b7048c4c87\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.bitdefender.security\", \"com.ktcs.whowho\", \"com.samsung.android.dialer\"], \"callScreeningEnabled\": true, \"dnsConfigured\": true}, {\"deviceUuid\": \"4d8a69c6-d180-4982-92e3-5c76b2946381\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.google.android.dialer\""
                     },
                     {
                         "id":  "ES-accessibility",

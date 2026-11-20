@@ -41,6 +41,8 @@ class CountryMasterOut(BaseModel):
 
     code: str
     name: str
+    name_en: str = Field(serialization_alias="nameEn", validation_alias="nameEn")
+    name_ko: str = Field(serialization_alias="nameKo", validation_alias="nameKo")
     calling_code: str = Field(serialization_alias="callingCode", validation_alias="callingCode")
 
 

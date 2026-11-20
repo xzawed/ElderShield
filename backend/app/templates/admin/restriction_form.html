@@ -1,11 +1,11 @@
 {% extends "admin/base.html" %}
-{% block title %}{{ "Edit" if row else "New" }} restriction · ElderShield Admin{% endblock %}
-{% block page_heading %}{{ "Edit restriction" if row else "New restriction" }}{% endblock %}
-{% block page_sub %}Countries stay multi-select arrays for device matching{% endblock %}
+{% block title %}{{ t('form.edit_restriction') if row else t('form.new_restriction') }} · ElderShield Admin{% endblock %}
+{% block page_heading %}{{ t('form.edit_restriction') if row else t('form.new_restriction') }}{% endblock %}
+{% block page_sub %}{{ t('form.sub_countries') }}{% endblock %}
 {% block content %}
 <section class="rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 max-w-3xl">
   <div class="border-b border-slate-100 px-6 py-5">
-    <h2 class="text-base font-semibold text-ink-950">{{ "Edit group" if row else "Create group" }}</h2>
+    <h2 class="text-base font-semibold text-ink-950">{{ t('form.edit_group') if row else t('form.create_group') }}</h2>
   </div>
   <form method="post" action="{{ action }}" class="px-6 py-6 space-y-5">
     {% if error %}
@@ -13,46 +13,48 @@
     {% endif %}
 
     <div>
-      <label for="name" class="block text-sm font-medium text-ink-800">Name</label>
+      <label for="name" class="block text-sm font-medium text-ink-800">{{ t('form.name') }}</label>
       <input id="name" name="name" type="text" required value="{{ row.name if row else '' }}"
              class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2.5 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">
     </div>
 
     <div>
-      <label for="countries" class="block text-sm font-medium text-ink-800">Countries (multi-select)</label>
-      <select id="countries" name="countries" multiple required size="8"
-              class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3 py-2 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">
+      <label for="country_filter" class="block text-sm font-medium text-ink-800">{{ t('form.countries') }}</label>
+      <input id="country_filter" type="search" autocomplete="off" placeholder="{{ t('form.countries_filter') }}"
+             class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">
+      <select id="countries" name="countries" multiple required size="12"
+              class="mt-2 w-full rounded-xl border-0 bg-slate-50 px-3 py-2 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">
         {% for c in countries %}
-        <option value="{{ c.code }}" {% if c.code in selected_countries %}selected{% endif %}>
-          {{ c.code }} — {{ c.name }} ({{ c.calling_code }})
+        {% set label = c.name_ko if lang == 'ko' else c.name_en %}
+        <option value="{{ c.code }}"
+                data-search="{{ c.code }} {{ c.name_en }} {{ c.name_ko }} {{ c.calling_code }}"
+                {% if c.code in selected_countries %}selected{% endif %}>
+          {{ c.code }} — {{ label }}{% if c.calling_code %} ({{ c.calling_code }}){% endif %}
         </option>
         {% endfor %}
       </select>
-      <p class="mt-1.5 text-xs text-ink-400">Hold Ctrl/Cmd to select multiple. Selection must persist after save.</p>
+      <p class="mt-1.5 text-xs text-ink-400">{{ t('form.countries_hint') }}</p>
     </div>
 
     <div>
-      <label for="apply_to" class="block text-sm font-medium text-ink-800">Apply to</label>
+      <label for="apply_to" class="block text-sm font-medium text-ink-800">{{ t('form.apply_to') }}</label>
       <select id="apply_to" name="apply_to" multiple required size="3"
               class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3 py-2 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">
         {% for a in apply_options %}
         <option value="{{ a }}" {% if a in selected_apply %}selected{% endif %}>{{ a }}</option>
         {% endfor %}
       </select>
-      <p class="mt-1.5 text-xs text-ink-400">
-        <code class="text-brand-700">call</code> → CallScreening.
-        <code class="text-brand-700">dns</code> / <code class="text-brand-700">internet</code> → DNS denylist (NextDNS/AdGuard; not an on-device VPN).
-      </p>
+      <p class="mt-1.5 text-xs text-ink-400">{{ t('form.apply_hint') }}</p>
     </div>
 
     <label class="inline-flex items-center gap-2 text-sm text-ink-800">
       <input type="checkbox" name="enabled" {% if not row or row.enabled %}checked{% endif %}
              class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
-      Enabled
+      {{ t('form.enabled') }}
     </label>
 
     <div>
-      <label for="description" class="block text-sm font-medium text-ink-800">Description</label>
+      <label for="description" class="block text-sm font-medium text-ink-800">{{ t('form.description') }}</label>
       <textarea id="description" name="description" rows="2"
                 class="mt-1.5 w-full rounded-xl border-0 bg-slate-50 px-3.5 py-2.5 shadow-sm ring-1 ring-inset ring-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500">{{ row.description if row and row.description else '' }}</textarea>
     </div>
@@ -60,22 +62,36 @@
     <div class="flex flex-wrap gap-3 pt-2">
       <button type="submit"
               class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
-        Save
+        {{ t('form.save') }}
       </button>
       <a href="/admin/ui/restrictions"
          class="rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-ink-800 ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
-        Cancel
+        {{ t('form.cancel') }}
       </a>
     </div>
   </form>
   {% if row %}
-  <form method="post" action="/admin/ui/restrictions/{{ row.id }}/delete" onsubmit="return confirm('Delete this group?');"
+  <form method="post" action="/admin/ui/restrictions/{{ row.id }}/delete" onsubmit="return confirm({{ t('form.delete_confirm')|tojson }});"
         class="border-t border-slate-100 px-6 py-5">
     <button type="submit"
             class="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700">
-      Delete group
+      {{ t('form.delete') }}
     </button>
   </form>
   {% endif %}
 </section>
+<script>
+(function () {
+  var filter = document.getElementById('country_filter');
+  var select = document.getElementById('countries');
+  if (!filter || !select) return;
+  filter.addEventListener('input', function () {
+    var q = (filter.value || '').trim().toLowerCase();
+    Array.prototype.forEach.call(select.options, function (opt) {
+      var hay = (opt.getAttribute('data-search') || opt.textContent || '').toLowerCase();
+      opt.hidden = q && hay.indexOf(q) === -1;
+    });
+  });
+})();
+</script>
 {% endblock %}

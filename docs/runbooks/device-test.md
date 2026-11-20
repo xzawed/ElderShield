@@ -156,7 +156,10 @@ CN/RU **PSTN SIM is unavailable**. Split coverage:
 | L12 | Bitdefender 병행 | S22 | Bitdefender **유지**. ElderShield must not instruct to turn off BD. Platform: only **one** `ROLE_CALL_SCREENING` holder — if BD holds it, ElderShield call-path cannot receive `onScreenCall`; report role holder to admin, keep DNS/scan paths. **Never** `cmd role add-role-holder` steal in lab without explicit test of “role already free”. |
 
 Repeatable host scripts:
+- `scripts/lab-full-verify.ps1` — orchestrator: host pytest/` :core:test` → `lab-batch-verify` → `lab-nocall-device-verify` → `docs/plans/YYYY-MM-DD-lab-full-verify-results.json`
+- `scripts/lab-attack-sim-verify.ps1` — virtual attacker: AVD CN gsm block+logcat · sideload `lab-attacker-fixture` scan collect · NextDNS denylist push
 - `scripts/lab-batch-verify.ps1` — emulator + USB S22 + API (L1–L11); S22 L9 = SKIP (no auto CALL)
+- `scripts/lab-nocall-device-verify.ps1` — USB bank launch + Bitdefender coexist (no PSTN)
 - `scripts/lab-s22-uiautomation.ps1` — USB UIAutomator (sync, DNS→`dnsConfigured`, **DIAL-only** outgoing UI, bank monkey); call place = AVD
 - `scripts/lab-combinatorial-matrix.ps1` — call×DNS×app matrix; gsm/`ACTION.CALL` hard-gated to `emulator-*`
 

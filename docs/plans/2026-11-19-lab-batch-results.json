@@ -1,23 +1,77 @@
-﻿{
-  "ranAt": "2026-11-19T12:06:00Z",
-  "constraint": "Korea location; KR handset only — CN PSTN via emulator gsm",
-  "bundleVersion": 15,
-  "note": "2026-11-19 follow-up: §1.2.1 A shipped; Lab KR call disabled (cleanup); nextdns/play runbooks added",
-  "results": [
-    {"id": "L1-pytest", "status": "PASS", "notes": "47 passed"},
-    {"id": "L1-denylist", "status": "PASS", "notes": "tlds=[cn], domains=15+, countries=[CN]"},
-    {"id": "L2-nextdns", "status": "SKIP", "notes": "NEXTDNS_API_KEY/PROFILE_ID unset → 503"},
-    {"id": "L3-apk", "status": "PASS", "notes": "assembleDebug"},
-    {"id": "L3-emu", "status": "PASS", "notes": "role held; device ec7b001e lastRuleVersion=13"},
-    {"id": "L3-s22", "status": "PASS", "notes": "role held; synced earlier at v11; pattern lock blocked Save for v13 pull — unlock then Save"},
-    {"id": "L4-cn-block", "status": "PASS", "notes": "+8613999999999 Reject/INCOMING_REJECTED"},
-    {"id": "L5-cn-whitelist", "status": "PASS", "notes": "+8613812345678 Allow"},
-    {"id": "L6-kr82", "status": "PASS", "notes": "+821098765432 Reject"},
-    {"id": "L7-emu-010", "status": "PASS", "notes": "01098765432 Reject (0→82 normalize)"},
-    {"id": "L7-s22-010", "status": "NEED_HUMAN", "notes": "Unlock S22 pattern; second KR phone dials S22 while Lab KR call enabled"},
-    {"id": "L8-us-allow", "status": "PASS", "notes": "+12025550199 Allow"},
-    {"id": "L9-outgoing", "status": "NEED_HUMAN", "notes": "From S22 dial out — expect connect (incoming-only screening)"},
-    {"id": "L10-bank", "status": "PASS", "notes": "Toss launch_ok; KakaoBank/Shinhan not installed"},
-    {"id": "L11-dns", "status": "SKIP", "notes": "private_dns_mode=opportunistic; needs hostname + L2"}
-  ]
-}
+﻿[
+    {
+        "id":  "L1-pytest",
+        "status":  "PASS",
+        "notes":  "72 passed, 1 warning in 35.40s"
+    },
+    {
+        "id":  "L1-denylist",
+        "status":  "PASS",
+        "notes":  "DEN 200 {\"source\": \"country_restrictions+threat_hosts\", \"countries\": [\"CN\"], \"tlds\": [\"cn\"], \"domains\": [\"0-autht-lo-xfin-ity-w0965.vercel.app\", \"0.232.205.92.host.secureserver.net\", \"0010-8y95-a36x.11alia-tiffincrane-com-s-account.workers.dev\", \"019252-microsoft.com\", \"01sw-bdg8-oxmc.alina-ciorba-duncantoplis-co-uk-s-account.workers.dev\", \"0215412pageaccountserve23-confirm.start.page\", \"03365pay.com\", \"0auth-collab.land\", \"0auth2.1mb.site\", \"0authxfinity.vercel.app\", \"0bruelo-wallet.co.com\", \"0kxweb3wa\r"
+    },
+    {
+        "id":  "L2-nextdns",
+        "status":  "PASS",
+        "notes":  "sync-nextdns 200"
+    },
+    {
+        "id":  "L3-apk",
+        "status":  "PASS",
+        "notes":  "assembleDebug ok"
+    },
+    {
+        "id":  "L3-emu",
+        "status":  "WARN",
+        "notes":  "role ok; check version vs 71 :: [{\"deviceUuid\": \"4d8a69c6-d180-4982-92e3-5c76b2946381\", \"name\": null, \"model\": null, \"appVersion\": \"0.2.0\", \"dnsConfigured\": false, \"callScreeningEnabled\": true, \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPe"
+    },
+    {
+        "id":  "L4-cn-block",
+        "status":  "PASS",
+        "notes":  "16:45:01.382 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = E"
+    },
+    {
+        "id":  "L5-cn-whitelist",
+        "status":  "PASS",
+        "notes":  "Allow"
+    },
+    {
+        "id":  "L6-kr82",
+        "status":  "PASS",
+        "notes":  "Reject"
+    },
+    {
+        "id":  "L7-emu-010",
+        "status":  "PASS",
+        "notes":  "Reject (national normalize)"
+    },
+    {
+        "id":  "L8-us-allow",
+        "status":  "PASS",
+        "notes":  "Allow"
+    },
+    {
+        "id":  "L3-s22",
+        "status":  "PASS",
+        "notes":  "role+version=71 dns_mode=hostname"
+    },
+    {
+        "id":  "L7-s22-010",
+        "status":  "NEED_HUMAN",
+        "notes":  "Second KR phone must dial S22 while KR restriction enabled; adb cannot inject PSTN on physical device"
+    },
+    {
+        "id":  "L9-outgoing",
+        "status":  "SKIP",
+        "notes":  "No auto CALL on S22 (billing risk). Outgoing Allow = AVD E1/E2 / combinatorial B-out*; optional manual own-line only"
+    },
+    {
+        "id":  "L10-bank",
+        "status":  "PASS",
+        "notes":  "Toss:installed launch_ok=True; KakaoBank:not_installed; Shinhan:not_installed"
+    },
+    {
+        "id":  "L11-dns",
+        "status":  "WARN",
+        "notes":  "Private DNS mode=hostname host=63f1cf.dns.nextdns.io — confirm heartbeat dnsConfigured after report worker"
+    }
+]

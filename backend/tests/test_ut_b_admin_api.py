@@ -64,10 +64,14 @@ def test_ut_b_13_delete_removes(client) -> None:
 def test_ut_b_14_countries_master(client) -> None:
     r = client.get("/api/v1/admin/countries", headers=ADMIN)
     assert r.status_code == 200
-    codes = {c["code"] for c in r.json()}
-    assert {"CN", "RU", "KP"}.issubset(codes)
-    cn = next(c for c in r.json() if c["code"] == "CN")
+    body = r.json()
+    assert len(body) >= 140
+    codes = {c["code"] for c in body}
+    assert {"CN", "RU", "KP", "KR", "US"}.issubset(codes)
+    cn = next(c for c in body if c["code"] == "CN")
     assert cn["callingCode"] == "+86"
+    assert cn["nameEn"]
+    assert cn["nameKo"]
 
 
 def test_ut_b_15_missing_or_bad_admin_key(client) -> None:

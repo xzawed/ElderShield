@@ -1,0 +1,1496 @@
+[
+  {
+    "code": "AD",
+    "name_en": "Andorra",
+    "name_ko": "안도라",
+    "calling_code": "+376"
+  },
+  {
+    "code": "AE",
+    "name_en": "United Arab Emirates",
+    "name_ko": "아랍에미리트",
+    "calling_code": "+971"
+  },
+  {
+    "code": "AF",
+    "name_en": "Afghanistan",
+    "name_ko": "아프가니스탄",
+    "calling_code": "+93"
+  },
+  {
+    "code": "AG",
+    "name_en": "Antigua & Barbuda",
+    "name_ko": "앤티가 바부다",
+    "calling_code": "+1"
+  },
+  {
+    "code": "AI",
+    "name_en": "Anguilla",
+    "name_ko": "앵귈라",
+    "calling_code": "+1"
+  },
+  {
+    "code": "AL",
+    "name_en": "Albania",
+    "name_ko": "알바니아",
+    "calling_code": "+355"
+  },
+  {
+    "code": "AM",
+    "name_en": "Armenia",
+    "name_ko": "아르메니아",
+    "calling_code": "+374"
+  },
+  {
+    "code": "AO",
+    "name_en": "Angola",
+    "name_ko": "앙골라",
+    "calling_code": "+244"
+  },
+  {
+    "code": "AQ",
+    "name_en": "Antarctica",
+    "name_ko": "남극 대륙",
+    "calling_code": ""
+  },
+  {
+    "code": "AR",
+    "name_en": "Argentina",
+    "name_ko": "아르헨티나",
+    "calling_code": "+54"
+  },
+  {
+    "code": "AS",
+    "name_en": "American Samoa",
+    "name_ko": "아메리칸 사모아",
+    "calling_code": "+1"
+  },
+  {
+    "code": "AT",
+    "name_en": "Austria",
+    "name_ko": "오스트리아",
+    "calling_code": "+43"
+  },
+  {
+    "code": "AU",
+    "name_en": "Australia",
+    "name_ko": "오스트레일리아",
+    "calling_code": "+61"
+  },
+  {
+    "code": "AW",
+    "name_en": "Aruba",
+    "name_ko": "아루바",
+    "calling_code": "+297"
+  },
+  {
+    "code": "AX",
+    "name_en": "Åland Islands",
+    "name_ko": "올란드 제도",
+    "calling_code": "+358"
+  },
+  {
+    "code": "AZ",
+    "name_en": "Azerbaijan",
+    "name_ko": "아제르바이잔",
+    "calling_code": "+994"
+  },
+  {
+    "code": "BA",
+    "name_en": "Bosnia & Herzegovina",
+    "name_ko": "보스니아 헤르체고비나",
+    "calling_code": "+387"
+  },
+  {
+    "code": "BB",
+    "name_en": "Barbados",
+    "name_ko": "바베이도스",
+    "calling_code": "+1"
+  },
+  {
+    "code": "BD",
+    "name_en": "Bangladesh",
+    "name_ko": "방글라데시",
+    "calling_code": "+880"
+  },
+  {
+    "code": "BE",
+    "name_en": "Belgium",
+    "name_ko": "벨기에",
+    "calling_code": "+32"
+  },
+  {
+    "code": "BF",
+    "name_en": "Burkina Faso",
+    "name_ko": "부르키나파소",
+    "calling_code": "+226"
+  },
+  {
+    "code": "BG",
+    "name_en": "Bulgaria",
+    "name_ko": "불가리아",
+    "calling_code": "+359"
+  },
+  {
+    "code": "BH",
+    "name_en": "Bahrain",
+    "name_ko": "바레인",
+    "calling_code": "+973"
+  },
+  {
+    "code": "BI",
+    "name_en": "Burundi",
+    "name_ko": "부룬디",
+    "calling_code": "+257"
+  },
+  {
+    "code": "BJ",
+    "name_en": "Benin",
+    "name_ko": "베냉",
+    "calling_code": "+229"
+  },
+  {
+    "code": "BL",
+    "name_en": "St. Barthélemy",
+    "name_ko": "생바르텔레미",
+    "calling_code": "+590"
+  },
+  {
+    "code": "BM",
+    "name_en": "Bermuda",
+    "name_ko": "버뮤다",
+    "calling_code": "+1"
+  },
+  {
+    "code": "BN",
+    "name_en": "Brunei",
+    "name_ko": "브루나이",
+    "calling_code": "+673"
+  },
+  {
+    "code": "BO",
+    "name_en": "Bolivia",
+    "name_ko": "볼리비아",
+    "calling_code": "+591"
+  },
+  {
+    "code": "BQ",
+    "name_en": "Caribbean Netherlands",
+    "name_ko": "네덜란드령 카리브",
+    "calling_code": "+599"
+  },
+  {
+    "code": "BR",
+    "name_en": "Brazil",
+    "name_ko": "브라질",
+    "calling_code": "+55"
+  },
+  {
+    "code": "BS",
+    "name_en": "Bahamas",
+    "name_ko": "바하마",
+    "calling_code": "+1"
+  },
+  {
+    "code": "BT",
+    "name_en": "Bhutan",
+    "name_ko": "부탄",
+    "calling_code": "+975"
+  },
+  {
+    "code": "BV",
+    "name_en": "Bouvet Island",
+    "name_ko": "부베섬",
+    "calling_code": ""
+  },
+  {
+    "code": "BW",
+    "name_en": "Botswana",
+    "name_ko": "보츠와나",
+    "calling_code": "+267"
+  },
+  {
+    "code": "BY",
+    "name_en": "Belarus",
+    "name_ko": "벨라루스",
+    "calling_code": "+375"
+  },
+  {
+    "code": "BZ",
+    "name_en": "Belize",
+    "name_ko": "벨리즈",
+    "calling_code": "+501"
+  },
+  {
+    "code": "CA",
+    "name_en": "Canada",
+    "name_ko": "캐나다",
+    "calling_code": "+1"
+  },
+  {
+    "code": "CC",
+    "name_en": "Cocos (Keeling) Islands",
+    "name_ko": "코코스 제도",
+    "calling_code": "+61"
+  },
+  {
+    "code": "CD",
+    "name_en": "Congo - Kinshasa",
+    "name_ko": "콩고-킨샤사",
+    "calling_code": "+243"
+  },
+  {
+    "code": "CF",
+    "name_en": "Central African Republic",
+    "name_ko": "중앙 아프리카 공화국",
+    "calling_code": "+236"
+  },
+  {
+    "code": "CG",
+    "name_en": "Congo - Brazzaville",
+    "name_ko": "콩고-브라자빌",
+    "calling_code": "+242"
+  },
+  {
+    "code": "CH",
+    "name_en": "Switzerland",
+    "name_ko": "스위스",
+    "calling_code": "+41"
+  },
+  {
+    "code": "CI",
+    "name_en": "Côte d’Ivoire",
+    "name_ko": "코트디부아르",
+    "calling_code": "+225"
+  },
+  {
+    "code": "CK",
+    "name_en": "Cook Islands",
+    "name_ko": "쿡 제도",
+    "calling_code": "+682"
+  },
+  {
+    "code": "CL",
+    "name_en": "Chile",
+    "name_ko": "칠레",
+    "calling_code": "+56"
+  },
+  {
+    "code": "CM",
+    "name_en": "Cameroon",
+    "name_ko": "카메룬",
+    "calling_code": "+237"
+  },
+  {
+    "code": "CN",
+    "name_en": "China",
+    "name_ko": "중국",
+    "calling_code": "+86"
+  },
+  {
+    "code": "CO",
+    "name_en": "Colombia",
+    "name_ko": "콜롬비아",
+    "calling_code": "+57"
+  },
+  {
+    "code": "CR",
+    "name_en": "Costa Rica",
+    "name_ko": "코스타리카",
+    "calling_code": "+506"
+  },
+  {
+    "code": "CU",
+    "name_en": "Cuba",
+    "name_ko": "쿠바",
+    "calling_code": "+53"
+  },
+  {
+    "code": "CV",
+    "name_en": "Cape Verde",
+    "name_ko": "카보베르데",
+    "calling_code": "+238"
+  },
+  {
+    "code": "CW",
+    "name_en": "Curaçao",
+    "name_ko": "퀴라소",
+    "calling_code": "+599"
+  },
+  {
+    "code": "CX",
+    "name_en": "Christmas Island",
+    "name_ko": "크리스마스섬",
+    "calling_code": "+61"
+  },
+  {
+    "code": "CY",
+    "name_en": "Cyprus",
+    "name_ko": "키프로스",
+    "calling_code": "+357"
+  },
+  {
+    "code": "CZ",
+    "name_en": "Czechia",
+    "name_ko": "체코",
+    "calling_code": "+420"
+  },
+  {
+    "code": "DE",
+    "name_en": "Germany",
+    "name_ko": "독일",
+    "calling_code": "+49"
+  },
+  {
+    "code": "DJ",
+    "name_en": "Djibouti",
+    "name_ko": "지부티",
+    "calling_code": "+253"
+  },
+  {
+    "code": "DK",
+    "name_en": "Denmark",
+    "name_ko": "덴마크",
+    "calling_code": "+45"
+  },
+  {
+    "code": "DM",
+    "name_en": "Dominica",
+    "name_ko": "도미니카",
+    "calling_code": "+1"
+  },
+  {
+    "code": "DO",
+    "name_en": "Dominican Republic",
+    "name_ko": "도미니카 공화국",
+    "calling_code": "+1"
+  },
+  {
+    "code": "DZ",
+    "name_en": "Algeria",
+    "name_ko": "알제리",
+    "calling_code": "+213"
+  },
+  {
+    "code": "EC",
+    "name_en": "Ecuador",
+    "name_ko": "에콰도르",
+    "calling_code": "+593"
+  },
+  {
+    "code": "EE",
+    "name_en": "Estonia",
+    "name_ko": "에스토니아",
+    "calling_code": "+372"
+  },
+  {
+    "code": "EG",
+    "name_en": "Egypt",
+    "name_ko": "이집트",
+    "calling_code": "+20"
+  },
+  {
+    "code": "EH",
+    "name_en": "Western Sahara",
+    "name_ko": "서사하라",
+    "calling_code": "+212"
+  },
+  {
+    "code": "ER",
+    "name_en": "Eritrea",
+    "name_ko": "에리트리아",
+    "calling_code": "+291"
+  },
+  {
+    "code": "ES",
+    "name_en": "Spain",
+    "name_ko": "스페인",
+    "calling_code": "+34"
+  },
+  {
+    "code": "ET",
+    "name_en": "Ethiopia",
+    "name_ko": "에티오피아",
+    "calling_code": "+251"
+  },
+  {
+    "code": "FI",
+    "name_en": "Finland",
+    "name_ko": "핀란드",
+    "calling_code": "+358"
+  },
+  {
+    "code": "FJ",
+    "name_en": "Fiji",
+    "name_ko": "피지",
+    "calling_code": "+679"
+  },
+  {
+    "code": "FK",
+    "name_en": "Falkland Islands",
+    "name_ko": "포클랜드 제도",
+    "calling_code": "+500"
+  },
+  {
+    "code": "FM",
+    "name_en": "Micronesia",
+    "name_ko": "미크로네시아",
+    "calling_code": "+691"
+  },
+  {
+    "code": "FO",
+    "name_en": "Faroe Islands",
+    "name_ko": "페로 제도",
+    "calling_code": "+298"
+  },
+  {
+    "code": "FR",
+    "name_en": "France",
+    "name_ko": "프랑스",
+    "calling_code": "+33"
+  },
+  {
+    "code": "GA",
+    "name_en": "Gabon",
+    "name_ko": "가봉",
+    "calling_code": "+241"
+  },
+  {
+    "code": "GB",
+    "name_en": "United Kingdom",
+    "name_ko": "영국",
+    "calling_code": "+44"
+  },
+  {
+    "code": "GD",
+    "name_en": "Grenada",
+    "name_ko": "그레나다",
+    "calling_code": "+1"
+  },
+  {
+    "code": "GE",
+    "name_en": "Georgia",
+    "name_ko": "조지아",
+    "calling_code": "+995"
+  },
+  {
+    "code": "GF",
+    "name_en": "French Guiana",
+    "name_ko": "프랑스령 기아나",
+    "calling_code": "+594"
+  },
+  {
+    "code": "GG",
+    "name_en": "Guernsey",
+    "name_ko": "건지",
+    "calling_code": "+44"
+  },
+  {
+    "code": "GH",
+    "name_en": "Ghana",
+    "name_ko": "가나",
+    "calling_code": "+233"
+  },
+  {
+    "code": "GI",
+    "name_en": "Gibraltar",
+    "name_ko": "지브롤터",
+    "calling_code": "+350"
+  },
+  {
+    "code": "GL",
+    "name_en": "Greenland",
+    "name_ko": "그린란드",
+    "calling_code": "+299"
+  },
+  {
+    "code": "GM",
+    "name_en": "Gambia",
+    "name_ko": "감비아",
+    "calling_code": "+220"
+  },
+  {
+    "code": "GN",
+    "name_en": "Guinea",
+    "name_ko": "기니",
+    "calling_code": "+224"
+  },
+  {
+    "code": "GP",
+    "name_en": "Guadeloupe",
+    "name_ko": "과들루프",
+    "calling_code": "+590"
+  },
+  {
+    "code": "GQ",
+    "name_en": "Equatorial Guinea",
+    "name_ko": "적도 기니",
+    "calling_code": "+240"
+  },
+  {
+    "code": "GR",
+    "name_en": "Greece",
+    "name_ko": "그리스",
+    "calling_code": "+30"
+  },
+  {
+    "code": "GS",
+    "name_en": "South Georgia & South Sandwich Islands",
+    "name_ko": "사우스조지아 사우스샌드위치 제도",
+    "calling_code": ""
+  },
+  {
+    "code": "GT",
+    "name_en": "Guatemala",
+    "name_ko": "과테말라",
+    "calling_code": "+502"
+  },
+  {
+    "code": "GU",
+    "name_en": "Guam",
+    "name_ko": "괌",
+    "calling_code": "+1"
+  },
+  {
+    "code": "GW",
+    "name_en": "Guinea-Bissau",
+    "name_ko": "기니비사우",
+    "calling_code": "+245"
+  },
+  {
+    "code": "GY",
+    "name_en": "Guyana",
+    "name_ko": "가이아나",
+    "calling_code": "+592"
+  },
+  {
+    "code": "HK",
+    "name_en": "Hong Kong SAR China",
+    "name_ko": "홍콩(중국 특별행정구)",
+    "calling_code": "+852"
+  },
+  {
+    "code": "HM",
+    "name_en": "Heard & McDonald Islands",
+    "name_ko": "허드 맥도널드 제도",
+    "calling_code": ""
+  },
+  {
+    "code": "HN",
+    "name_en": "Honduras",
+    "name_ko": "온두라스",
+    "calling_code": "+504"
+  },
+  {
+    "code": "HR",
+    "name_en": "Croatia",
+    "name_ko": "크로아티아",
+    "calling_code": "+385"
+  },
+  {
+    "code": "HT",
+    "name_en": "Haiti",
+    "name_ko": "아이티",
+    "calling_code": "+509"
+  },
+  {
+    "code": "HU",
+    "name_en": "Hungary",
+    "name_ko": "헝가리",
+    "calling_code": "+36"
+  },
+  {
+    "code": "ID",
+    "name_en": "Indonesia",
+    "name_ko": "인도네시아",
+    "calling_code": "+62"
+  },
+  {
+    "code": "IE",
+    "name_en": "Ireland",
+    "name_ko": "아일랜드",
+    "calling_code": "+353"
+  },
+  {
+    "code": "IL",
+    "name_en": "Israel",
+    "name_ko": "이스라엘",
+    "calling_code": "+972"
+  },
+  {
+    "code": "IM",
+    "name_en": "Isle of Man",
+    "name_ko": "맨섬",
+    "calling_code": "+44"
+  },
+  {
+    "code": "IN",
+    "name_en": "India",
+    "name_ko": "인도",
+    "calling_code": "+91"
+  },
+  {
+    "code": "IO",
+    "name_en": "British Indian Ocean Territory",
+    "name_ko": "영국령 인도양 지역",
+    "calling_code": "+246"
+  },
+  {
+    "code": "IQ",
+    "name_en": "Iraq",
+    "name_ko": "이라크",
+    "calling_code": "+964"
+  },
+  {
+    "code": "IR",
+    "name_en": "Iran",
+    "name_ko": "이란",
+    "calling_code": "+98"
+  },
+  {
+    "code": "IS",
+    "name_en": "Iceland",
+    "name_ko": "아이슬란드",
+    "calling_code": "+354"
+  },
+  {
+    "code": "IT",
+    "name_en": "Italy",
+    "name_ko": "이탈리아",
+    "calling_code": "+39"
+  },
+  {
+    "code": "JE",
+    "name_en": "Jersey",
+    "name_ko": "저지",
+    "calling_code": "+44"
+  },
+  {
+    "code": "JM",
+    "name_en": "Jamaica",
+    "name_ko": "자메이카",
+    "calling_code": "+1"
+  },
+  {
+    "code": "JO",
+    "name_en": "Jordan",
+    "name_ko": "요르단",
+    "calling_code": "+962"
+  },
+  {
+    "code": "JP",
+    "name_en": "Japan",
+    "name_ko": "일본",
+    "calling_code": "+81"
+  },
+  {
+    "code": "KE",
+    "name_en": "Kenya",
+    "name_ko": "케냐",
+    "calling_code": "+254"
+  },
+  {
+    "code": "KG",
+    "name_en": "Kyrgyzstan",
+    "name_ko": "키르기스스탄",
+    "calling_code": "+996"
+  },
+  {
+    "code": "KH",
+    "name_en": "Cambodia",
+    "name_ko": "캄보디아",
+    "calling_code": "+855"
+  },
+  {
+    "code": "KI",
+    "name_en": "Kiribati",
+    "name_ko": "키리바시",
+    "calling_code": "+686"
+  },
+  {
+    "code": "KM",
+    "name_en": "Comoros",
+    "name_ko": "코모로",
+    "calling_code": "+269"
+  },
+  {
+    "code": "KN",
+    "name_en": "St. Kitts & Nevis",
+    "name_ko": "세인트키츠 네비스",
+    "calling_code": "+1"
+  },
+  {
+    "code": "KP",
+    "name_en": "North Korea",
+    "name_ko": "북한",
+    "calling_code": "+850"
+  },
+  {
+    "code": "KR",
+    "name_en": "South Korea",
+    "name_ko": "대한민국",
+    "calling_code": "+82"
+  },
+  {
+    "code": "KW",
+    "name_en": "Kuwait",
+    "name_ko": "쿠웨이트",
+    "calling_code": "+965"
+  },
+  {
+    "code": "KY",
+    "name_en": "Cayman Islands",
+    "name_ko": "케이맨 제도",
+    "calling_code": "+1"
+  },
+  {
+    "code": "KZ",
+    "name_en": "Kazakhstan",
+    "name_ko": "카자흐스탄",
+    "calling_code": "+7"
+  },
+  {
+    "code": "LA",
+    "name_en": "Laos",
+    "name_ko": "라오스",
+    "calling_code": "+856"
+  },
+  {
+    "code": "LB",
+    "name_en": "Lebanon",
+    "name_ko": "레바논",
+    "calling_code": "+961"
+  },
+  {
+    "code": "LC",
+    "name_en": "St. Lucia",
+    "name_ko": "세인트루시아",
+    "calling_code": "+1"
+  },
+  {
+    "code": "LI",
+    "name_en": "Liechtenstein",
+    "name_ko": "리히텐슈타인",
+    "calling_code": "+423"
+  },
+  {
+    "code": "LK",
+    "name_en": "Sri Lanka",
+    "name_ko": "스리랑카",
+    "calling_code": "+94"
+  },
+  {
+    "code": "LR",
+    "name_en": "Liberia",
+    "name_ko": "라이베리아",
+    "calling_code": "+231"
+  },
+  {
+    "code": "LS",
+    "name_en": "Lesotho",
+    "name_ko": "레소토",
+    "calling_code": "+266"
+  },
+  {
+    "code": "LT",
+    "name_en": "Lithuania",
+    "name_ko": "리투아니아",
+    "calling_code": "+370"
+  },
+  {
+    "code": "LU",
+    "name_en": "Luxembourg",
+    "name_ko": "룩셈부르크",
+    "calling_code": "+352"
+  },
+  {
+    "code": "LV",
+    "name_en": "Latvia",
+    "name_ko": "라트비아",
+    "calling_code": "+371"
+  },
+  {
+    "code": "LY",
+    "name_en": "Libya",
+    "name_ko": "리비아",
+    "calling_code": "+218"
+  },
+  {
+    "code": "MA",
+    "name_en": "Morocco",
+    "name_ko": "모로코",
+    "calling_code": "+212"
+  },
+  {
+    "code": "MC",
+    "name_en": "Monaco",
+    "name_ko": "모나코",
+    "calling_code": "+377"
+  },
+  {
+    "code": "MD",
+    "name_en": "Moldova",
+    "name_ko": "몰도바",
+    "calling_code": "+373"
+  },
+  {
+    "code": "ME",
+    "name_en": "Montenegro",
+    "name_ko": "몬테네그로",
+    "calling_code": "+382"
+  },
+  {
+    "code": "MF",
+    "name_en": "St. Martin",
+    "name_ko": "생마르탱",
+    "calling_code": "+590"
+  },
+  {
+    "code": "MG",
+    "name_en": "Madagascar",
+    "name_ko": "마다가스카르",
+    "calling_code": "+261"
+  },
+  {
+    "code": "MH",
+    "name_en": "Marshall Islands",
+    "name_ko": "마셜 제도",
+    "calling_code": "+692"
+  },
+  {
+    "code": "MK",
+    "name_en": "North Macedonia",
+    "name_ko": "북마케도니아",
+    "calling_code": "+389"
+  },
+  {
+    "code": "ML",
+    "name_en": "Mali",
+    "name_ko": "말리",
+    "calling_code": "+223"
+  },
+  {
+    "code": "MM",
+    "name_en": "Myanmar (Burma)",
+    "name_ko": "미얀마",
+    "calling_code": "+95"
+  },
+  {
+    "code": "MN",
+    "name_en": "Mongolia",
+    "name_ko": "몽골",
+    "calling_code": "+976"
+  },
+  {
+    "code": "MO",
+    "name_en": "Macao SAR China",
+    "name_ko": "마카오(중국 특별행정구)",
+    "calling_code": "+853"
+  },
+  {
+    "code": "MP",
+    "name_en": "Northern Mariana Islands",
+    "name_ko": "북마리아나제도",
+    "calling_code": "+1"
+  },
+  {
+    "code": "MQ",
+    "name_en": "Martinique",
+    "name_ko": "마르티니크",
+    "calling_code": "+596"
+  },
+  {
+    "code": "MR",
+    "name_en": "Mauritania",
+    "name_ko": "모리타니",
+    "calling_code": "+222"
+  },
+  {
+    "code": "MS",
+    "name_en": "Montserrat",
+    "name_ko": "몬트세라트",
+    "calling_code": "+1"
+  },
+  {
+    "code": "MT",
+    "name_en": "Malta",
+    "name_ko": "몰타",
+    "calling_code": "+356"
+  },
+  {
+    "code": "MU",
+    "name_en": "Mauritius",
+    "name_ko": "모리셔스",
+    "calling_code": "+230"
+  },
+  {
+    "code": "MV",
+    "name_en": "Maldives",
+    "name_ko": "몰디브",
+    "calling_code": "+960"
+  },
+  {
+    "code": "MW",
+    "name_en": "Malawi",
+    "name_ko": "말라위",
+    "calling_code": "+265"
+  },
+  {
+    "code": "MX",
+    "name_en": "Mexico",
+    "name_ko": "멕시코",
+    "calling_code": "+52"
+  },
+  {
+    "code": "MY",
+    "name_en": "Malaysia",
+    "name_ko": "말레이시아",
+    "calling_code": "+60"
+  },
+  {
+    "code": "MZ",
+    "name_en": "Mozambique",
+    "name_ko": "모잠비크",
+    "calling_code": "+258"
+  },
+  {
+    "code": "NA",
+    "name_en": "Namibia",
+    "name_ko": "나미비아",
+    "calling_code": "+264"
+  },
+  {
+    "code": "NC",
+    "name_en": "New Caledonia",
+    "name_ko": "뉴칼레도니아",
+    "calling_code": "+687"
+  },
+  {
+    "code": "NE",
+    "name_en": "Niger",
+    "name_ko": "니제르",
+    "calling_code": "+227"
+  },
+  {
+    "code": "NF",
+    "name_en": "Norfolk Island",
+    "name_ko": "노퍽섬",
+    "calling_code": "+672"
+  },
+  {
+    "code": "NG",
+    "name_en": "Nigeria",
+    "name_ko": "나이지리아",
+    "calling_code": "+234"
+  },
+  {
+    "code": "NI",
+    "name_en": "Nicaragua",
+    "name_ko": "니카라과",
+    "calling_code": "+505"
+  },
+  {
+    "code": "NL",
+    "name_en": "Netherlands",
+    "name_ko": "네덜란드",
+    "calling_code": "+31"
+  },
+  {
+    "code": "NO",
+    "name_en": "Norway",
+    "name_ko": "노르웨이",
+    "calling_code": "+47"
+  },
+  {
+    "code": "NP",
+    "name_en": "Nepal",
+    "name_ko": "네팔",
+    "calling_code": "+977"
+  },
+  {
+    "code": "NR",
+    "name_en": "Nauru",
+    "name_ko": "나우루",
+    "calling_code": "+674"
+  },
+  {
+    "code": "NU",
+    "name_en": "Niue",
+    "name_ko": "니우에",
+    "calling_code": "+683"
+  },
+  {
+    "code": "NZ",
+    "name_en": "New Zealand",
+    "name_ko": "뉴질랜드",
+    "calling_code": "+64"
+  },
+  {
+    "code": "OM",
+    "name_en": "Oman",
+    "name_ko": "오만",
+    "calling_code": "+968"
+  },
+  {
+    "code": "PA",
+    "name_en": "Panama",
+    "name_ko": "파나마",
+    "calling_code": "+507"
+  },
+  {
+    "code": "PE",
+    "name_en": "Peru",
+    "name_ko": "페루",
+    "calling_code": "+51"
+  },
+  {
+    "code": "PF",
+    "name_en": "French Polynesia",
+    "name_ko": "프랑스령 폴리네시아",
+    "calling_code": "+689"
+  },
+  {
+    "code": "PG",
+    "name_en": "Papua New Guinea",
+    "name_ko": "파푸아뉴기니",
+    "calling_code": "+675"
+  },
+  {
+    "code": "PH",
+    "name_en": "Philippines",
+    "name_ko": "필리핀",
+    "calling_code": "+63"
+  },
+  {
+    "code": "PK",
+    "name_en": "Pakistan",
+    "name_ko": "파키스탄",
+    "calling_code": "+92"
+  },
+  {
+    "code": "PL",
+    "name_en": "Poland",
+    "name_ko": "폴란드",
+    "calling_code": "+48"
+  },
+  {
+    "code": "PM",
+    "name_en": "St. Pierre & Miquelon",
+    "name_ko": "생피에르 미클롱",
+    "calling_code": "+508"
+  },
+  {
+    "code": "PN",
+    "name_en": "Pitcairn Islands",
+    "name_ko": "핏케언 제도",
+    "calling_code": ""
+  },
+  {
+    "code": "PR",
+    "name_en": "Puerto Rico",
+    "name_ko": "푸에르토리코",
+    "calling_code": "+1"
+  },
+  {
+    "code": "PS",
+    "name_en": "Palestinian Territories",
+    "name_ko": "팔레스타인 지구",
+    "calling_code": "+970"
+  },
+  {
+    "code": "PT",
+    "name_en": "Portugal",
+    "name_ko": "포르투갈",
+    "calling_code": "+351"
+  },
+  {
+    "code": "PW",
+    "name_en": "Palau",
+    "name_ko": "팔라우",
+    "calling_code": "+680"
+  },
+  {
+    "code": "PY",
+    "name_en": "Paraguay",
+    "name_ko": "파라과이",
+    "calling_code": "+595"
+  },
+  {
+    "code": "QA",
+    "name_en": "Qatar",
+    "name_ko": "카타르",
+    "calling_code": "+974"
+  },
+  {
+    "code": "RE",
+    "name_en": "Réunion",
+    "name_ko": "레위니옹",
+    "calling_code": "+262"
+  },
+  {
+    "code": "RO",
+    "name_en": "Romania",
+    "name_ko": "루마니아",
+    "calling_code": "+40"
+  },
+  {
+    "code": "RS",
+    "name_en": "Serbia",
+    "name_ko": "세르비아",
+    "calling_code": "+381"
+  },
+  {
+    "code": "RU",
+    "name_en": "Russia",
+    "name_ko": "러시아",
+    "calling_code": "+7"
+  },
+  {
+    "code": "RW",
+    "name_en": "Rwanda",
+    "name_ko": "르완다",
+    "calling_code": "+250"
+  },
+  {
+    "code": "SA",
+    "name_en": "Saudi Arabia",
+    "name_ko": "사우디아라비아",
+    "calling_code": "+966"
+  },
+  {
+    "code": "SB",
+    "name_en": "Solomon Islands",
+    "name_ko": "솔로몬 제도",
+    "calling_code": "+677"
+  },
+  {
+    "code": "SC",
+    "name_en": "Seychelles",
+    "name_ko": "세이셸",
+    "calling_code": "+248"
+  },
+  {
+    "code": "SD",
+    "name_en": "Sudan",
+    "name_ko": "수단",
+    "calling_code": "+249"
+  },
+  {
+    "code": "SE",
+    "name_en": "Sweden",
+    "name_ko": "스웨덴",
+    "calling_code": "+46"
+  },
+  {
+    "code": "SG",
+    "name_en": "Singapore",
+    "name_ko": "싱가포르",
+    "calling_code": "+65"
+  },
+  {
+    "code": "SH",
+    "name_en": "St. Helena",
+    "name_ko": "세인트헬레나",
+    "calling_code": "+290"
+  },
+  {
+    "code": "SI",
+    "name_en": "Slovenia",
+    "name_ko": "슬로베니아",
+    "calling_code": "+386"
+  },
+  {
+    "code": "SJ",
+    "name_en": "Svalbard & Jan Mayen",
+    "name_ko": "스발바르제도-얀마웬섬",
+    "calling_code": "+47"
+  },
+  {
+    "code": "SK",
+    "name_en": "Slovakia",
+    "name_ko": "슬로바키아",
+    "calling_code": "+421"
+  },
+  {
+    "code": "SL",
+    "name_en": "Sierra Leone",
+    "name_ko": "시에라리온",
+    "calling_code": "+232"
+  },
+  {
+    "code": "SM",
+    "name_en": "San Marino",
+    "name_ko": "산마리노",
+    "calling_code": "+378"
+  },
+  {
+    "code": "SN",
+    "name_en": "Senegal",
+    "name_ko": "세네갈",
+    "calling_code": "+221"
+  },
+  {
+    "code": "SO",
+    "name_en": "Somalia",
+    "name_ko": "소말리아",
+    "calling_code": "+252"
+  },
+  {
+    "code": "SR",
+    "name_en": "Suriname",
+    "name_ko": "수리남",
+    "calling_code": "+597"
+  },
+  {
+    "code": "SS",
+    "name_en": "South Sudan",
+    "name_ko": "남수단",
+    "calling_code": "+211"
+  },
+  {
+    "code": "ST",
+    "name_en": "São Tomé & Príncipe",
+    "name_ko": "상투메 프린시페",
+    "calling_code": "+239"
+  },
+  {
+    "code": "SV",
+    "name_en": "El Salvador",
+    "name_ko": "엘살바도르",
+    "calling_code": "+503"
+  },
+  {
+    "code": "SX",
+    "name_en": "Sint Maarten",
+    "name_ko": "신트마르턴",
+    "calling_code": "+1"
+  },
+  {
+    "code": "SY",
+    "name_en": "Syria",
+    "name_ko": "시리아",
+    "calling_code": "+963"
+  },
+  {
+    "code": "SZ",
+    "name_en": "Eswatini",
+    "name_ko": "에스와티니",
+    "calling_code": "+268"
+  },
+  {
+    "code": "TC",
+    "name_en": "Turks & Caicos Islands",
+    "name_ko": "터크스 케이커스 제도",
+    "calling_code": "+1"
+  },
+  {
+    "code": "TD",
+    "name_en": "Chad",
+    "name_ko": "차드",
+    "calling_code": "+235"
+  },
+  {
+    "code": "TF",
+    "name_en": "French Southern Territories",
+    "name_ko": "프랑스령 남방 지역",
+    "calling_code": ""
+  },
+  {
+    "code": "TG",
+    "name_en": "Togo",
+    "name_ko": "토고",
+    "calling_code": "+228"
+  },
+  {
+    "code": "TH",
+    "name_en": "Thailand",
+    "name_ko": "태국",
+    "calling_code": "+66"
+  },
+  {
+    "code": "TJ",
+    "name_en": "Tajikistan",
+    "name_ko": "타지키스탄",
+    "calling_code": "+992"
+  },
+  {
+    "code": "TK",
+    "name_en": "Tokelau",
+    "name_ko": "토켈라우",
+    "calling_code": "+690"
+  },
+  {
+    "code": "TL",
+    "name_en": "Timor-Leste",
+    "name_ko": "동티모르",
+    "calling_code": "+670"
+  },
+  {
+    "code": "TM",
+    "name_en": "Turkmenistan",
+    "name_ko": "투르크메니스탄",
+    "calling_code": "+993"
+  },
+  {
+    "code": "TN",
+    "name_en": "Tunisia",
+    "name_ko": "튀니지",
+    "calling_code": "+216"
+  },
+  {
+    "code": "TO",
+    "name_en": "Tonga",
+    "name_ko": "통가",
+    "calling_code": "+676"
+  },
+  {
+    "code": "TR",
+    "name_en": "Türkiye",
+    "name_ko": "튀르키예",
+    "calling_code": "+90"
+  },
+  {
+    "code": "TT",
+    "name_en": "Trinidad & Tobago",
+    "name_ko": "트리니다드 토바고",
+    "calling_code": "+1"
+  },
+  {
+    "code": "TV",
+    "name_en": "Tuvalu",
+    "name_ko": "투발루",
+    "calling_code": "+688"
+  },
+  {
+    "code": "TW",
+    "name_en": "Taiwan",
+    "name_ko": "대만",
+    "calling_code": "+886"
+  },
+  {
+    "code": "TZ",
+    "name_en": "Tanzania",
+    "name_ko": "탄자니아",
+    "calling_code": "+255"
+  },
+  {
+    "code": "UA",
+    "name_en": "Ukraine",
+    "name_ko": "우크라이나",
+    "calling_code": "+380"
+  },
+  {
+    "code": "UG",
+    "name_en": "Uganda",
+    "name_ko": "우간다",
+    "calling_code": "+256"
+  },
+  {
+    "code": "UM",
+    "name_en": "U.S. Outlying Islands",
+    "name_ko": "미국령 해외 제도",
+    "calling_code": ""
+  },
+  {
+    "code": "US",
+    "name_en": "United States",
+    "name_ko": "미국",
+    "calling_code": "+1"
+  },
+  {
+    "code": "UY",
+    "name_en": "Uruguay",
+    "name_ko": "우루과이",
+    "calling_code": "+598"
+  },
+  {
+    "code": "UZ",
+    "name_en": "Uzbekistan",
+    "name_ko": "우즈베키스탄",
+    "calling_code": "+998"
+  },
+  {
+    "code": "VA",
+    "name_en": "Vatican City",
+    "name_ko": "바티칸 시국",
+    "calling_code": "+39"
+  },
+  {
+    "code": "VC",
+    "name_en": "St. Vincent & Grenadines",
+    "name_ko": "세인트빈센트그레나딘",
+    "calling_code": "+1"
+  },
+  {
+    "code": "VE",
+    "name_en": "Venezuela",
+    "name_ko": "베네수엘라",
+    "calling_code": "+58"
+  },
+  {
+    "code": "VG",
+    "name_en": "British Virgin Islands",
+    "name_ko": "영국령 버진아일랜드",
+    "calling_code": "+1"
+  },
+  {
+    "code": "VI",
+    "name_en": "U.S. Virgin Islands",
+    "name_ko": "미국령 버진아일랜드",
+    "calling_code": "+1"
+  },
+  {
+    "code": "VN",
+    "name_en": "Vietnam",
+    "name_ko": "베트남",
+    "calling_code": "+84"
+  },
+  {
+    "code": "VU",
+    "name_en": "Vanuatu",
+    "name_ko": "바누아투",
+    "calling_code": "+678"
+  },
+  {
+    "code": "WF",
+    "name_en": "Wallis & Futuna",
+    "name_ko": "왈리스-푸투나 제도",
+    "calling_code": "+681"
+  },
+  {
+    "code": "WS",
+    "name_en": "Samoa",
+    "name_ko": "사모아",
+    "calling_code": "+685"
+  },
+  {
+    "code": "YE",
+    "name_en": "Yemen",
+    "name_ko": "예멘",
+    "calling_code": "+967"
+  },
+  {
+    "code": "YT",
+    "name_en": "Mayotte",
+    "name_ko": "마요트",
+    "calling_code": "+262"
+  },
+  {
+    "code": "ZA",
+    "name_en": "South Africa",
+    "name_ko": "남아프리카",
+    "calling_code": "+27"
+  },
+  {
+    "code": "ZM",
+    "name_en": "Zambia",
+    "name_ko": "잠비아",
+    "calling_code": "+260"
+  },
+  {
+    "code": "ZW",
+    "name_en": "Zimbabwe",
+    "name_ko": "짐바브웨",
+    "calling_code": "+263"
+  }
+]
