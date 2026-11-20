@@ -1,0 +1,15 @@
+.git
+.github
+android
+docs
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+backend/.env
+backend/.env.*
+**/*.db
+**/upload-keystore.jks
+**/app-release.aab

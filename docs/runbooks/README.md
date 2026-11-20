@@ -8,6 +8,7 @@
 | [`admin-api-keys.md`](admin-api-keys.md) | API 키·Admin UI 세션 쿠키 · 키 로테이션 |
 | [`device-test.md`](device-test.md) | S6.1 — 실기기·KR-lab §8 · L12 Bitdefender 병행 |
 | [`nextdns-setup.md`](nextdns-setup.md) | S6.3 — NextDNS 프로필·sync·Private DNS |
+| [`railway-backend.md`](railway-backend.md) | HTTPS 백엔드 Railway 배포 (zero-touch `baseUrl`) |
 | [`play-internal.md`](play-internal.md) | S6.2 — Play internal track 체크리스트 |
 | [`play-console-while-waiting.md`](play-console-while-waiting.md) | 계정 인증 대기 중 병행 작업 · Data safety 초안 |
 | [`../legal/privacy-policy.md`](../legal/privacy-policy.md) | 스토어용 개인정보처리방침 초안 |

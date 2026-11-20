@@ -115,8 +115,13 @@ class MainActivity : AppCompatActivity() {
             }
             ensureScreeningPermissions()
             lifecycleScope.launch {
-                val integrity = IntegrityTokenProvider.requestOrNull(this@MainActivity)
-                val outcome = Autoprovision.ensure(this@MainActivity, integrityToken = integrity)
+                val attestation = IntegrityTokenProvider.request(this@MainActivity)
+                val outcome =
+                    Autoprovision.ensure(
+                        this@MainActivity,
+                        integrityToken = attestation.token,
+                        integrityNonce = attestation.nonce,
+                    )
                 findViewById<TextView>(R.id.status).text =
                     when (outcome) {
                         is Autoprovision.Outcome.AlreadyProvisioned ->
