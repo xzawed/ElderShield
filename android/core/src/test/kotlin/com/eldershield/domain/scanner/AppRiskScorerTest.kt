@@ -63,6 +63,53 @@ class AppRiskScorerTest {
     }
 
     @Test
+    fun overlayPermissionAddsTwentyFive() {
+        val plain =
+            AppRiskScorer.score(
+                AppScanInput(
+                    packageName = "com.overlay.app",
+                    installerPackage = null,
+                    permissions = emptyList(),
+                ),
+            )!!
+        val overlay =
+            AppRiskScorer.score(
+                AppScanInput(
+                    packageName = "com.overlay.app",
+                    installerPackage = null,
+                    permissions = emptyList(),
+                    hasOverlayPermission = true,
+                ),
+            )!!
+        assertEquals(plain.riskScore + 25, overlay.riskScore)
+        assertTrue(overlay.reasons.contains("overlay_permission"))
+    }
+
+    @Test
+    fun accessibilityServiceDeclaredAddsTwentyFive() {
+        val plain =
+            AppRiskScorer.score(
+                AppScanInput(
+                    packageName = "com.a11y.app",
+                    installerPackage = AppRiskScorer.PLAY_STORE,
+                    permissions = emptyList(),
+                ),
+            )!!
+        val declared =
+            AppRiskScorer.score(
+                AppScanInput(
+                    packageName = "com.a11y.app",
+                    installerPackage = AppRiskScorer.PLAY_STORE,
+                    permissions = emptyList(),
+                    hasAccessibilityService = true,
+                ),
+            )!!
+        assertEquals(25, declared.riskScore)
+        assertTrue(plain.riskScore < AppRiskScorer.THRESHOLD)
+        assertTrue(declared.reasons.contains("accessibility_service_declared"))
+    }
+
+    @Test
     fun `UT-A-44 system and self packages excluded`() {
         assertNull(
             AppRiskScorer.score(
@@ -96,5 +143,36 @@ class AppRiskScorerTest {
                 ),
             )
         assertEquals(listOf("com.fake.app"), reported.map { it.packageName })
+    }
+
+    @Test
+    fun overlayPermissionRaisesScoreAndReason() {
+        val r =
+            AppRiskScorer.score(
+                AppScanInput(
+                    packageName = "com.overlay.scam",
+                    installerPackage = null,
+                    permissions = listOf(AppRiskScorer.OVERLAY_PERM),
+                    hasOverlayPermission = true,
+                ),
+            )!!
+        assertTrue(r.reasons.contains("overlay_permission"))
+        assertTrue(r.riskScore >= 50)
+        assertTrue(r.suspicious)
+    }
+
+    @Test
+    fun accessibilityServiceDeclaredRaisesScore() {
+        val r =
+            AppRiskScorer.score(
+                AppScanInput(
+                    packageName = "com.a11y.scam",
+                    installerPackage = "com.android.packageinstaller",
+                    permissions = emptyList(),
+                    hasAccessibilityService = true,
+                ),
+            )!!
+        assertTrue(r.reasons.contains("accessibility_service_declared"))
+        assertTrue(r.suspicious)
     }
 }

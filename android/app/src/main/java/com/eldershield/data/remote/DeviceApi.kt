@@ -23,6 +23,11 @@ class DeviceApi(
         callScreeningHeldBy: String?,
         callScreeningPeers: List<String>,
         lastRuleVersion: Int,
+        dnsHostClass: String? = null,
+        lastSyncOk: Boolean = true,
+        lastSyncErrorCode: String? = null,
+        cachedBundleVersion: Int = 0,
+        protectionDegraded: Boolean? = null,
     ) {
         val peers = JSONArray()
         callScreeningPeers.forEach { peers.put(it) }
@@ -38,9 +43,37 @@ class DeviceApi(
                 )
                 .put("callScreeningPeers", peers)
                 .put("lastRuleVersion", lastRuleVersion)
+                .put("dnsHostClass", dnsHostClass ?: JSONObject.NULL)
+                .put("lastSyncOk", lastSyncOk)
+                .put(
+                    "lastSyncErrorCode",
+                    if (lastSyncErrorCode == null) JSONObject.NULL else lastSyncErrorCode,
+                )
+                .put("cachedBundleVersion", cachedBundleVersion)
+        if (protectionDegraded != null) {
+            body.put("protectionDegraded", protectionDegraded)
+        }
+        execute("POST", "/api/v1/devices/heartbeat", body.toString().toRequestBody(jsonMedia))
+    }
+
+    fun postHealthEvents(
+        deviceUuid: String,
+        events: List<Pair<String, String?>>,
+    ) {
+        if (events.isEmpty()) return
+        val arr = JSONArray()
+        events.forEach { (type, detail) ->
+            val o = JSONObject().put("type", type)
+            if (detail != null) o.put("detail", detail)
+            arr.put(o)
+        }
+        val body =
+            JSONObject()
+                .put("deviceUuid", deviceUuid)
+                .put("events", arr)
                 .toString()
                 .toRequestBody(jsonMedia)
-        execute("POST", "/api/v1/devices/heartbeat", body)
+        execute("POST", "/api/v1/devices/health-events", body)
     }
 
     fun postScanResult(
@@ -51,6 +84,8 @@ class DeviceApi(
         apps.forEach { a ->
             val perms = JSONArray()
             a.dangerousPermissions.forEach { perms.put(it) }
+            val reasons = JSONArray()
+            a.reasons.forEach { reasons.put(it) }
             arr.put(
                 JSONObject()
                     .put("packageName", a.packageName)
@@ -59,7 +94,8 @@ class DeviceApi(
                         if (a.installerPackage == null) JSONObject.NULL else a.installerPackage,
                     )
                     .put("dangerousPermissions", perms)
-                    .put("riskScore", a.riskScore),
+                    .put("riskScore", a.riskScore)
+                    .put("reasons", reasons),
             )
         }
         val body =

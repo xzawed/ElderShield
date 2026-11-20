@@ -21,11 +21,17 @@ sealed class SyncOutcome {
 class RuleSyncPolicy(
     private val repository: RuleRepository,
 ) {
+    /** Set when the remote fetch failed. Null after a successful fetch. */
+    var lastError: Throwable? = null
+        private set
+
     suspend fun sync(): SyncOutcome {
+        lastError = null
         val cached = repository.getCachedRules()
         val remoteResult = runCatching { repository.getLatestRules() }
 
         if (remoteResult.isFailure) {
+            lastError = remoteResult.exceptionOrNull()
             return if (cached != null) {
                 SyncOutcome.UsedCache(cached)
             } else {

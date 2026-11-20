@@ -7,12 +7,19 @@ data class DnsStatus(
     val privateDnsMode: String,
     val privateDnsSpecifier: String?,
     val configured: Boolean,
+    /** nextdns | adguard | other | none — never send raw specifier to server. */
+    val hostClass: String = "none",
 )
 
 object DnsStatusEvaluator {
     const val MODE_OFF = "off"
     const val MODE_OPPORTUNISTIC = "opportunistic"
     const val MODE_PROVIDER = "hostname"
+
+    const val HOST_NONE = "none"
+    const val HOST_NEXTDNS = "nextdns"
+    const val HOST_ADGUARD = "adguard"
+    const val HOST_OTHER = "other"
 
     /** Trusted Private DNS hosts (NextDNS / AdGuard). Exact or DNS subdomain only. */
     val DEFAULT_ALLOWED_HOSTS: Set<String> =
@@ -22,6 +29,26 @@ object DnsStatusEvaluator {
             "dns.nextdns.io",
             "nextdns.io",
         )
+
+    fun hostClassFor(specifier: String?): String {
+        val host = specifier?.trim().orEmpty()
+        if (host.isEmpty()) return HOST_NONE
+        val lower = host.lowercase()
+        if (lower == "dns.nextdns.io" ||
+            lower == "nextdns.io" ||
+            lower.endsWith(".dns.nextdns.io") ||
+            lower.endsWith(".nextdns.io")
+        ) {
+            return HOST_NEXTDNS
+        }
+        if (lower == "dns.adguard.com" ||
+            lower == "dns-unfiltered.adguard.com" ||
+            lower.endsWith(".adguard.com")
+        ) {
+            return HOST_ADGUARD
+        }
+        return HOST_OTHER
+    }
 
     fun fromAndroidSettings(
         mode: Int,
@@ -55,6 +82,16 @@ object DnsStatusEvaluator {
                         host.endsWith(".$allowed", ignoreCase = true)
                 }
         val configured = hostnameMode && trusted
-        return DnsStatus(privateDnsMode = modeName, privateDnsSpecifier = specifier, configured = configured)
+        val hostClass =
+            when {
+                !hostnameMode -> HOST_NONE
+                else -> hostClassFor(specifier)
+            }
+        return DnsStatus(
+            privateDnsMode = modeName,
+            privateDnsSpecifier = specifier,
+            configured = configured,
+            hostClass = hostClass,
+        )
     }
 }

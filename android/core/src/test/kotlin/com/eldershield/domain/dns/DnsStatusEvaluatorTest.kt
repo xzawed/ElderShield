@@ -36,12 +36,58 @@ class DnsStatusEvaluatorTest {
     }
 
     @Test
+    fun hostClassIsFamilyNotRawSpecifier() {
+        assertEquals(
+            DnsStatusEvaluator.HOST_NEXTDNS,
+            DnsStatusEvaluator.fromAndroidSettings("hostname", "abc.dns.nextdns.io").hostClass,
+        )
+        assertEquals(
+            DnsStatusEvaluator.HOST_ADGUARD,
+            DnsStatusEvaluator.fromAndroidSettings(3, "dns.adguard.com").hostClass,
+        )
+        assertEquals(
+            DnsStatusEvaluator.HOST_OTHER,
+            DnsStatusEvaluator.fromAndroidSettings("hostname", "evil.example").hostClass,
+        )
+        assertEquals(
+            DnsStatusEvaluator.HOST_OTHER,
+            DnsStatusEvaluator.fromAndroidSettings("hostname", "evil.nextdns.io.attacker.com").hostClass,
+        )
+        assertEquals(DnsStatusEvaluator.HOST_NONE, DnsStatusEvaluator.fromAndroidSettings("off", null).hostClass)
+        assertEquals(
+            DnsStatusEvaluator.HOST_NONE,
+            DnsStatusEvaluator.fromAndroidSettings("opportunistic", "dns.nextdns.io").hostClass,
+        )
+        assertEquals(DnsStatusEvaluator.HOST_NONE, DnsStatusEvaluator.fromAndroidSettings(3, "").hostClass)
+    }
+
+    @Test
     fun trustedHostMustNotMatchSubstringInjection() {
         assertFalse(
             DnsStatusEvaluator.fromAndroidSettings("hostname", "evil.nextdns.io.attacker.com").configured,
         )
         assertTrue(
             DnsStatusEvaluator.fromAndroidSettings("hostname", "abc.dns.nextdns.io").configured,
+        )
+    }
+
+    @Test
+    fun hostClassMapsTrustedProviders() {
+        assertEquals(
+            DnsStatusEvaluator.HOST_NEXTDNS,
+            DnsStatusEvaluator.fromAndroidSettings("hostname", "dns.nextdns.io").hostClass,
+        )
+        assertEquals(
+            DnsStatusEvaluator.HOST_ADGUARD,
+            DnsStatusEvaluator.fromAndroidSettings("hostname", "dns.adguard.com").hostClass,
+        )
+        assertEquals(
+            DnsStatusEvaluator.HOST_OTHER,
+            DnsStatusEvaluator.fromAndroidSettings("hostname", "evil.example").hostClass,
+        )
+        assertEquals(
+            DnsStatusEvaluator.HOST_NONE,
+            DnsStatusEvaluator.fromAndroidSettings("off", null).hostClass,
         )
     }
 }

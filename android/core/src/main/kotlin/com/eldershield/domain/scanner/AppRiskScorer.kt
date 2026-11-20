@@ -5,6 +5,10 @@ data class AppScanInput(
     val installerPackage: String?,
     val permissions: List<String>,
     val isSystemApp: Boolean = false,
+    /** Other app declares SYSTEM_ALERT_WINDOW (overlay capability — P3). */
+    val hasOverlayPermission: Boolean = false,
+    /** Other app declares AccessibilityService (capability only; ElderShield never uses a11y). */
+    val hasAccessibilityService: Boolean = false,
 )
 
 data class AppRiskResult(
@@ -19,6 +23,7 @@ data class AppRiskResult(
 object AppRiskScorer {
     const val PLAY_STORE = "com.android.vending"
     const val THRESHOLD = 50
+    const val OVERLAY_PERM = "android.permission.SYSTEM_ALERT_WINDOW"
 
     private val dangerous =
         setOf(
@@ -67,8 +72,23 @@ object AppRiskScorer {
             reasons += "accessibility_bind"
         }
 
-        // Play Store + no dangerous perms stays low (UT-A-40)
-        if (input.installerPackage == PLAY_STORE && dangerousHits.isEmpty()) {
+        val overlay =
+            input.hasOverlayPermission || OVERLAY_PERM in normalized
+        if (overlay) {
+            score += 25
+            reasons += "overlay_permission"
+        }
+        if (input.hasAccessibilityService) {
+            score += 25
+            reasons += "accessibility_service_declared"
+        }
+
+        // Play Store + no dangerous / overlay / a11y capability stays low (UT-A-40)
+        if (input.installerPackage == PLAY_STORE &&
+            dangerousHits.isEmpty() &&
+            !overlay &&
+            !input.hasAccessibilityService
+        ) {
             score = minOf(score, 15)
         }
 
