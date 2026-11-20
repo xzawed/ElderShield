@@ -1,16 +1,16 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Session, select
 
-from app.api.deps import require_device
+from app.api.deps import DeviceAuth, assert_device_uuid_bound, require_device
 from app.db import get_session
 from app.models.device import AppAllowlist, AppScanResult, Device, DeviceHealthEvent
 from app.services.admin_notify import notify_admin
 from app.services.rule_bundle_builder import build_rule_bundle
 
-router = APIRouter(prefix="/api/v1", tags=["device"], dependencies=[Depends(require_device)])
+router = APIRouter(prefix="/api/v1", tags=["device"])
 
 
 def _compute_degraded(
@@ -82,16 +82,27 @@ class ScanResultIn(BaseModel):
 
 
 @router.get("/rules/latest")
-def rules_latest(session: Session = Depends(get_session)) -> dict:
+def rules_latest(
+    session: Session = Depends(get_session),
+    _auth: DeviceAuth = Depends(require_device),
+) -> dict:
     return build_rule_bundle(session)
 
 
 @router.post("/devices/heartbeat", response_model=HeartbeatOut)
-def heartbeat(body: HeartbeatIn, session: Session = Depends(get_session)) -> Device:
+def heartbeat(
+    body: HeartbeatIn,
+    session: Session = Depends(get_session),
+    auth: DeviceAuth = Depends(require_device),
+) -> Device:
+    assert_device_uuid_bound(auth, body.device_uuid)
     now = datetime.now(timezone.utc)
     device = session.get(Device, body.device_uuid)
     prev_screening = device.call_screening_enabled if device is not None else False
     if device is None:
+        # Token-bound callers already have a row from enroll; shared lab key may mint.
+        if not auth.shared_key:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="device_not_found")
         device = Device(device_uuid=body.device_uuid)
     device.app_version = body.app_version
     device.dns_configured = body.dns_configured
@@ -111,7 +122,6 @@ def heartbeat(body: HeartbeatIn, session: Session = Depends(get_session)) -> Dev
     )
     session.add(device)
 
-    # Spec §2.4 / C4: role_lost only when we lose screening and peers hint coexistence.
     if prev_screening and not body.call_screening_enabled and body.call_screening_peers:
         peers = ",".join(body.call_screening_peers)
         session.add(
@@ -133,8 +143,15 @@ _ALLOWED_HEALTH_TYPES = frozenset({"dns_drift", "role_lost", "sync_failed"})
 
 
 @router.post("/devices/health-events")
-def health_events(body: HealthEventsIn, session: Session = Depends(get_session)) -> dict:
+def health_events(
+    body: HealthEventsIn,
+    session: Session = Depends(get_session),
+    auth: DeviceAuth = Depends(require_device),
+) -> dict:
+    assert_device_uuid_bound(auth, body.device_uuid)
     if session.get(Device, body.device_uuid) is None:
+        if not auth.shared_key:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="device_not_found")
         session.add(Device(device_uuid=body.device_uuid, last_sync_at=datetime.now(timezone.utc)))
         session.commit()
     saved = 0
@@ -160,13 +177,18 @@ def health_events(body: HealthEventsIn, session: Session = Depends(get_session))
 
 
 @router.post("/devices/apps/scan-result")
-def scan_result(body: ScanResultIn, session: Session = Depends(get_session)) -> dict:
+def scan_result(
+    body: ScanResultIn,
+    session: Session = Depends(get_session),
+    auth: DeviceAuth = Depends(require_device),
+) -> dict:
+    assert_device_uuid_bound(auth, body.device_uuid)
     if session.get(Device, body.device_uuid) is None:
+        if not auth.shared_key:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="device_not_found")
         session.add(Device(device_uuid=body.device_uuid, last_sync_at=datetime.now(timezone.utc)))
         session.commit()
-    allowed = {
-        row.package_name for row in session.exec(select(AppAllowlist)).all()
-    }
+    allowed = {row.package_name for row in session.exec(select(AppAllowlist)).all()}
     saved = 0
     for app in body.suspicious_apps:
         if app.package_name in allowed:

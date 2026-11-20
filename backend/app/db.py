@@ -33,7 +33,9 @@ def init_db() -> None:
     _sqlite_add_column_if_missing("device", "api_token_hash", "VARCHAR(64)")
     _sqlite_add_column_if_missing("device", "token_revoked_at", "DATETIME")
     _sqlite_add_column_if_missing("app_scan_result", "reasons", "JSON DEFAULT '[]'")
-    # enrollment_window table is created by metadata.create_all when missing.
+    _sqlite_add_column_if_missing("enrollment_window", "enroll_count", "INTEGER DEFAULT 0")
+    _sqlite_add_column_if_missing("enrollment_window", "max_enrolls", "INTEGER DEFAULT 10")
+    # used_integrity_token created by metadata.create_all when missing.
 
 
 def get_session() -> Generator[Session, None, None]:

@@ -1,9 +1,14 @@
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 from app.core import config as config_module
+
+# Lab Integrity skip is only legal with this flag (startup gate).
+os.environ["ELDERSHIELD_ALLOW_INSECURE_DEFAULTS"] = "1"
 
 config_module.settings = config_module.Settings(
     database_url="sqlite://",
@@ -31,8 +36,10 @@ def engine():
 def client(engine, monkeypatch):
     from app import db as db_module
     from app.main import app
+    from app.services.enroll_rate_limit import reset_for_tests
 
     monkeypatch.setattr(db_module, "engine", engine)
+    reset_for_tests()
 
     def _get_session():
         with Session(engine) as session:
@@ -42,3 +49,4 @@ def client(engine, monkeypatch):
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
+    reset_for_tests()

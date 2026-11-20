@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlmodel import Session
 
+from app.core import config as config_module
 from app.models.device import EnrollmentWindow
 
 DEFAULT_WINDOW_ID = "default"
@@ -19,7 +20,13 @@ def _utcnow() -> datetime:
 def get_enrollment_window(session: Session) -> EnrollmentWindow:
     row = session.get(EnrollmentWindow, DEFAULT_WINDOW_ID)
     if row is None:
-        row = EnrollmentWindow(id=DEFAULT_WINDOW_ID, enabled=False, expires_at=None)
+        row = EnrollmentWindow(
+            id=DEFAULT_WINDOW_ID,
+            enabled=False,
+            expires_at=None,
+            enroll_count=0,
+            max_enrolls=config_module.settings.enroll_max_per_window,
+        )
         session.add(row)
         session.commit()
         session.refresh(row)
@@ -42,6 +49,8 @@ def open_enrollment(session: Session, *, minutes: int = DEFAULT_TTL_MINUTES) -> 
     row = get_enrollment_window(session)
     row.enabled = True
     row.expires_at = _utcnow() + timedelta(minutes=max(1, minutes))
+    row.enroll_count = 0
+    row.max_enrolls = max(1, config_module.settings.enroll_max_per_window)
     session.add(row)
     session.commit()
     session.refresh(row)
@@ -52,6 +61,20 @@ def close_enrollment(session: Session) -> EnrollmentWindow:
     row = get_enrollment_window(session)
     row.enabled = False
     row.expires_at = None
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    return row
+
+
+def remaining_enrolls(session: Session) -> int:
+    row = get_enrollment_window(session)
+    return max(0, int(row.max_enrolls) - int(row.enroll_count))
+
+
+def record_enroll(session: Session) -> EnrollmentWindow:
+    row = get_enrollment_window(session)
+    row.enroll_count = int(row.enroll_count) + 1
     session.add(row)
     session.commit()
     session.refresh(row)

@@ -46,6 +46,17 @@ class EnrollmentWindow(SQLModel, table=True):
     id: str = Field(default="default", primary_key=True, max_length=32)
     enabled: bool = False
     expires_at: Optional[datetime] = None
+    enroll_count: int = 0
+    max_enrolls: int = 10
+
+
+class UsedIntegrityToken(SQLModel, table=True):
+    """Replay protection for Play Integrity / lab integrity tokens presented at enroll."""
+
+    __tablename__ = "used_integrity_token"
+
+    token_hash: str = Field(primary_key=True, max_length=64)
+    created_at: datetime = Field(default_factory=_utcnow)
 
 
 class AppScanResult(SQLModel, table=True):

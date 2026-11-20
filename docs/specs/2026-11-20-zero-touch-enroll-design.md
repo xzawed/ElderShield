@@ -131,7 +131,14 @@ CI/`local.properties`(gitignore)에서만 `BASE_URL` 주입. 키·토큰 시크�
 
 - 관리자: `등록 허용` ON + TTL(기본 예: 30분)  
 - 창이 열린 동안에만 enroll 성공  
+- 창당 상한(`ENROLL_MAX_PER_WINDOW`) · IP rate limit · Integrity 토큰 재사용 거부  
+- `ELDERSHIELD_ENROLL_SKIP_INTEGRITY` 는 `ALLOW_INSECURE_DEFAULTS=1` 없이는 기동 거부  
 - 부모님에게 링크/코드를 보내지 않음 — **설치 타이밍만** 관리자가 맞춤 (전화 안내: “지금 Play에서 설치·허용만”)
+
+### 4.4 기기 토큰 ↔ UUID 바인딩
+
+- Per-device 토큰으로 인증된 요청은 body `deviceUuid`가 **발급 기기와 일치**해야 함 (`device_uuid_mismatch` 거부).  
+- 공유 랩 `DEVICE_API_KEY`만 임의 UUID heartbeat 허용 (debug).
 
 ---
 
