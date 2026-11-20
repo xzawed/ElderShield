@@ -29,7 +29,7 @@
 | Zero-touch prod gates | Railway HTTPS up — `https://backend-production-6d51aca0.up.railway.app` (`/health` OK). AAB `-Peldershield.baseUrl` + Play Integrity ADC still operator |
 | Integrity nonce bind | Code ready (#11) — client sends `integrityNonce`; server checks requestDetails when Integrity enabled |
 | `ADMIN_NOTIFY_WEBHOOK_URL` | Optional (unset) |
-| Lab device smoke | Optional |
+| Lab device smoke | Pass 2026-11-21 — `scripts/lab-full-verify.ps1` · AVD L4–L8 gsm PASS · S22 nocall banks (Toss/KB/Woori/NH/SOL) + BD coexist · see `2026-11-21-lab-full-verify-results.json` |
 | Public GitHub visibility | **PUBLIC** as of 2026-11-20 (authority handoff) |
 
 ## Notes

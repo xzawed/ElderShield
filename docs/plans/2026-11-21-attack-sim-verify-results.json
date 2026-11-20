@@ -1,0 +1,96 @@
+﻿{
+    "baseUrl":  "http://127.0.0.1:8765",
+    "ranAt":  "2026-11-20T16:54:36.3636738Z",
+    "summary":  {
+                    "skip":  0,
+                    "pass":  16,
+                    "fail":  0,
+                    "warn":  0
+                },
+    "results":  [
+                    {
+                        "id":  "A0-seed",
+                        "status":  "PASS",
+                        "notes":  "{\"cn\": true, \"tlds\": [\"cn\"], \"has_cn\": true, \"bundle\": 76}"
+                    },
+                    {
+                        "id":  "A1-role",
+                        "status":  "PASS",
+                        "notes":  "holder=com.eldershield"
+                    },
+                    {
+                        "id":  "A1-block-attacker-cli",
+                        "status":  "PASS",
+                        "notes":  "    16:52:31.270 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = ElderShield, mCallScreeningComponentN"
+                    },
+                    {
+                        "id":  "A1-log-pattern",
+                        "status":  "PASS",
+                        "notes":  "--------- beginning of main | 11-20 16:52:31.269 32636 32636 I ElderCallScreen: onScreenCall dir=0 len=14 bundleVer=71 block=true"
+                    },
+                    {
+                        "id":  "A1-whitelist-contrast",
+                        "status":  "PASS",
+                        "notes":  "Allow for WL CLI"
+                    },
+                    {
+                        "id":  "A1-control-us",
+                        "status":  "PASS",
+                        "notes":  "US Allow"
+                    },
+                    {
+                        "id":  "A1-server-attacker-cli",
+                        "status":  "PASS",
+                        "notes":  "by design: no raw caller number uploaded; evidence = telecom Reject + logcat len/block"
+                    },
+                    {
+                        "id":  "A2-build-fixture",
+                        "status":  "PASS",
+                        "notes":  "lab-attacker-fixture-debug.apk"
+                    },
+                    {
+                        "id":  "A2-install-emu",
+                        "status":  "PASS",
+                        "notes":  "package:/data/app/~~S11qqPmYOCbNScOq-jrI6Q==/com.eldershield.labattacker-icHRSNy4eqc3iDXAWFfzgQ==/base.apk"
+                    },
+                    {
+                        "id":  "A2-collect-emu",
+                        "status":  "PASS",
+                        "notes":  "{\"found\": {\"deviceUuid\": \"4d8a69c6-d180-4982-92e3-5c76b2946381\", \"scan\": {\"packageName\": \"com.eldershield.labattacker\", \"installer\": null, \"dangerousPermissions\": [\"android.permission.READ_SMS\", \"android.permission.READ_CALL_LOG\", \"android.permission.RECEIVE_SMS\", \"android.permission.REQUEST_INSTALL_PACKAGES\"], \"riskScore\": 100, \"reasons\": [\"installer_null\", \"dangerous_permissions:android.permissi"
+                    },
+                    {
+                        "id":  "A2-install-phone",
+                        "status":  "PASS",
+                        "notes":  "package:/data/app/~~WsmvIG1ymOfEG2XT_pggCA==/com.eldershield.labattacker-NOB9-04i_0R7qxgG6QqUQA==/base.apk"
+                    },
+                    {
+                        "id":  "A2-collect-phone",
+                        "status":  "PASS",
+                        "notes":  "{\"found\": {\"deviceUuid\": \"2409ff2a-21f6-4b70-9c24-a3b7048c4c87\", \"scan\": {\"packageName\": \"com.eldershield.labattacker\", \"installer\": null, \"dangerousPermissions\": [\"android.permission.READ_SMS\", \"android.permission.RECEIVE_SMS\", \"android.permission.READ_CALL_LOG\", \"android.permission.REQUEST_INSTALL_PACKAGES\"], \"riskScore\": 100, \"reasons\": [\"installer_null\", \"dangerous_permissions:android.permissi"
+                    },
+                    {
+                        "id":  "A3-denylist",
+                        "status":  "PASS",
+                        "notes":  "{\"denylist_cn\": true, \"domains_sample\": [\"0-autht-lo-xfin-ity-w0965.vercel.app\", \"0.232.205.92.host.secureserver.net\", \"0010-8y95-a36x.11alia-tiffincrane-com-s-account.workers.dev\"], \"sync\": 200, \"dnsConfigured_devices\": [{\"uuid\": \"2409ff2a-21f6-4b70-9c24-a3b7048c4c87\", \"dns\": tr"
+                    },
+                    {
+                        "id":  "A3-nextdns-push",
+                        "status":  "PASS",
+                        "notes":  "sync-nextdns 200 (attacker TLD/domains pushed to profile)"
+                    },
+                    {
+                        "id":  "A3-phone-private-dns",
+                        "status":  "PASS",
+                        "notes":  "mode=hostname host=63f1cf.dns.nextdns.io"
+                    },
+                    {
+                        "id":  "Z-note",
+                        "status":  "PASS",
+                        "notes":  "Fixture left installed for admin UI inspection; uninstall: adb uninstall com.eldershield.labattacker"
+                    }
+                ],
+    "serials":  {
+                    "emulator":  "emulator-5554",
+                    "phone":  "R5CT61S888J"
+                }
+}

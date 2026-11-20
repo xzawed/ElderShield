@@ -1,7 +1,7 @@
 {% extends "admin/base.html" %}
-{% block title %}App allowlist · ElderShield Admin{% endblock %}
-{% block page_heading %}App allowlist{% endblock %}
-{% block page_sub %}Suppress false-positive risk packages (report still stored){% endblock %}
+{% block title %}{{ t('allowlist.heading') }} · ElderShield Admin{% endblock %}
+{% block page_heading %}{{ t('allowlist.heading') }}{% endblock %}
+{% block page_sub %}{{ t('allowlist.sub') }}{% endblock %}
 {% block content %}
 <section class="mb-6 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 p-6">
   <form method="post" action="/admin/ui/allowlist" class="flex flex-wrap gap-3 items-end">

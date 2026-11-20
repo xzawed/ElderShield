@@ -17,4 +17,5 @@ dependencyResolutionManagement {
 rootProject.name = "ElderShield"
 include(":core")
 include(":app")
+include(":lab-attacker-fixture")
 

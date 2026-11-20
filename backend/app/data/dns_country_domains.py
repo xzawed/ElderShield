@@ -3,6 +3,12 @@
 Not exhaustive — curated high-signal hosts + ccTLD. Expand over time.
 """
 
+from __future__ import annotations
+
+import json
+from functools import lru_cache
+from pathlib import Path
+
 # Domains without leading "*." ; ccTLD entries use "*.xx" form in builder.
 COUNTRY_DOMAIN_SEEDS: dict[str, list[str]] = {
     "CN": [
@@ -37,10 +43,12 @@ COUNTRY_DOMAIN_SEEDS: dict[str, list[str]] = {
     "KR": [],  # never seed KR by default for parents' daily use
 }
 
-COUNTRY_CCTLD: dict[str, str] = {
-    "CN": "cn",
-    "RU": "ru",
-    "KP": "kp",
-    "IR": "ir",
-    "KR": "kr",
-}
+
+@lru_cache(maxsize=1)
+def _load_cctld() -> dict[str, str]:
+    path = Path(__file__).with_name("country_cctld.json")
+    return dict(json.loads(path.read_text(encoding="utf-8")))
+
+
+# Full ISO set (known ccTLD mapping); seeds above remain curated.
+COUNTRY_CCTLD: dict[str, str] = _load_cctld()

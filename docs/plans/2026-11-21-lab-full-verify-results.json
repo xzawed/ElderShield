@@ -1,0 +1,238 @@
+﻿{
+    "ranAt":  "2026-11-20T16:49:10.7014515Z",
+    "baseUrl":  "http://127.0.0.1:8765",
+    "orchestrator":  "scripts/lab-full-verify.ps1",
+    "serials":  {
+                    "emulator":  "emulator-5554",
+                    "phone":  "R5CT61S888J"
+                },
+    "results":  [
+                    {
+                        "id":  "preflight-adb",
+                        "status":  "PASS",
+                        "notes":  "emu=emulator-5554 phone=R5CT61S888J"
+                    },
+                    {
+                        "id":  "preflight-health",
+                        "status":  "PASS",
+                        "notes":  "local uvicorn :8765 /health ok"
+                    },
+                    {
+                        "id":  "preflight-keys",
+                        "status":  "PASS",
+                        "notes":  "backend .env ADMIN/DEVICE aligned with lab scripts"
+                    },
+                    {
+                        "id":  "host-pytest",
+                        "status":  "PASS",
+                        "notes":  "72 passed"
+                    },
+                    {
+                        "id":  "host-android",
+                        "status":  "PASS",
+                        "notes":  ":core:test + assembleDebug BUILD SUCCESSFUL"
+                    },
+                    {
+                        "id":  "batch:L1-pytest",
+                        "status":  "PASS",
+                        "notes":  "72 passed, 1 warning in 35.40s"
+                    },
+                    {
+                        "id":  "batch:L1-denylist",
+                        "status":  "PASS",
+                        "notes":  "DEN 200 {\"source\": \"country_restrictions+threat_hosts\", \"countries\": [\"CN\"], \"tlds\": [\"cn\"], \"domains\": [\"0-autht-lo-xfin-ity-w0965.vercel.app\", \"0.232.205.92.host.secureserver.net\", \"0010-8y95-a36x.11alia-tiffincrane-com-s-account.workers.dev\", \"019252-microsoft.com\", \"01sw-bdg8-oxmc.alina-ciorba-duncantoplis-co-uk-s-account.workers.dev\", \"0215412pageaccountserve23-confirm.start.page\", \"03365pay.com\", \"0auth-collab.land\", \"0auth2.1mb.site\", \"0authxfinity.vercel.app\", \"0bruelo-wallet.co.com\", \"0kxweb3wa\r"
+                    },
+                    {
+                        "id":  "batch:L2-nextdns",
+                        "status":  "PASS",
+                        "notes":  "sync-nextdns 200"
+                    },
+                    {
+                        "id":  "batch:L3-apk",
+                        "status":  "PASS",
+                        "notes":  "assembleDebug ok"
+                    },
+                    {
+                        "id":  "batch:L3-emu",
+                        "status":  "WARN",
+                        "notes":  "role ok; check version vs 71 :: [{\"deviceUuid\": \"4d8a69c6-d180-4982-92e3-5c76b2946381\", \"name\": null, \"model\": null, \"appVersion\": \"0.2.0\", \"dnsConfigured\": false, \"callScreeningEnabled\": true, \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPe"
+                    },
+                    {
+                        "id":  "batch:L4-cn-block",
+                        "status":  "PASS",
+                        "notes":  "16:45:01.382 - SCREENING_COMPLETED ([Reject, logged, DND not determined, mCallBlockReason = 1, mCallScreeningAppName = E"
+                    },
+                    {
+                        "id":  "batch:L5-cn-whitelist",
+                        "status":  "PASS",
+                        "notes":  "Allow"
+                    },
+                    {
+                        "id":  "batch:L6-kr82",
+                        "status":  "PASS",
+                        "notes":  "Reject"
+                    },
+                    {
+                        "id":  "batch:L7-emu-010",
+                        "status":  "PASS",
+                        "notes":  "Reject (national normalize)"
+                    },
+                    {
+                        "id":  "batch:L8-us-allow",
+                        "status":  "PASS",
+                        "notes":  "Allow"
+                    },
+                    {
+                        "id":  "batch:L3-s22",
+                        "status":  "PASS",
+                        "notes":  "role+version=71 dns_mode=hostname"
+                    },
+                    {
+                        "id":  "batch:L7-s22-010",
+                        "status":  "NEED_HUMAN",
+                        "notes":  "Second KR phone must dial S22 while KR restriction enabled; adb cannot inject PSTN on physical device"
+                    },
+                    {
+                        "id":  "batch:L9-outgoing",
+                        "status":  "SKIP",
+                        "notes":  "No auto CALL on S22 (billing risk). Outgoing Allow = AVD E1/E2 / combinatorial B-out*; optional manual own-line only"
+                    },
+                    {
+                        "id":  "batch:L10-bank",
+                        "status":  "PASS",
+                        "notes":  "Toss:installed launch_ok=True; KakaoBank:not_installed; Shinhan:not_installed"
+                    },
+                    {
+                        "id":  "batch:L11-dns",
+                        "status":  "WARN",
+                        "notes":  "Private DNS mode=hostname host=63f1cf.dns.nextdns.io — confirm heartbeat dnsConfigured after report worker"
+                    },
+                    {
+                        "id":  "avd-batch",
+                        "status":  "PASS",
+                        "notes":  "pass=11 fail=0 warn=2"
+                    },
+                    {
+                        "id":  "nocall:N1-denylist",
+                        "status":  "PASS",
+                        "notes":  "{\"countries\": [\"CN\"], \"tlds\": [\"cn\"], \"count\": 96, \"has_baidu\": true, \"sync\": 200}"
+                    },
+                    {
+                        "id":  "nocall:N2-nextdns-sync",
+                        "status":  "PASS",
+                        "notes":  "sync 200"
+                    },
+                    {
+                        "id":  "nocall:S22-vpn",
+                        "status":  "PASS",
+                        "notes":  "no ElderShield VpnService in package dump"
+                    },
+                    {
+                        "id":  "nocall:S22-dnsConfigured",
+                        "status":  "PASS",
+                        "notes":  "dnsConfigured=true after Private DNS hostname"
+                    },
+                    {
+                        "id":  "nocall:S22-cn-resolve",
+                        "status":  "WARN",
+                        "notes":  "sync ok but resolve still open: \r\n"
+                    },
+                    {
+                        "id":  "nocall:EMU-vpn",
+                        "status":  "PASS",
+                        "notes":  "no ElderShield VpnService in package dump"
+                    },
+                    {
+                        "id":  "nocall:EMU-dnsConfigured",
+                        "status":  "PASS",
+                        "notes":  "dnsConfigured=true after Private DNS hostname"
+                    },
+                    {
+                        "id":  "nocall:EMU-cn-resolve",
+                        "status":  "WARN",
+                        "notes":  "sync ok but resolve still open: \r\n"
+                    },
+                    {
+                        "id":  "nocall:BANK-Toss",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{227578638 u0 viva.republica.toss/im.toss.features.main.ui.MainActivity t24046}"
+                    },
+                    {
+                        "id":  "nocall:BANK-KakaoBank",
+                        "status":  "SKIP",
+                        "notes":  "not installed"
+                    },
+                    {
+                        "id":  "nocall:BANK-Shinhan",
+                        "status":  "SKIP",
+                        "notes":  "not installed"
+                    },
+                    {
+                        "id":  "nocall:BANK-ShinhanSOL",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{223536299 u0 com.shinhan.stax/.main.IntroActivity t24047}"
+                    },
+                    {
+                        "id":  "nocall:BANK-KBCard",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{234807874 u0 com.kbcard.cxh.appcard/.screen.intro.LaunchControlActivity t24048}"
+                    },
+                    {
+                        "id":  "nocall:BANK-KBBank",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{79843234 u0 com.kbstar.kbbank/.implementation.presentation.MainActivity t24049}"
+                    },
+                    {
+                        "id":  "nocall:BANK-Woori",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{236926631 u0 com.wooribank.smart.npib/.main.ui.MainWebActivity t24050}"
+                    },
+                    {
+                        "id":  "nocall:BANK-NH",
+                        "status":  "PASS",
+                        "notes":  "    topResumedActivity=ActivityRecord{164512169 u0 nh.smart.banking/com.smart.banking.popup.AccessPermisPopupActivity t24051}"
+                    },
+                    {
+                        "id":  "nocall:BD-packages",
+                        "status":  "PASS",
+                        "notes":  "package:com.bitdefender.security, package:com.bitdefender.centralmgmt, package:com.bitdefender.passmanager, package:com.bitdefender.vpn"
+                    },
+                    {
+                        "id":  "nocall:BD-role-holder",
+                        "status":  "PASS",
+                        "notes":  "holders=com.eldershield (no steal this run)"
+                    },
+                    {
+                        "id":  "nocall:BD-coexist",
+                        "status":  "PASS",
+                        "notes":  "ES holds CALL_SCREENING; BD not holding (platform single-holder). DNS/scan still OK policy A"
+                    },
+                    {
+                        "id":  "nocall:BD-heartbeat-peers",
+                        "status":  "PASS",
+                        "notes":  "[{\"deviceUuid\": \"2409ff2a-21f6-4b70-9c24-a3b7048c4c87\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.bitdefender.security\", \"com.ktcs.whowho\", \"com.samsung.android.dialer\"], \"callScreeningEnabled\": true, \"dnsConfigured\": true}, {\"deviceUuid\": \"4d8a69c6-d180-4982-92e3-5c76b2946381\", \"callScreeningHeldBy\": \"com.eldershield\", \"callScreeningPeers\": [\"com.google.android.dialer\""
+                    },
+                    {
+                        "id":  "nocall:ES-accessibility",
+                        "status":  "PASS",
+                        "notes":  "ES not in enabled_accessibility_services"
+                    },
+                    {
+                        "id":  "nocall:Z-restore",
+                        "status":  "PASS",
+                        "notes":  "CN call+dns on; KR call off"
+                    },
+                    {
+                        "id":  "phone-nocall",
+                        "status":  "PASS",
+                        "notes":  "pass=18 fail=0 warn=2 skip=2"
+                    }
+                ],
+    "summary":  {
+                    "skip":  3,
+                    "need_human":  1,
+                    "pass":  36,
+                    "fail":  0,
+                    "warn":  4
+                }
+}

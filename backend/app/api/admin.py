@@ -69,7 +69,13 @@ class EnrollmentWindowOut(BaseModel):
 @router.get("/countries", response_model=list[CountryMasterOut])
 def list_countries() -> list[CountryMasterOut]:
     return [
-        CountryMasterOut(code=c["code"], name=c["name"], callingCode=c["calling_code"])
+        CountryMasterOut(
+            code=c["code"],
+            name=c.get("name_en") or c.get("name") or c["code"],
+            nameEn=c.get("name_en") or c.get("name") or c["code"],
+            nameKo=c.get("name_ko") or c.get("name_en") or c["code"],
+            callingCode=c.get("calling_code") or "",
+        )
         for c in COUNTRY_MASTER
     ]
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="{{ lang|default('ko') }}" class="h-full">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,40 +47,46 @@
     <aside class="lg:w-64 shrink-0 border-b lg:border-b-0 lg:border-r border-slate-200 bg-ink-950 text-slate-100">
       <div class="px-5 py-6">
         <p class="font-display text-xl tracking-tight text-white">ElderShield</p>
-        <p class="mt-1 text-xs uppercase tracking-[0.18em] text-brand-100/80">Admin console</p>
+        <p class="mt-1 text-xs uppercase tracking-[0.18em] text-brand-100/80">{{ t('brand.sub') }}</p>
       </div>
       <nav class="px-3 pb-6 space-y-1 text-sm">
         <a href="/admin/ui/restrictions"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/restrictions') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          Country restrictions
+          {{ t('nav.restrictions') }}
         </a>
         <a href="/admin/ui/call-rules"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/call-rules') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          Call rules
+          {{ t('nav.call_rules') }}
         </a>
         <a href="/admin/ui/dns-denylist"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/dns-denylist') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          DNS denylist
+          {{ t('nav.dns') }}
         </a>
         <a href="/admin/ui/devices"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/devices') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          Devices
+          {{ t('nav.devices') }}
         </a>
         <a href="/admin/ui/allowlist"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/allowlist') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          App allowlist
+          {{ t('nav.allowlist') }}
         </a>
         <a href="/admin/ui/audit"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/audit') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          Audit
+          {{ t('nav.audit') }}
         </a>
         <a href="/admin/ui/logout"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white">
-          Sign out
+          {{ t('nav.logout') }}
         </a>
       </nav>
-      <div class="hidden lg:block px-5 pb-6 text-xs text-slate-500">
-        Phase 2 · C depth + A quality
+      <div class="px-5 pb-6 space-y-2">
+        <div class="flex gap-2 text-xs">
+          <a href="/admin/ui/lang?set=ko&next={{ request.url.path|urlencode }}"
+             class="rounded-md px-2 py-1 {% if lang == 'ko' %}bg-brand-600 text-white{% else %}bg-white/5 text-slate-300 hover:text-white{% endif %}">{{ t('lang.ko') }}</a>
+          <a href="/admin/ui/lang?set=en&next={{ request.url.path|urlencode }}"
+             class="rounded-md px-2 py-1 {% if lang == 'en' %}bg-brand-600 text-white{% else %}bg-white/5 text-slate-300 hover:text-white{% endif %}">{{ t('lang.en') }}</a>
+        </div>
+        <p class="hidden lg:block text-xs text-slate-500">Phase 2 · C depth + A quality</p>
       </div>
     </aside>
     <div class="flex-1 min-w-0">
@@ -94,6 +100,12 @@
       <main class="px-6 py-8 max-w-6xl">
   {% else %}
   <div class="min-h-full grid place-items-center px-4 py-12">
+    <div class="absolute top-4 right-4 flex gap-2 text-xs">
+      <a href="/admin/ui/lang?set=ko&next=/admin/ui/login"
+         class="rounded-md px-2 py-1 {% if lang == 'ko' %}bg-brand-600 text-white{% else %}bg-white/80 text-ink-800 ring-1 ring-slate-200{% endif %}">{{ t('lang.ko') }}</a>
+      <a href="/admin/ui/lang?set=en&next=/admin/ui/login"
+         class="rounded-md px-2 py-1 {% if lang == 'en' %}bg-brand-600 text-white{% else %}bg-white/80 text-ink-800 ring-1 ring-slate-200{% endif %}">{{ t('lang.en') }}</a>
+    </div>
     <main class="w-full max-w-md">
   {% endif %}
         {% block content %}{% endblock %}

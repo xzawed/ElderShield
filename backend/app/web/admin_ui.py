@@ -20,6 +20,7 @@ from app.services.country_restriction_service import (
 )
 from app.services.dns_denylist import build_dns_denylist
 from app.web.auth import login_redirect, logout_redirect, require_admin_ui
+from app.web.i18n import LANG_COOKIE, make_translator, normalize_lang, resolve_lang
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parents[1] / "templates"))
@@ -46,23 +47,50 @@ def _record_login_failure(ip: str) -> None:
     _LOGIN_FAILURES.setdefault(ip, []).append(time.time())
 
 
-def _ctx(request: Request, **kwargs):
-    return {"request": request, "admin_authed": True, **kwargs}
+def _ctx(request: Request, admin_authed: bool = True, **kwargs):
+    lang = resolve_lang(request)
+    t = make_translator(lang)
+    return {
+        "request": request,
+        "admin_authed": admin_authed,
+        "lang": lang,
+        "t": t,
+        **kwargs,
+    }
+
+
+@router.get("/lang")
+def set_lang(request: Request, set: str = "ko", next: str = "/admin/ui/restrictions") -> Response:
+    lang = normalize_lang(set)
+    # Only allow relative admin UI next paths (open-redirect guard).
+    nxt = next if next.startswith("/admin/ui") else "/admin/ui/restrictions"
+    resp = RedirectResponse(nxt, status_code=303)
+    resp.set_cookie(
+        LANG_COOKIE,
+        lang,
+        max_age=86400 * 365,
+        httponly=False,
+        samesite="lax",
+        path="/",
+    )
+    return resp
 
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request) -> HTMLResponse:
+    lang = resolve_lang(request)
+    t = make_translator(lang)
     err = request.query_params.get("error")
     if err == "rate":
-        error = "Too many failed attempts. Try again later."
+        error = t("login.error_rate")
     elif err:
-        error = "Invalid API key"
+        error = t("login.error_invalid")
     else:
         error = None
     return templates.TemplateResponse(
         request,
         "admin/login.html",
-        {"request": request, "admin_authed": False, "error": error},
+        _ctx(request, admin_authed=False, error=error),
     )
 
 

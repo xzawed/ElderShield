@@ -196,7 +196,11 @@ if (Ensure-Serial $S22) {
   $banks = @(
     @{ pkg = "viva.republica.toss"; name = "Toss" },
     @{ pkg = "com.kakaobank.channel"; name = "KakaoBank" },
-    @{ pkg = "com.shinhan.sbanking"; name = "Shinhan" }
+    @{ pkg = "com.shinhan.sbanking"; name = "Shinhan" },
+    @{ pkg = "com.shinhan.stax"; name = "ShinhanSOL" },
+    @{ pkg = "com.kbstar.kbbank"; name = "KBBank" },
+    @{ pkg = "com.wooribank.smart.npib"; name = "Woori" },
+    @{ pkg = "nh.smart.banking"; name = "NH" }
   )
   $bankNotes = @()
   foreach ($b in $banks) {

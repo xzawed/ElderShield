@@ -1,7 +1,7 @@
 {% extends "admin/base.html" %}
-{% block title %}DNS denylist · ElderShield Admin{% endblock %}
-{% block page_heading %}DNS / internet policy{% endblock %}
-{% block page_sub %}NextDNS security.tlds + denylist hosts from applyTo dns/internet{% endblock %}
+{% block title %}{{ t('dns.heading') }} · ElderShield Admin{% endblock %}
+{% block page_heading %}{{ t('dns.heading') }}{% endblock %}
+{% block page_sub %}{{ t('dns.sub') }}{% endblock %}
 {% block content %}
 <div class="grid gap-6 lg:grid-cols-5">
   <section class="lg:col-span-3 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 space-y-6">
