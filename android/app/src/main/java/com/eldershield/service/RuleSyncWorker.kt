@@ -21,7 +21,7 @@ class RuleSyncWorker(
     params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
-        val prefs = applicationContext.getSharedPreferences("eldershield", Context.MODE_PRIVATE)
+        val prefs = applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         return try {
             val baseUrl = prefs.getString("base_url", DEFAULT_BASE_URL) ?: DEFAULT_BASE_URL
             val apiKey = prefs.getString("device_api_key", null).orEmpty()
@@ -68,6 +68,7 @@ class RuleSyncWorker(
     companion object {
         const val UNIQUE_NAME = "eldershield-rule-sync"
         const val DEFAULT_BASE_URL = "https://example.invalid"
+        const val PREFS = "eldershield"
         const val PREF_LAST_SYNC_OK = "last_sync_ok"
         const val PREF_LAST_SYNC_ERROR = "last_sync_error_code"
     }

@@ -67,20 +67,25 @@ object AppRiskScorer {
         if (dangerousHits.isNotEmpty()) {
             reasons += "dangerous_permissions:${dangerousHits.joinToString("|")}"
         }
+        // Accessibility capability bonus capped at +25 total (bind and/or declared service).
+        var a11yBonus = 0
         if ("android.permission.BIND_ACCESSIBILITY_SERVICE" in dangerousHits) {
-            score += 25
+            a11yBonus = 25
             reasons += "accessibility_bind"
         }
+        if (input.hasAccessibilityService) {
+            if (a11yBonus == 0) {
+                a11yBonus = 25
+            }
+            reasons += "accessibility_service_declared"
+        }
+        score += a11yBonus
 
         val overlay =
             input.hasOverlayPermission || OVERLAY_PERM in normalized
         if (overlay) {
             score += 25
             reasons += "overlay_permission"
-        }
-        if (input.hasAccessibilityService) {
-            score += 25
-            reasons += "accessibility_service_declared"
         }
 
         // Play Store + no dangerous / overlay / a11y capability stays low (UT-A-40)
