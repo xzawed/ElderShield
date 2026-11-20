@@ -33,14 +33,15 @@
 | **Product** | ElderShield (실버실드) — hands-off defensive layer for parents’ phones/tablets |
 | **Who acts** | **Admin only** (web + API). Parents install once, grant roles/permissions, then do nothing |
 | **Phase 1** | Call screening · Private DNS status · App risk scan report · Versioned rule sync |
-| **Not Phase 1** | Default `VpnService`, Overlay, Accessibility Service, Device Admin, counter-attacks |
+| **Phase 2** | Device health · overlay/a11y **capability** scan (P3) · threat-host DNS · audit/notify/`/health` |
+| **Out of scope** | Default `VpnService`, ElderShield Overlay/Accessibility/Device Admin, counter-attacks, multi-tenant (B) |
 
 | Capability | How it works |
 |------------|----------------|
-| Risky-country **calls** | `CallScreeningService` + Room-cached `RuleBundle` (+ `CallRule` whitelist) |
-| Risky-country **internet** | Private DNS (NextDNS / AdGuard) + Admin **DNS denylist**; no on-device VPN; API push next |
-| **Scam / sideloaded apps** | Scan & report to admin only (no parent popups) |
-| **Control plane** | Admin web + `X-API-Key` APIs + monotonic rule **generation** |
+| Risky-country **calls** | `CallScreeningService` + Room-cached `RuleBundle` (+ `CallRule` whitelist); `role_lost` admin alert only |
+| Risky-country **internet** | Private DNS (NextDNS / AdGuard) + Admin **DNS denylist** + threat-host feed; no on-device VPN |
+| **Scam / sideloaded apps** | Scan & report (incl. overlay capability reasons) to admin only |
+| **Control plane** | Admin web + `X-API-Key` APIs + monotonic rule **generation** + audit log |
 
 > Complements (does not replace) consumer antivirus products.
 

@@ -1,6 +1,6 @@
 # ElderShield Backend
 
-FastAPI + SQLModel + Alembic (Phase 1).
+FastAPI + SQLModel + Alembic (Phase 1 + Phase 2 health/audit/threat DNS).
 
 ## Setup
 
@@ -31,7 +31,8 @@ UI notes: [`../docs/runbooks/admin-ui.md`](../docs/runbooks/admin-ui.md)
 python -m pytest -q
 ```
 
-## Known Phase-1 gaps
+## Notes
 
-- Alembic `versions/` still empty — schema via `SQLModel.metadata.create_all` (dev)
-- Play internal track / real-device checklist = S6.1 (user)
+- Schema: `SQLModel.metadata.create_all` + sqlite additive columns in `init_db` (dev/lab)
+- Phase 2: device health, threat hosts, allowlist, audit, `ADMIN_NOTIFY_WEBHOOK_URL` — see `docs/releases/v0.2.0.md`
+- Operator: Play internal AAB, production threat hosts, NextDNS profile keys

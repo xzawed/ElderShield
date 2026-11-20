@@ -1,6 +1,7 @@
 # 00. 제품 개요
 
-**SSOT 설계**: [`specs/2026-11-18-eldershield-system-design.md`](specs/2026-11-18-eldershield-system-design.md)
+**SSOT 설계**: [`specs/2026-11-18-eldershield-system-design.md`](specs/2026-11-18-eldershield-system-design.md)  
+**Phase 2 addendum**: [`specs/2026-11-20-phase2-ac-depth-quality-design.md`](specs/2026-11-20-phase2-ac-depth-quality-design.md) (코드 `main` 반영 2026-11-20)
 
 ## 한 줄
 
@@ -33,6 +34,6 @@ ElderShield(실버실드)는 부모님 Android 기기의 **위험 국가 전화�
 ## Phase 1 / 2
 
 - **Phase 1**: Call screening(수신 전용 국가 차단), Private DNS 모니터, DNS denylist + **NextDNS sync API**(운영 키 필요), AppScanner 보고, Admin CRUD
-- **Phase 2 (C→A)**: 기기 health · 오버레이/사기팝업 **가능 앱** 탐지(P3) · phishing/scam-ad DNS 피드 · role_lost 경보 → 이어서 audit/notify/메트릭/auth. 상세: [`specs/2026-11-20-phase2-ac-depth-quality-design.md`](specs/2026-11-20-phase2-ac-depth-quality-design.md)
+- **Phase 2 (C→A, shipped)**: 기기 health · 오버레이/사기팝업 **가능 앱**(P3) · phishing/scam-ad DNS · role_lost 경보 · audit/notify/`/health`/login rate-limit. 보드: [`plans/2026-11-20-phase2-sprint-board.md`](plans/2026-11-20-phase2-sprint-board.md)
 - **후순위**: VpnService IP 필터(은행앱 회귀 후), B 다조직  
-  (NextDNS **운영 프로필·키 실배포**는 Phase 1 코드 경로 위 운영자 게이트)
+  (NextDNS·threat host 실운영·Play AAB는 운영자 게이트)

@@ -414,9 +414,10 @@ interface AppScanner {
 ---
 
 ## 10. 향후 확장
-- **NextDNS API 자동 푸시** (denylist 슬라이스 직후 — 인터넷 차단 P0)
+- **Phase 2 (A+C)** — 구현됨: [`2026-11-20-phase2-ac-depth-quality-design.md`](2026-11-20-phase2-ac-depth-quality-design.md) (health · P3 overlay capability · threat DNS · audit/notify). NextDNS API 푸시는 Phase 1 경로에 포함.
 - VpnService 기반 IP 국가 필터 (은행 앱 회귀 통과 후에만 옵션)
-- 더 정교한 앱 위험 점수 / 통계 대시보드
+- B 다조직/테넌트 · P4 화면 읽기 · 스미싱 리스너 (별도 게이트)
+- 더 정교한 통계 대시보드
 
 ---
 
