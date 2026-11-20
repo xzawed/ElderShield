@@ -34,27 +34,31 @@ class RuleSyncWorker(
             val policy = RuleSyncPolicy(repo)
             val outcome = policy.sync()
             ActiveRuleBundleCache.publishIfNewer(policy.activeBundle(outcome))
-            prefs
-                .edit()
-                .putBoolean(PREF_LAST_SYNC_OK, true)
-                .remove(PREF_LAST_SYNC_ERROR)
-                .apply()
+            val syncFailed =
+                outcome is SyncOutcome.UsedCache || outcome is SyncOutcome.EmptyNoBlock
+            if (syncFailed) {
+                prefs
+                    .edit()
+                    .putBoolean(PREF_LAST_SYNC_OK, false)
+                    .putString(PREF_LAST_SYNC_ERROR, SyncErrorCodes.fromThrowable(policy.lastError))
+                    .apply()
+            } else {
+                prefs
+                    .edit()
+                    .putBoolean(PREF_LAST_SYNC_OK, true)
+                    .remove(PREF_LAST_SYNC_ERROR)
+                    .apply()
+            }
             if (SyncWorkDisposition.shouldRetry(outcome)) {
                 Result.retry()
             } else {
                 Result.success()
             }
         } catch (e: Exception) {
-            val code =
-                when {
-                    e.message?.contains("HTTP 4") == true -> "http_4xx"
-                    e.message?.contains("HTTP 5") == true -> "http_5xx"
-                    else -> "network"
-                }
             prefs
                 .edit()
                 .putBoolean(PREF_LAST_SYNC_OK, false)
-                .putString(PREF_LAST_SYNC_ERROR, code)
+                .putString(PREF_LAST_SYNC_ERROR, SyncErrorCodes.fromThrowable(e))
                 .apply()
             // Never crash the process; retry later with backoff.
             Result.retry()
