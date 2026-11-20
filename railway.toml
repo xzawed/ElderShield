@@ -1,11 +1,13 @@
-# ElderShield backend on Railway (monorepo root Dockerfile copies backend/).
+# ElderShield backend on Railway.
+# Live service uses rootDirectory=/backend + Railpack; startCommand must expand PORT via shell.
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 watchPatterns = ["backend/**", "Dockerfile", "railway.toml"]
 
 [deploy]
+startCommand = "sh -c \"uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}\""
 healthcheckPath = "/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 5
