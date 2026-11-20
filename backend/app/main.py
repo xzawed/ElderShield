@@ -6,6 +6,7 @@ from sqlmodel import Session, func, select
 
 from app.api.admin import router as admin_router
 from app.api.devices import router as device_router
+from app.api.enroll import router as enroll_router
 from app.core.config import assert_secure_settings, settings
 from app import db as db_module
 from app.db import init_db
@@ -24,6 +25,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="ElderShield API", version="0.2.0", lifespan=lifespan)
 app.include_router(admin_router)
 app.include_router(device_router)
+app.include_router(enroll_router)
 app.include_router(admin_ui_router)
 
 

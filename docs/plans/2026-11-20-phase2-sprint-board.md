@@ -25,6 +25,7 @@
 | NextDNS sync (`NEXTDNS_*`) | Pass 2026-11-20 — denylist stable (country + curated local threats); `*.example` excluded; 429 backoff |
 | Threat hosts local overlay | Pass 2026-11-20 — `threat_hosts.local.json` (gitignored) from PhishDestroy primary_active, brand-FP filtered, capped |
 | Play signed AAB | Pass build 2026-11-20 — local `upload-keystore.jks` + `app-release.aab` (gitignored). **Play Console upload** still needs Google login |
+| Zero-touch enroll (spec+impl) | **Code ready 2026-11-20** — enrollment window · per-device token · Integrity hooks · admin UI. Needs HTTPS `eldershield.baseUrl` + Play Integrity creds for production AAB; lab smoke OK with `ELDERSHIELD_ENROLL_SKIP_INTEGRITY=1` |
 | `ADMIN_NOTIFY_WEBHOOK_URL` | Optional (unset) |
 | Lab device smoke | Optional |
 | Public GitHub visibility | **PUBLIC** as of 2026-11-20 (authority handoff) |

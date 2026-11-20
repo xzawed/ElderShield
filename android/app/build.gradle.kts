@@ -23,6 +23,33 @@ android {
         versionCode = 2
         versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Release Play builds (no device key in APK):
+        //   -Peldershield.baseUrl=https://api.example.com
+        //   -Peldershield.playCloudProjectNumber=123456789012
+        // Or set the same keys in android/local.properties (gitignored).
+        fun prop(name: String): String {
+            val fromProject = (project.findProperty(name) as String?)?.trim()
+            if (!fromProject.isNullOrEmpty()) return fromProject
+            val localFile = rootProject.file("local.properties")
+            if (localFile.exists()) {
+                val p = Properties()
+                localFile.inputStream().use { p.load(it) }
+                return p.getProperty(name)?.trim().orEmpty()
+            }
+            return ""
+        }
+        val baseUrl = prop("eldershield.baseUrl")
+        val cloudProject = prop("eldershield.playCloudProjectNumber").ifEmpty { "0" }
+        buildConfigField("String", "BASE_URL", "\"${baseUrl.replace("\"", "\\\"")}\"")
+        buildConfigField(
+            "String",
+            "PLAY_CLOUD_PROJECT_NUMBER",
+            "\"${cloudProject.replace("\"", "\\\"")}\"",
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     signingConfigs {
@@ -64,6 +91,8 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("com.google.android.play:integrity:1.4.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }

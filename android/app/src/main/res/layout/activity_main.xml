@@ -10,6 +10,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Admin provisioning (not parent UX)"
@@ -33,6 +34,13 @@
             android:hint="Device API key"
             android:inputType="textPassword"
             android:importantForAutofill="no" />
+
+        <Button
+            android:id="@+id/labEnroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Lab: enroll (no key — needs open window)" />
 
         <Button
             android:id="@+id/saveProvision"

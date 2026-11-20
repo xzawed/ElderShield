@@ -418,17 +418,68 @@ def list_devices(
     _: str = Depends(require_admin_ui),
     session: Session = Depends(get_session),
 ) -> HTMLResponse:
+    from app.services.enrollment_window import get_enrollment_window, is_enrollment_open
+
     devices = list(session.exec(select(Device)).all())
     role_lost = set(
         session.exec(
             select(DeviceHealthEvent.device_uuid).where(DeviceHealthEvent.type == "role_lost")
         ).all()
     )
+    window = get_enrollment_window(session)
     return templates.TemplateResponse(
         request,
         "admin/devices.html",
-        _ctx(request, devices=devices, role_lost=role_lost),
+        _ctx(
+            request,
+            devices=devices,
+            role_lost=role_lost,
+            enrollment_open=is_enrollment_open(session),
+            enrollment_expires_at=window.expires_at,
+        ),
     )
+
+
+@router.post("/devices/enrollment-window")
+def ui_set_enrollment_window(
+    request: Request,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+    enabled: str = Form("0"),
+    ttl_minutes: int = Form(30),
+) -> RedirectResponse:
+    from app.services.enrollment_window import close_enrollment, open_enrollment
+
+    if enabled in ("1", "true", "on", "yes"):
+        open_enrollment(session, minutes=ttl_minutes)
+    else:
+        close_enrollment(session)
+    return RedirectResponse("/admin/ui/devices", status_code=303)
+
+
+@router.post("/devices/{device_uuid}/revoke-token")
+def ui_revoke_device_token(
+    device_uuid: str,
+    _: str = Depends(require_admin_ui),
+    session: Session = Depends(get_session),
+) -> RedirectResponse:
+    from datetime import datetime, timezone
+
+    device = session.get(Device, device_uuid)
+    if device is None:
+        return RedirectResponse("/admin/ui/devices", status_code=303)
+    device.token_revoked_at = datetime.now(timezone.utc)
+    device.api_token_hash = None
+    session.add(device)
+    record_audit(
+        session,
+        action="device_token_revoke",
+        resource_type="device",
+        resource_id=device_uuid,
+        detail="token revoked via admin UI",
+    )
+    session.commit()
+    return RedirectResponse(f"/admin/ui/devices/{device_uuid}", status_code=303)
 
 
 @router.get("/devices/{device_uuid}", response_class=HTMLResponse)

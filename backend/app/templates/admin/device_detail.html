@@ -19,7 +19,18 @@
     <div><dt class="text-ink-400">DNS</dt><dd>{{ "on" if device.dns_configured else "off" }} ({{ device.dns_host_class or "—" }})</dd></div>
     <div><dt class="text-ink-400">Call screening</dt><dd>{{ "held" if device.call_screening_enabled else "not held" }}</dd></div>
     <div><dt class="text-ink-400">Sync error</dt><dd>{{ device.last_sync_error_code or "—" }}</dd></div>
+    <div><dt class="text-ink-400">Device token</dt>
+      <dd>{% if device.api_token_hash and not device.token_revoked_at %}active{% elif device.token_revoked_at %}revoked{% else %}shared-key / none{% endif %}</dd>
+    </div>
   </dl>
+  {% if device.api_token_hash and not device.token_revoked_at %}
+  <form method="post" action="/admin/ui/devices/{{ device.device_uuid }}/revoke-token" class="mt-4"
+        onsubmit="return confirm('Revoke this device token? The phone must re-enroll (enrollment window open).');">
+    <button type="submit" class="rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600">
+      Revoke device token
+    </button>
+  </form>
+  {% endif %}
 </section>
 
 <section class="mb-6 rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80">

@@ -21,6 +21,8 @@ from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
 from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
+from datetime import datetime, timezone
+
 from app.models.device import AppAllowlist, AppScanResult, AuditLog, Device, DeviceHealthEvent
 from app.services.audit import record_audit
 from app.services.call_rule_service import create_call_rule
@@ -30,6 +32,12 @@ from app.services.country_restriction_service import (
     update_country_restriction,
 )
 from app.services.dns_denylist import build_dns_denylist
+from app.services.enrollment_window import (
+    DEFAULT_TTL_MINUTES,
+    close_enrollment,
+    get_enrollment_window,
+    open_enrollment,
+)
 from app.services.nextdns_sync import NextDnsNotConfigured, NextDnsSyncError, sync_policy_to_nextdns
 from app.services.rule_bundle_service import publish_rollback
 
@@ -41,6 +49,21 @@ class AllowlistIn(BaseModel):
 
     package_name: str = Field(alias="packageName")
     note: str | None = None
+
+
+class EnrollmentWindowIn(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    enabled: bool
+    ttl_minutes: int = Field(default=DEFAULT_TTL_MINUTES, alias="ttlMinutes")
+
+
+class EnrollmentWindowOut(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, ser_json_by_alias=True)
+
+    enabled: bool
+    open: bool
+    expires_at: datetime | None = Field(default=None, serialization_alias="expiresAt")
 
 
 @router.get("/countries", response_model=list[CountryMasterOut])
@@ -223,6 +246,61 @@ def sync_dns_denylist_nextdns(session: Session = Depends(get_session)) -> NextDn
         tlds=result["tlds"],
         denylist=result["denylist"],
     )
+
+
+@router.get("/enrollment-window", response_model=EnrollmentWindowOut)
+def read_enrollment_window(session: Session = Depends(get_session)) -> EnrollmentWindowOut:
+    from app.services.enrollment_window import is_enrollment_open
+
+    row = get_enrollment_window(session)
+    return EnrollmentWindowOut(
+        enabled=row.enabled,
+        open=is_enrollment_open(session),
+        expires_at=row.expires_at,
+    )
+
+
+@router.post("/enrollment-window", response_model=EnrollmentWindowOut)
+def set_enrollment_window(
+    body: EnrollmentWindowIn, session: Session = Depends(get_session)
+) -> EnrollmentWindowOut:
+    from app.services.enrollment_window import is_enrollment_open
+
+    if body.enabled:
+        row = open_enrollment(session, minutes=body.ttl_minutes)
+    else:
+        row = close_enrollment(session)
+    record_audit(
+        session,
+        action="enrollment_window_set",
+        resource_type="enrollment_window",
+        resource_id="default",
+        detail=f"enabled={body.enabled} ttlMinutes={body.ttl_minutes}",
+    )
+    return EnrollmentWindowOut(
+        enabled=row.enabled,
+        open=is_enrollment_open(session),
+        expires_at=row.expires_at,
+    )
+
+
+@router.delete("/devices/{device_uuid}/token", status_code=status.HTTP_204_NO_CONTENT)
+def revoke_device_token(device_uuid: str, session: Session = Depends(get_session)) -> Response:
+    device = session.get(Device, device_uuid)
+    if device is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    device.token_revoked_at = datetime.now(timezone.utc)
+    device.api_token_hash = None
+    session.add(device)
+    record_audit(
+        session,
+        action="device_token_revoke",
+        resource_type="device",
+        resource_id=device_uuid,
+        detail="token revoked",
+    )
+    session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/devices", response_model=list[DeviceOut])

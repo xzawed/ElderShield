@@ -1,7 +1,8 @@
 # 00. 제품 개요
 
 **SSOT 설계**: [`specs/2026-11-18-eldershield-system-design.md`](specs/2026-11-18-eldershield-system-design.md)  
-**Phase 2 addendum**: [`specs/2026-11-20-phase2-ac-depth-quality-design.md`](specs/2026-11-20-phase2-ac-depth-quality-design.md) (코드 `main` 반영 2026-11-20)
+**Phase 2 addendum**: [`specs/2026-11-20-phase2-ac-depth-quality-design.md`](specs/2026-11-20-phase2-ac-depth-quality-design.md) (코드 `main` 반영 2026-11-20)  
+**Zero-touch enroll**: [`specs/2026-11-20-zero-touch-enroll-design.md`](specs/2026-11-20-zero-touch-enroll-design.md) (부모님 URL/키 입력 제로 · Play Integrity · 기기 토큰)
 
 ## 한 줄
 
@@ -18,7 +19,7 @@ ElderShield(실버실드)는 부모님 Android 기기의 **위험 국가 전화�
 
 | 제약 | 상세 |
 |------|------|
-| 부모님 불편 제로 | 설치·권한 후 추가 조작 없음. 알림/팝업 최소화 |
+| 부모님 불편 제로 | 설치·권한 후 추가 조작 없음. Play release는 URL/키 입력 없음(등록 창+기기 토큰). 알림/팝업 최소화 |
 | 은행 앱 호환 | VpnService 기본 비활성. Overlay/Accessibility/Device Admin 금지 |
 | 무인지 업데이트 | 규칙·앱 업데이트 시 부모님 화면에 표시 없음 |
 | 합법적 방어만 | 역공격·강제 삭제·불법 행위 없음 |
@@ -35,5 +36,5 @@ ElderShield(실버실드)는 부모님 Android 기기의 **위험 국가 전화�
 
 - **Phase 1**: Call screening(수신 전용 국가 차단), Private DNS 모니터, DNS denylist + **NextDNS sync API**(운영 키 필요), AppScanner 보고, Admin CRUD
 - **Phase 2 (C→A, shipped)**: 기기 health · 오버레이/사기팝업 **가능 앱**(P3) · phishing/scam-ad DNS · role_lost 경보 · audit/notify/`/health`/login rate-limit. 보드: [`plans/2026-11-20-phase2-sprint-board.md`](plans/2026-11-20-phase2-sprint-board.md)
-- **후순위**: VpnService IP 필터(은행앱 회귀 후), B 다조직  
-  (NextDNS·threat host 실운영·Play AAB는 운영자 게이트)
+- **Zero-touch enroll (코드 준비)**: 등록 창 · per-device token · Integrity 훅 · release Autoprovision. 운영 게이트: HTTPS `eldershield.baseUrl` + Play Integrity 자격증명 · Play Console 업로드  
+- **후순위**: VpnService IP 필터(은행앱 회귀 후), B 다조직

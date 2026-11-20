@@ -31,6 +31,18 @@
 운영 잔여(2026-11-20 handoff): Play Console에 signed AAB 업로드 · (선택) `ADMIN_NOTIFY_WEBHOOK_URL` · 실기기 스모크 — [`play-internal.md`](runbooks/play-internal.md) · [`nextdns-setup.md`](runbooks/nextdns-setup.md).  
 완료: NextDNS sync + local threat overlay · GitHub **PUBLIC** · 로컬 signed `app-release.aab` 생성.
 
+## Zero-touch enroll (부모님 입력 제로)
+
+**설계**: [`specs/2026-11-20-zero-touch-enroll-design.md`](specs/2026-11-20-zero-touch-enroll-design.md)  
+**구현 계획**: [`plans/2026-11-20-zero-touch-enroll-implementation.md`](plans/2026-11-20-zero-touch-enroll-implementation.md)
+
+| 항목 | 상태 |
+|------|------|
+| Backend enroll · enrollment-window · per-device token · admin revoke UI | Code ready |
+| Android Autoprovision · EncryptedPrefs · Integrity client hook | Code ready |
+| Lab smoke (`ELDERSHIELD_ENROLL_SKIP_INTEGRITY=1`, `scripts/lab-enroll-device.ps1`) | Pass |
+| Production Play Integrity decode + HTTPS `eldershield.baseUrl` AAB | Operator gate |
+
 ## Phase 3+ (후순위)
 
 - VpnService 기반 IP 국가 필터 (은행앱 회귀 후에만)
