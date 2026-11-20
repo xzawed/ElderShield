@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlmodel import Session, select
+from pydantic import BaseModel, ConfigDict, Field
+from sqlmodel import Session, col, select
 
 from app.api.deps import require_admin
 from app.api.schemas import (
@@ -15,23 +16,31 @@ from app.api.schemas import (
     RulesRollbackOut,
     RulesRollbackRequest,
 )
+from app.core.config import settings
 from app.data.countries import COUNTRY_MASTER
 from app.db import get_session
 from app.models.call_rule import CallRule
 from app.models.country_restriction import CountryRestriction
-from app.models.device import AppScanResult, Device
+from app.models.device import AppAllowlist, AppScanResult, AuditLog, Device, DeviceHealthEvent
+from app.services.audit import record_audit
 from app.services.call_rule_service import create_call_rule
 from app.services.country_restriction_service import (
     create_country_restriction,
     delete_country_restriction,
     update_country_restriction,
 )
-from app.core.config import settings
 from app.services.dns_denylist import build_dns_denylist
 from app.services.nextdns_sync import NextDnsNotConfigured, NextDnsSyncError, sync_policy_to_nextdns
 from app.services.rule_bundle_service import publish_rollback
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"], dependencies=[Depends(require_admin)])
+
+
+class AllowlistIn(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    package_name: str = Field(alias="packageName")
+    note: str | None = None
 
 
 @router.get("/countries", response_model=list[CountryMasterOut])
@@ -56,7 +65,7 @@ def create_restriction(
     body: CountryRestrictionCreate, session: Session = Depends(get_session)
 ) -> CountryRestriction:
     try:
-        return create_country_restriction(
+        row = create_country_restriction(
             session,
             name=body.name,
             countries=body.countries,
@@ -66,6 +75,15 @@ def create_restriction(
         )
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    record_audit(
+        session,
+        action="create",
+        resource_type="country_restriction",
+        resource_id=row.id,
+        detail=row.name,
+        commit=True,
+    )
+    return row
 
 
 @router.put("/country-restrictions/{restriction_id}", response_model=CountryRestrictionOut)
@@ -83,6 +101,13 @@ def put_restriction(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     if updated is None:
         raise HTTPException(status_code=404, detail="Not found")
+    record_audit(
+        session,
+        action="update",
+        resource_type="country_restriction",
+        resource_id=restriction_id,
+        commit=True,
+    )
     return updated
 
 
@@ -92,6 +117,13 @@ def delete_restriction(
 ) -> Response:
     if not delete_country_restriction(session, restriction_id):
         raise HTTPException(status_code=404, detail="Not found")
+    record_audit(
+        session,
+        action="delete",
+        resource_type="country_restriction",
+        resource_id=restriction_id,
+        commit=True,
+    )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -105,7 +137,7 @@ def post_call_rule(
     body: CallRuleCreate, session: Session = Depends(get_session)
 ) -> CallRule:
     try:
-        return create_call_rule(
+        row = create_call_rule(
             session,
             country_codes=body.country_codes,
             whitelist=body.whitelist,
@@ -113,6 +145,14 @@ def post_call_rule(
         )
     except TypeError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    record_audit(
+        session,
+        action="create",
+        resource_type="call_rule",
+        resource_id=row.id,
+        commit=True,
+    )
+    return row
 
 
 @router.post("/rules/rollback", response_model=RulesRollbackOut)
@@ -129,6 +169,14 @@ def rollback_rules(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     row = result["restriction"]
     assert isinstance(row, CountryRestriction)
+    record_audit(
+        session,
+        action="rollback",
+        resource_type="country_restriction",
+        resource_id=row.id,
+        detail=f"targetVersion={body.target_version}",
+        commit=True,
+    )
     return RulesRollbackOut(
         id=row.id,
         name=row.name,
@@ -143,7 +191,6 @@ def rollback_rules(
 
 @router.get("/dns-denylist", response_model=DnsDenylistOut)
 def get_dns_denylist(session: Session = Depends(get_session)) -> DnsDenylistOut:
-    """NextDNS security.tlds + denylist hosts from applyTo dns|internet restrictions."""
     rows = list(session.exec(select(CountryRestriction)).all())
     payload = build_dns_denylist(rows)
     return DnsDenylistOut(**payload)
@@ -151,7 +198,6 @@ def get_dns_denylist(session: Session = Depends(get_session)) -> DnsDenylistOut:
 
 @router.post("/dns-denylist/sync-nextdns", response_model=NextDnsSyncOut)
 def sync_dns_denylist_nextdns(session: Session = Depends(get_session)) -> NextDnsSyncOut:
-    """Push policy to a dedicated NextDNS profile (requires NEXTDNS_* env)."""
     rows = list(session.exec(select(CountryRestriction)).all())
     try:
         result = sync_policy_to_nextdns(
@@ -163,6 +209,13 @@ def sync_dns_denylist_nextdns(session: Session = Depends(get_session)) -> NextDn
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except NextDnsSyncError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+    record_audit(
+        session,
+        action="sync_nextdns",
+        resource_type="dns_denylist",
+        resource_id=str(result["profileId"]),
+        commit=True,
+    )
     return NextDnsSyncOut(
         ok=True,
         profile_id=str(result["profileId"]),
@@ -177,6 +230,52 @@ def list_devices(session: Session = Depends(get_session)) -> list[Device]:
     return list(session.exec(select(Device)).all())
 
 
+@router.get("/devices/{device_uuid}")
+def get_device(device_uuid: str, session: Session = Depends(get_session)) -> dict:
+    device = session.get(Device, device_uuid)
+    if device is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    events = list(
+        session.exec(
+            select(DeviceHealthEvent)
+            .where(DeviceHealthEvent.device_uuid == device_uuid)
+            .order_by(col(DeviceHealthEvent.created_at).desc())
+            .limit(50)
+        ).all()
+    )
+    scans = list(
+        session.exec(
+            select(AppScanResult)
+            .where(AppScanResult.device_uuid == device_uuid)
+            .order_by(col(AppScanResult.created_at).desc())
+            .limit(50)
+        ).all()
+    )
+    return {
+        "device": DeviceOut.model_validate(device).model_dump(by_alias=True),
+        "healthEvents": [
+            {
+                "id": e.id,
+                "type": e.type,
+                "detail": e.detail,
+                "createdAt": e.created_at.isoformat() if e.created_at else None,
+            }
+            for e in events
+        ],
+        "scans": [
+            {
+                "packageName": s.package_name,
+                "installer": s.installer,
+                "dangerousPermissions": list(s.dangerous_permissions or []),
+                "riskScore": s.risk_score,
+                "reasons": list(s.reasons or []),
+                "createdAt": s.created_at.isoformat() if s.created_at else None,
+            }
+            for s in scans
+        ],
+    }
+
+
 @router.get("/devices/{device_uuid}/scan-results")
 def list_scan_results(device_uuid: str, session: Session = Depends(get_session)) -> list[dict]:
     rows = session.exec(
@@ -188,6 +287,77 @@ def list_scan_results(device_uuid: str, session: Session = Depends(get_session))
             "installer": r.installer,
             "dangerousPermissions": list(r.dangerous_permissions),
             "riskScore": r.risk_score,
+            "reasons": list(r.reasons or []),
+        }
+        for r in rows
+    ]
+
+
+@router.get("/app-allowlist")
+def list_allowlist(session: Session = Depends(get_session)) -> list[dict]:
+    rows = list(session.exec(select(AppAllowlist)).all())
+    return [
+        {
+            "packageName": r.package_name,
+            "note": r.note,
+            "createdAt": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in rows
+    ]
+
+
+@router.post("/app-allowlist", status_code=status.HTTP_201_CREATED)
+def add_allowlist(body: AllowlistIn, session: Session = Depends(get_session)) -> dict:
+    row = session.get(AppAllowlist, body.package_name)
+    if row is None:
+        row = AppAllowlist(package_name=body.package_name, note=body.note)
+    else:
+        row.note = body.note
+    session.add(row)
+    record_audit(
+        session,
+        action="upsert",
+        resource_type="app_allowlist",
+        resource_id=body.package_name,
+        detail=body.note,
+    )
+    session.commit()
+    return {"packageName": row.package_name, "note": row.note}
+
+
+@router.delete("/app-allowlist/{package_name}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_allowlist(package_name: str, session: Session = Depends(get_session)) -> Response:
+    row = session.get(AppAllowlist, package_name)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    session.delete(row)
+    record_audit(
+        session,
+        action="delete",
+        resource_type="app_allowlist",
+        resource_id=package_name,
+    )
+    session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/audit")
+def list_audit(limit: int = 100, session: Session = Depends(get_session)) -> list[dict]:
+    lim = max(1, min(limit, 500))
+    rows = list(
+        session.exec(
+            select(AuditLog).order_by(col(AuditLog.created_at).desc()).limit(lim)
+        ).all()
+    )
+    return [
+        {
+            "id": r.id,
+            "actor": r.actor,
+            "action": r.action,
+            "resourceType": r.resource_type,
+            "resourceId": r.resource_id,
+            "detail": r.detail,
+            "createdAt": r.created_at.isoformat() if r.created_at else None,
         }
         for r in rows
     ]

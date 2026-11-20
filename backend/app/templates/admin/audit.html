@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% block title %}Audit · ElderShield Admin{% endblock %}
+{% block page_heading %}Audit log{% endblock %}
+{% block page_sub %}Admin mutations (Phase 2A){% endblock %}
+{% block content %}
+<section class="rounded-2xl bg-white shadow-panel ring-1 ring-slate-200/80 overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-ink-600">
+      <tr>
+        <th class="px-6 py-3">When</th>
+        <th class="px-6 py-3">Action</th>
+        <th class="px-6 py-3">Resource</th>
+        <th class="px-6 py-3">Id</th>
+        <th class="px-6 py-3">Detail</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for r in rows %}
+      <tr>
+        <td class="px-6 py-3 text-xs text-ink-500">{{ r.created_at }}</td>
+        <td class="px-6 py-3 font-semibold">{{ r.action }}</td>
+        <td class="px-6 py-3">{{ r.resource_type }}</td>
+        <td class="px-6 py-3 font-mono text-xs">{{ r.resource_id or "—" }}</td>
+        <td class="px-6 py-3 text-ink-600">{{ r.detail or "—" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="px-6 py-10 text-center text-ink-400">No audit entries yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

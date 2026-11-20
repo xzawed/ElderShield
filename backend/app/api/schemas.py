@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class CountryRestrictionCreate(BaseModel):
@@ -51,6 +51,11 @@ class DnsDenylistOut(BaseModel):
     countries: list[str]
     tlds: list[str] = Field(default_factory=list)
     domains: list[str]
+    threat_hosts: list[str] = Field(
+        default_factory=list,
+        serialization_alias="threatHosts",
+        validation_alias=AliasChoices("threatHosts", "threat_hosts"),
+    )
     count: int
 
 
@@ -99,6 +104,13 @@ class DeviceOut(BaseModel):
     )
     last_rule_version: int = Field(serialization_alias="lastRuleVersion")
     last_sync_at: Optional[datetime] = Field(default=None, serialization_alias="lastSyncAt")
+    dns_host_class: Optional[str] = Field(default=None, serialization_alias="dnsHostClass")
+    last_sync_ok: bool = Field(default=True, serialization_alias="lastSyncOk")
+    last_sync_error_code: Optional[str] = Field(
+        default=None, serialization_alias="lastSyncErrorCode"
+    )
+    cached_bundle_version: int = Field(default=0, serialization_alias="cachedBundleVersion")
+    protection_degraded: bool = Field(default=False, serialization_alias="protectionDegraded")
 
 
 class RulesRollbackRequest(BaseModel):

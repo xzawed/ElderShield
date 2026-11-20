@@ -15,6 +15,7 @@ class Settings:
     device_api_key: str
     nextdns_api_key: str | None = None
     nextdns_profile_id: str | None = None
+    admin_notify_webhook_url: str | None = None
 
 
 def load_settings() -> Settings:
@@ -24,6 +25,7 @@ def load_settings() -> Settings:
         device_api_key=os.getenv("DEVICE_API_KEY", "change-me-device"),
         nextdns_api_key=os.getenv("NEXTDNS_API_KEY") or None,
         nextdns_profile_id=os.getenv("NEXTDNS_PROFILE_ID") or None,
+        admin_notify_webhook_url=os.getenv("ADMIN_NOTIFY_WEBHOOK_URL") or None,
     )
 
 

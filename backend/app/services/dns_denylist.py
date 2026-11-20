@@ -2,6 +2,7 @@
 
 NextDNS fact (api.nextdns.io): country ccTLDs map to security.tlds (e.g. cn, ru);
 curated hosts map to denylist entries. Wildcard strings like "*.cn" are not used.
+Phase 2C: merge THREAT_HOSTS (scam-ad / phishing) into domains.
 """
 
 from __future__ import annotations
@@ -9,6 +10,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 
 from app.data.dns_country_domains import COUNTRY_CCTLD, COUNTRY_DOMAIN_SEEDS
+from app.data.threat_hosts import THREAT_HOSTS
 
 
 def _apply_to_list(row: Any) -> list[str]:
@@ -37,6 +39,7 @@ def managed_seed_domains() -> set[str]:
     out: set[str] = set()
     for hosts in COUNTRY_DOMAIN_SEEDS.values():
         out.update(h.lower() for h in hosts)
+    out.update(h.lower() for h in THREAT_HOSTS)
     return out
 
 
@@ -60,10 +63,14 @@ def build_dns_denylist(rows: Iterable[Any]) -> dict[str, Any]:
             for host in COUNTRY_DOMAIN_SEEDS.get(iso, []):
                 domains.add(host.lower())
 
+    threat = sorted(h.lower() for h in THREAT_HOSTS)
+    domains.update(threat)
+
     return {
-        "source": "country_restrictions",
+        "source": "country_restrictions+threat_hosts",
         "countries": sorted(countries),
         "tlds": sorted(tlds),
         "domains": sorted(domains),
+        "threatHosts": threat,
         "count": len(domains) + len(tlds),
     }

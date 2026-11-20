@@ -66,13 +66,21 @@
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/devices') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
           Devices
         </a>
+        <a href="/admin/ui/allowlist"
+           class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/allowlist') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+          App allowlist
+        </a>
+        <a href="/admin/ui/audit"
+           class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/audit') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+          Audit
+        </a>
         <a href="/admin/ui/logout"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white">
           Sign out
         </a>
       </nav>
       <div class="hidden lg:block px-5 pb-6 text-xs text-slate-500">
-        Phase 1 · Rule sync control plane
+        Phase 2 · C depth + A quality
       </div>
     </aside>
     <div class="flex-1 min-w-0">

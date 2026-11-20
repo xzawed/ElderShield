@@ -22,9 +22,15 @@ def _sqlite_add_column_if_missing(table: str, column: str, ddl_type: str) -> Non
 
 def init_db() -> None:
     SQLModel.metadata.create_all(engine)
-    # Lab DBs created before coexistence fields — additive only.
+    # Lab DBs created before coexistence / Phase 2 fields — additive only.
     _sqlite_add_column_if_missing("device", "call_screening_held_by", "VARCHAR(256)")
     _sqlite_add_column_if_missing("device", "call_screening_peers", "JSON DEFAULT '[]'")
+    _sqlite_add_column_if_missing("device", "dns_host_class", "VARCHAR(32)")
+    _sqlite_add_column_if_missing("device", "last_sync_ok", "BOOLEAN DEFAULT 1")
+    _sqlite_add_column_if_missing("device", "last_sync_error_code", "VARCHAR(64)")
+    _sqlite_add_column_if_missing("device", "cached_bundle_version", "INTEGER DEFAULT 0")
+    _sqlite_add_column_if_missing("device", "protection_degraded", "BOOLEAN DEFAULT 0")
+    _sqlite_add_column_if_missing("app_scan_result", "reasons", "JSON DEFAULT '[]'")
 
 
 def get_session() -> Generator[Session, None, None]:

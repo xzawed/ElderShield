@@ -27,6 +27,12 @@ class Device(SQLModel, table=True):
     )
     last_rule_version: int = 0
     last_sync_at: Optional[datetime] = None
+    # Phase 2C health snapshot
+    dns_host_class: Optional[str] = Field(default=None, max_length=32)
+    last_sync_ok: bool = True
+    last_sync_error_code: Optional[str] = Field(default=None, max_length=64)
+    cached_bundle_version: int = 0
+    protection_degraded: bool = False
 
 
 class AppScanResult(SQLModel, table=True):
@@ -40,4 +46,37 @@ class AppScanResult(SQLModel, table=True):
         default_factory=list, sa_column=Column(JSON, nullable=False)
     )
     risk_score: int = 0
+    reasons: list[str] = Field(
+        default_factory=list, sa_column=Column(JSON, nullable=False, server_default="[]")
+    )
+    created_at: datetime = Field(default_factory=_utcnow)
+
+
+class DeviceHealthEvent(SQLModel, table=True):
+    __tablename__ = "device_health_event"
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    device_uuid: str = Field(index=True, max_length=128)
+    type: str = Field(max_length=64)
+    detail: Optional[str] = Field(default=None, max_length=512)
+    created_at: datetime = Field(default_factory=_utcnow)
+
+
+class AppAllowlist(SQLModel, table=True):
+    __tablename__ = "app_allowlist"
+
+    package_name: str = Field(primary_key=True, max_length=256)
+    note: Optional[str] = Field(default=None, max_length=512)
+    created_at: datetime = Field(default_factory=_utcnow)
+
+
+class AuditLog(SQLModel, table=True):
+    __tablename__ = "audit_log"
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    actor: str = Field(default="admin", max_length=64)
+    action: str = Field(max_length=64)
+    resource_type: str = Field(max_length=64)
+    resource_id: Optional[str] = Field(default=None, max_length=128)
+    detail: Optional[str] = Field(default=None, max_length=1024)
     created_at: datetime = Field(default_factory=_utcnow)
