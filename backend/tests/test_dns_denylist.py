@@ -18,12 +18,13 @@ def test_cn_dns_restriction_includes_tld_and_major_hosts():
     assert "baidu.com" in out["domains"]
     assert "CN" in out["countries"]
     assert out["source"] == "country_restrictions+threat_hosts"
-    # Lab seeds stay visible but are not pushed in domains
-    assert out["threatHostsLab"]
-    assert all(is_example_tld_host(h) for h in out["threatHostsLab"])
+    # Lab `*.example` seeds never go to NextDNS domains / threatHosts
     assert "scam-ad-landing.example" not in out["domains"]
     assert "scam-ad-landing.example" not in out["threatHosts"]
-    assert set(out["threatHostsLab"]) == set(THREAT_HOSTS_BUILTIN)
+    assert all(is_example_tld_host(h) for h in out["threatHostsLab"])
+    # Without a local overlay, lab list equals builtin; with overlay, lab may be empty.
+    assert set(out["threatHostsLab"]).issubset(set(THREAT_HOSTS_BUILTIN))
+    assert all(not is_example_tld_host(h) for h in out["threatHosts"])
 
 
 def test_call_only_restriction_does_not_contribute_country_policy():
