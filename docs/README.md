@@ -28,13 +28,15 @@ Grok Build 문서 관례를 따른다.
 | 문서 | 내용 |
 |------|------|
 | [2026-11-18-eldershield-system-design.md](specs/2026-11-18-eldershield-system-design.md) | 시스템 상세 설계 **SSOT** |
+| [2026-11-20-phase2-ac-depth-quality-design.md](specs/2026-11-20-phase2-ac-depth-quality-design.md) | Phase 2 A+C (C→A) 설계 addendum |
 | [2026-11-19-unit-test-design.md](specs/2026-11-19-unit-test-design.md) | 단위 테스트 설계·케이스 ID |
 
 ## plans/ (구현 서사)
 
 | 문서 | 내용 |
 |------|------|
-| [2026-11-19-sprint-board.md](plans/2026-11-19-sprint-board.md) | Sprint 게이트·TDD·실측 (얇은 보드) |
+| [2026-11-19-sprint-board.md](plans/2026-11-19-sprint-board.md) | Phase 1 Sprint 게이트·TDD·실측 (얇은 보드) |
+| [2026-11-20-phase2-sprint-board.md](plans/2026-11-20-phase2-sprint-board.md) | Phase 2 C→A 스프린트 보드 |
 | [2026-11-19-phase1-schedule-wbs.md](plans/2026-11-19-phase1-schedule-wbs.md) | Phase 1 일정·WBS |
 | [2026-11-19-development-plan-and-review.md](plans/2026-11-19-development-plan-and-review.md) | 개발 기획·검토 게이트 |
 

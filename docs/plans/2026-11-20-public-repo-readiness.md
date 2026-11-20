@@ -1,6 +1,6 @@
 ﻿# Public-repo readiness — 5-pass verification (2026-11-20)
 
-Repo visibility at last check: may become **Public** after history purge.
+Repo visibility at last check: **PRIVATE** (`xzawed/ElderShield`). History-purged `main` is ready; Public flip is operator choice.
 
 ## Pass matrix
 
@@ -26,8 +26,9 @@ Repo visibility at last check: may become **Public** after history purge.
 2. History rewrite removing lab serial/UUID strings (`git filter-repo`)  
 3. Force-push rewritten `main`  
 4. **PR refs are immutable on GitHub** — old serial/UUID remained under `refs/pull/*/head`, so:
-   - Renamed old repo → [`ElderShield-private-history`](https://github.com/xzawed/ElderShield-private-history) (**keep PRIVATE**)
+   - Renamed old repo → `ElderShield-private-history` (temporary PRIVATE archive)
    - Recreated clean [`ElderShield`](https://github.com/xzawed/ElderShield) with purged `main` only (no dirty PR refs)
+5. **2026-11-20**: archive `ElderShield-private-history` **deleted** (confirmed HTTP 404). Clean repo remains sole remote; local `origin` → `https://github.com/xzawed/ElderShield.git`
 
 ## Acceptable in public OSS tree
 

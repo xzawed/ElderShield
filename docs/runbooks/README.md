@@ -10,3 +10,5 @@
 | [`nextdns-setup.md`](nextdns-setup.md) | S6.3 — NextDNS 프로필·sync·Private DNS |
 | [`play-internal.md`](play-internal.md) | S6.2 — Play internal track 체크리스트 |
 | [`admin-ui.md`](admin-ui.md) | Admin 콘솔 (Tailwind) · 브라우저 검증 |
+| [`backup-restore.md`](backup-restore.md) | Phase 2A — DB + NextDNS 프로필 백업·복구 |
+| [`backup-restore.md`](backup-restore.md) | Phase 2A — SQLite·NextDNS 백업/복구 |
