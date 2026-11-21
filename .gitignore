@@ -49,3 +49,7 @@ Thumbs.db
 
 # Grok / local agent
 .grok-build/
+
+# Admin SPA build output (produced at deploy via admin-web npm run build)
+backend/app/static/admin-spa/**
+!backend/app/static/admin-spa/.gitkeep
