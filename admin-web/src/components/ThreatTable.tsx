@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { IncidentOut } from '../api/admin'
 import { useI18n } from '../i18n/useI18n'
 
@@ -40,17 +41,20 @@ export default function ThreatTable({ rows }: { rows: IncidentRow[] }) {
         </thead>
         <tbody className="divide-y divide-slate-100">
           {rows.map((row) => (
-            <tr
-              key={row.incidentId}
-              className="hover:bg-slate-50 cursor-pointer"
-              onClick={() => {
-                window.location.assign(`/admin/ui/devices/${row.deviceUuid}`)
-              }}
-            >
+            <tr key={row.incidentId} className="hover:bg-slate-50">
               <td className="px-2 py-2.5 whitespace-nowrap text-ink-800">
-                {formatTime(row.triggeredAt, lang)}
+                <Link
+                  to={`/incidents/${row.incidentId}`}
+                  className="font-medium text-brand-700 hover:text-brand-800"
+                >
+                  {formatTime(row.triggeredAt, lang)}
+                </Link>
               </td>
-              <td className="px-2 py-2.5 font-mono text-xs text-ink-600">{shortUuid(row.deviceUuid)}</td>
+              <td className="px-2 py-2.5 font-mono text-xs text-ink-600">
+                <Link to={`/devices/${row.deviceUuid}`} className="hover:underline">
+                  {shortUuid(row.deviceUuid)}
+                </Link>
+              </td>
               <td className="px-2 py-2.5 text-ink-800">
                 <span className="line-clamp-2">{row.triggers.join(', ') || '—'}</span>
               </td>

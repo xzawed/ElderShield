@@ -33,6 +33,7 @@ Grok Build 문서 관례를 따른다.
 | [2026-11-19-unit-test-design.md](specs/2026-11-19-unit-test-design.md) | 단위 테스트 설계·케이스 ID |
 | [2026-11-21-incident-evidence-pack-design.md](specs/2026-11-21-incident-evidence-pack-design.md) | 신고용 Incident 최소 증거 패킷 (A앱·B전화·C DNS) |
 | [2026-11-21-admin-react-spa-dashboard-design.md](specs/2026-11-21-admin-react-spa-dashboard-design.md) | Admin React SPA 대시보드 (고급 UI · Phase A–C) |
+| [2026-11-21-admin-log-visibility-design.md](specs/2026-11-21-admin-log-visibility-design.md) | Admin 수집 로그 가시화 (Incident·기기·audit·NextDNS) |
 
 ## plans/ (구현 서사)
 
@@ -43,6 +44,7 @@ Grok Build 문서 관례를 따른다.
 | [2026-11-20-zero-touch-enroll-implementation.md](plans/2026-11-20-zero-touch-enroll-implementation.md) | Zero-touch enroll 구현 계획 |
 | [2026-11-21-incident-evidence-pack-implementation.md](plans/2026-11-21-incident-evidence-pack-implementation.md) | Incident 증거 패킷 구현 계획 (A/B/C) |
 | [2026-11-21-admin-react-spa-phase-a-implementation.md](plans/2026-11-21-admin-react-spa-phase-a-implementation.md) | Admin React SPA Phase A (대시보드·Devices) |
+| [2026-11-21-admin-log-visibility-implementation.md](plans/2026-11-21-admin-log-visibility-implementation.md) | Admin 로그 가시화 구현 (L1–L3) |
 | [2026-11-19-phase1-schedule-wbs.md](plans/2026-11-19-phase1-schedule-wbs.md) | Phase 1 일정·WBS |
 | [2026-11-19-development-plan-and-review.md](plans/2026-11-19-development-plan-and-review.md) | 개발 기획·검토 게이트 |
 
@@ -53,4 +55,4 @@ Grok Build 문서 관례를 따른다.
 | [runbooks/](runbooks/README.md) | 운영 런북 (롤백 · API 키 · Admin UI · 백업 · 실기기 · Railway) |
 | [releases/](releases/README.md) | 릴리스 노트 (`v0.1.0` · `v0.2.0`) |
 
-**갱신**: 2026-11-21 (Admin React SPA 대시보드 설계 초안) · **실행**: Grok 주 구현 / 오케스트레이터 리뷰 · 자동 커밋 없음 · PR 단위 머지
+**갱신**: 2026-11-21 (Admin 로그 가시화 설계) · **실행**: Grok 주 구현 / 오케스트레이터 리뷰 · 자동 커밋 없음 · PR 단위 머지

@@ -63,3 +63,22 @@ def test_spa_devices_shell_serves_index(client: TestClient) -> None:
     r = client.get("/admin/ui/devices")
     assert r.status_code == 200
     assert 'id="root"' in r.text
+
+
+def test_spa_incident_param_serves_index(client: TestClient) -> None:
+    r = client.get("/admin/ui/incidents/inc-demo-1")
+    assert r.status_code == 200
+    assert 'id="root"' in r.text
+
+
+def test_spa_device_detail_param_serves_index(client: TestClient) -> None:
+    r = client.get("/admin/ui/devices/dev-demo-1")
+    assert r.status_code == 200
+    assert 'id="root"' in r.text
+
+
+def test_spa_audit_and_dns_logs_shell(client: TestClient) -> None:
+    for path in ("/admin/ui/audit", "/admin/ui/dns-logs"):
+        r = client.get(path)
+        assert r.status_code == 200
+        assert 'id="root"' in r.text

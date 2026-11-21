@@ -75,7 +75,7 @@ Base path: `/admin/ui/` (Vite `base: '/admin/ui/'`).
 | Phase | 내용 | 성공 기준 |
 |-------|------|-----------|
 | **A** | 셸·로그인·Dashboard·Devices 읽기 | 홈에 KPI·위협·정책 실데이터; Devices SPA; 스켈레톤 해소 |
-| **B** | Restrictions, call-rules, DNS, allowlist, audit, device detail/Incident | 기존 Jinja CRUD와 동등 기능 |
+| **B** | Restrictions, call-rules, DNS, allowlist, audit, device detail/Incident | 기존 Jinja CRUD와 동등 기능; 로그 가시화는 [`2026-11-21-admin-log-visibility-design.md`](2026-11-21-admin-log-visibility-design.md) |
 | **C** | Jinja 템플릿 deprecate (필요 시 login만 잔존) | 단일 SPA 콘솔 |
 
 Phase A에서 미이관 메뉴는 사이드바에서 旧 Jinja 경로 임시 링크 허용.

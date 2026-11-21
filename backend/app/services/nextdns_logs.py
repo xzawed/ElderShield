@@ -33,6 +33,10 @@ def _credentials() -> tuple[str, str] | None:
     return api_key, profile_id
 
 
+def nextdns_configured() -> bool:
+    return _credentials() is not None
+
+
 def _as_utc(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
@@ -165,6 +169,101 @@ def fetch_blocked_domains(
     except Exception:
         logger.exception("NextDNS logs pull failed")
         return events
+    finally:
+        if owns_client:
+            http.close()
+
+
+def fetch_dns_log_events(
+    from_ts: datetime,
+    to_ts: datetime,
+    *,
+    status: str = "blocked",
+    limit: int = 200,
+    client: httpx.Client | None = None,
+) -> tuple[list[dict[str, str]], str | None]:
+    """Admin DNS log viewer: return (events, next_cursor).
+
+    Events are ``{at, domain, status}``. Raises ValueError if credentials unset
+    (caller maps to 503). On HTTP failure returns whatever was collected (often []).
+    """
+    creds = _credentials()
+    if creds is None:
+        raise ValueError("nextdns_unset")
+    api_key, profile_id = creds
+    status_filter = (status or "blocked").strip().lower() or "blocked"
+    page_limit = max(1, min(int(limit), _PAGE_LIMIT))
+    owns_client = client is None
+    http = client or httpx.Client(base_url=API_BASE, timeout=_TIMEOUT_SEC)
+    events: list[dict[str, str]] = []
+    next_cursor: str | None = None
+    try:
+        params: dict[str, Any] = {
+            "from": _iso(from_ts),
+            "to": _iso(to_ts),
+            "limit": page_limit,
+            "sort": "desc",
+        }
+        if status_filter not in ("", "all", "*"):
+            params["status"] = status_filter
+        cursor: str | None = None
+        for _ in range(_MAX_PAGES):
+            if len(events) >= page_limit:
+                break
+            query = dict(params)
+            if cursor:
+                query["cursor"] = cursor
+            try:
+                response = http.get(
+                    f"/profiles/{profile_id}/logs",
+                    headers=_headers(api_key),
+                    params=query,
+                )
+            except httpx.HTTPError as exc:
+                logger.warning("NextDNS admin logs request failed: %s", exc)
+                break
+            if response.status_code >= 400:
+                logger.warning(
+                    "NextDNS admin logs GET failed: %s %s",
+                    response.status_code,
+                    (response.text or "")[:200],
+                )
+                break
+            try:
+                payload = response.json()
+            except ValueError:
+                logger.warning("NextDNS admin logs response was not JSON")
+                break
+            rows = payload.get("data") if isinstance(payload, dict) else None
+            if not isinstance(rows, list):
+                rows = []
+            for item in rows:
+                if not isinstance(item, dict):
+                    continue
+                domain = str(item.get("domain") or "").strip()
+                if not domain:
+                    continue
+                st = str(item.get("status") or "").strip().lower() or "unknown"
+                if status_filter not in ("", "all", "*") and st != status_filter:
+                    continue
+                at = str(item.get("timestamp") or item.get("at") or "")
+                events.append({"at": at, "domain": domain, "status": st})
+                if len(events) >= page_limit:
+                    break
+            meta = payload.get("meta") if isinstance(payload, dict) else None
+            pagination = (meta or {}).get("pagination") if isinstance(meta, dict) else None
+            next_cursor = None
+            if isinstance(pagination, dict):
+                raw_cursor = pagination.get("cursor")
+                if isinstance(raw_cursor, str) and raw_cursor:
+                    next_cursor = raw_cursor
+            if not next_cursor or len(events) >= page_limit:
+                break
+            cursor = next_cursor
+        return events[:page_limit], next_cursor
+    except Exception:
+        logger.exception("NextDNS admin logs pull failed")
+        return events[:page_limit], next_cursor
     finally:
         if owns_client:
             http.close()
