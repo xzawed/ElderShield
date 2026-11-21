@@ -1,6 +1,6 @@
 {
     "ranAt":  "2026-11-20T17:50:50.1582800Z",
-    "baseUrl":  "https://backend-production-6d51aca0.up.railway.app",
+    "baseUrl":  "https://eldershield.up.railway.app",
     "verdict":  "FAIL_NOT_ENFORCED",
     "summary":  "Restricted-country sites resolve and respond on emulator. Internet/DNS blocking is not active.",
     "causes":  [

@@ -1,6 +1,6 @@
-﻿{
+{
     "ranAt":  "2026-11-20T17:47:48.6403461Z",
-    "baseUrl":  "https://backend-production-6d51aca0.up.railway.app",
+    "baseUrl":  "https://eldershield.up.railway.app",
     "deviceUuid":  "43630289-0cf4-49ed-bfc9-e4aa1e63c0e5",
     "note":  "Clean Railway retest after pm clear. First script run polluted by lab 127.0.0.1:8765 RuleBundle v76 (CN-only) + version-monotonic sync refuse of Railway v2.",
     "ops":  {

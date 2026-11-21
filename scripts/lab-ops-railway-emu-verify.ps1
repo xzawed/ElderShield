@@ -1,4 +1,4 @@
-﻿# Precise ops verification: emulator against Railway production rules.
+# Precise ops verification: emulator against Railway production rules.
 # SAFETY: gsm inject only on emulator-*.
 $ErrorActionPreference = "Continue"
 $Root = Split-Path -Parent $PSScriptRoot
@@ -9,7 +9,7 @@ $AttackerPkg = "com.eldershield.labattacker"
 $Apk = Join-Path $Root "android\app\build\outputs\apk\debug\app-debug.apk"
 $AttackerApk = Join-Path $Root "android\lab-attacker-fixture\build\outputs\apk\debug\lab-attacker-fixture-debug.apk"
 $Py = Join-Path $Root "backend\.venv\Scripts\python.exe"
-$Base = if ($env:ELDERSHIELD_LAB_URL) { $env:ELDERSHIELD_LAB_URL } else { "https://backend-production-6d51aca0.up.railway.app" }
+$Base = if ($env:ELDERSHIELD_LAB_URL) { $env:ELDERSHIELD_LAB_URL } else { "https://eldershield.up.railway.app" }
 $KeysPath = if ($env:ELDERSHIELD_KEYS_JSON) { $env:ELDERSHIELD_KEYS_JSON } else { Join-Path $env:TEMP "es-keys.json" }
 $Date = Get-Date -Format "yyyy-MM-dd"
 $OutPath = Join-Path $Root "docs\plans\$Date-ops-railway-emu-verify-results.json"
@@ -115,7 +115,7 @@ $AttackerPkg = "com.eldershield.labattacker"
 $Apk = Join-Path $Root "android\app\build\outputs\apk\debug\app-debug.apk"
 $AttackerApk = Join-Path $Root "android\lab-attacker-fixture\build\outputs\apk\debug\lab-attacker-fixture-debug.apk"
 $Py = Join-Path $Root "backend\.venv\Scripts\python.exe"
-$Base = if ($env:ELDERSHIELD_LAB_URL) { $env:ELDERSHIELD_LAB_URL } else { "https://backend-production-6d51aca0.up.railway.app" }
+$Base = if ($env:ELDERSHIELD_LAB_URL) { $env:ELDERSHIELD_LAB_URL } else { "https://eldershield.up.railway.app" }
 $KeysPath = if ($env:ELDERSHIELD_KEYS_JSON) { $env:ELDERSHIELD_KEYS_JSON } else { Join-Path $env:TEMP "es-keys.json" }
 $Date = Get-Date -Format "yyyy-MM-dd"
 $OutPath = Join-Path $Root "docs\plans\$Date-ops-railway-emu-verify-results.json"
