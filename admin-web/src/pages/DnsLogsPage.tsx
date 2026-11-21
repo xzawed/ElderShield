@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { type DnsLogEvent, getDnsLogs } from '../api/admin'
 import DnsTopChart from '../components/DnsTopChart'
 import { useI18n } from '../i18n/useI18n'
@@ -122,9 +122,9 @@ export default function DnsLogsPage() {
         >
           {t('dns_logs.refresh')}
         </button>
-        <a href="/admin/ui/dns-denylist" className="text-sm font-semibold text-ink-600 hover:text-ink-900 ml-auto">
+        <Link to="/dns-denylist" className="text-sm font-semibold text-ink-600 hover:text-ink-900 ml-auto">
           {t('dns_logs.denylist_link')}
-        </a>
+        </Link>
       </div>
 
       {unset ? (

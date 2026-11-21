@@ -185,6 +185,12 @@ export function listCallRules(): Promise<unknown[]> {
   return apiGet<unknown[]>('/api/v1/admin/call-rules')
 }
 
+export function listAllowlist(): Promise<
+  { packageName: string; note?: string | null; createdAt?: string | null }[]
+> {
+  return apiGet('/api/v1/admin/app-allowlist')
+}
+
 export function openEnrollmentWindow(body: {
   enabled: boolean
   ttlMinutes?: number

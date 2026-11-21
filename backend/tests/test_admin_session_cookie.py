@@ -20,6 +20,6 @@ def test_login_sets_hmac_session_cookie_not_raw_key(client: TestClient) -> None:
 
 def test_raw_api_key_cookie_is_rejected(client: TestClient) -> None:
     client.cookies.set(COOKIE_NAME, "test-admin-key")
-    r = client.get("/admin/ui/restrictions", follow_redirects=False)
+    r = client.get("/admin/ui/restrictions/new", follow_redirects=False)
     assert r.status_code in (303, 302)
     assert "/admin/ui/login" in r.headers.get("location", "")

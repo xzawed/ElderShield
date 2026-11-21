@@ -11,9 +11,11 @@ SUPPORTED = frozenset({"ko", "en"})
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
         "brand.sub": "Admin console",
+        "nav.dashboard": "Dashboard",
         "nav.restrictions": "Country restrictions",
         "nav.call_rules": "Call rules",
         "nav.dns": "DNS denylist",
+        "nav.dns_logs": "DNS query logs",
         "nav.devices": "Devices",
         "nav.allowlist": "App allowlist",
         "nav.audit": "Audit",
@@ -83,9 +85,11 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "ko": {
         "brand.sub": "관리자 콘솔",
+        "nav.dashboard": "대시보드",
         "nav.restrictions": "국가 제한",
         "nav.call_rules": "통화 규칙",
         "nav.dns": "DNS 차단 목록",
+        "nav.dns_logs": "DNS 질의 로그",
         "nav.devices": "기기",
         "nav.allowlist": "앱 허용 목록",
         "nav.audit": "감사 로그",

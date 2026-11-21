@@ -11,7 +11,19 @@ SPA_INDEX = SPA_DIR / "index.html"
 SPA_ASSETS_DIR = SPA_DIR / "assets"
 
 # Exact first segments after /admin/ui/ owned by the SPA shell (not Jinja list pages).
-SPA_SHELL_SEGMENTS = frozenset({"login", "devices", "audit", "dns-logs", "incidents"})
+SPA_SHELL_SEGMENTS = frozenset(
+    {
+        "login",
+        "devices",
+        "audit",
+        "dns-logs",
+        "incidents",
+        "restrictions",
+        "call-rules",
+        "dns-denylist",
+        "allowlist",
+    }
+)
 
 # Parameterized SPA shells (shadow Jinja device detail when SPA is built).
 SPA_PARAM_PATHS = (

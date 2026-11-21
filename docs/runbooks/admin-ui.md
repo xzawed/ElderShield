@@ -1,53 +1,52 @@
-# Admin UI (Tailwind)
+# Admin UI
 
-**Stack:** Jinja2 templates + **Tailwind CSS CDN** (`cdn.tailwindcss.com`) + HTMX  
-**Entry:** `/admin/ui/login` → HMAC session cookie (see [`admin-api-keys.md`](admin-api-keys.md))
+**Stack (현재):** React SPA (`admin-web`) under `/admin/ui/` + **레거시 Jinja 폼** (생성·편집만)  
+**Entry:** `/admin/ui/login` → HMAC session cookie (see [`admin-api-keys.md`](admin-api-keys.md))  
+**설계:** [`../specs/2026-11-21-admin-react-spa-dashboard-design.md`](../specs/2026-11-21-admin-react-spa-dashboard-design.md)
 
-## Look & layout
+## Auth
 
-| Surface | Design |
-|---------|--------|
-| Sign-in | Centered card, Fraunces display + Source Sans 3, teal brand |
-| Authenticated | Dark ink sidebar + light content, status pill, panel cards |
-| Tables | Enterprise-style headers, badges for DNS / enabled / risk |
+- Cookie `eldershield_admin_session` + SPA API calls send `X-ElderShield-Admin: 1`
+- Logout: `/admin/ui/logout` (same Secure/SameSite/Path as login)
 
-Brand tokens (Tailwind `theme.extend`): `brand.*` teal, `ink.*` slate/navy — not purple defaults.
-
-## Pages
+## Primary nav (SPA shell — must not swap templates)
 
 | Path | Purpose |
 |------|---------|
-| `/admin/ui/login` | Admin API key → session |
-| `/admin/ui/restrictions` | Country restriction groups |
-| `/admin/ui/restrictions/new` · `/{id}` | Create / edit (multi-select `countries`). `applyTo=call` → device CallScreening; `dns`/`internet` → admin denylist / NextDNS sync (device does not VPN-filter) |
-| `/admin/ui/call-rules` | Call whitelist rules (exact E.164 lines → `callRules`) |
-| `/admin/ui/dns-denylist` | NextDNS `security.tlds` + denylist hosts; optional **Sync to NextDNS** (`NEXTDNS_*` env) |
-| `/admin/ui/devices` | Heartbeat + protection degraded badge · **enrollment window** open/close |
-| `/admin/ui/devices/{uuid}` | Device detail — health events · **revoke device token** · recent scans |
-| `/admin/ui/devices/{uuid}/scans` | Scan results (`reasons[]`) |
-| `/admin/ui/allowlist` | App allowlist (false-positive packages) |
-| `/admin/ui/audit` | Admin mutation audit log |
+| `/admin/ui/` | Dashboard KPI · threats · policy |
+| `/admin/ui/devices` | Device list |
+| `/admin/ui/devices/{uuid}` | Health · scans · incidents · token revoke |
+| `/admin/ui/restrictions` | Country restriction **list** (read) |
+| `/admin/ui/call-rules` | Call rules **list** (read) |
+| `/admin/ui/dns-denylist` | Denylist summary |
+| `/admin/ui/dns-logs` | NextDNS query logs (503 UI if unset) |
+| `/admin/ui/allowlist` | App allowlist **list** (read) |
+| `/admin/ui/audit` | Audit log |
+| `/admin/ui/incidents/{id}` | Incident evidence |
 
-## Visual verification
+## Legacy Jinja forms (until Phase B CRUD)
 
-With backend running:
+| Path | Purpose |
+|------|---------|
+| `/admin/ui/restrictions/new` · `/{id}` | Create / edit multi-select `countries` |
+| call-rules / allowlist create·delete forms | Still Jinja POST; sidebar links return to SPA lists |
+
+Jinja `base.html` nav points at SPA list URLs so leaving a form restores the React sidebar.
+
+## Look
+
+Dark ink sidebar + light canvas · Fraunces + Source Sans 3 · brand teal (`brand.*` / `ink.*`).
+
+## Verify
 
 ```bash
-cd backend
-# set ADMIN_API_KEY / DEVICE_API_KEY (non change-me-*)
-uvicorn app.main:app --host 127.0.0.1 --port 8765
+cd admin-web && npm ci && npm run build
+cd ../backend && .venv/Scripts/python.exe -m pytest tests/test_admin_spa_static.py -q
 ```
 
-Then open `/admin/ui/login` in a browser (or Cursor browser / Playwright MCP):
+```powershell
+powershell -File scripts/lab-admin-spa-smoke.ps1
+# expects spa-nav-shell-unity PASS
+```
 
-1. Confirm Tailwind styles load (sidebar/card spacing, not unstyled HTML).  
-2. Sign in with admin key → restrictions list.  
-3. Open **Call rules** → add a full E.164 whitelist line → row appears; `GET /api/v1/rules/latest` includes `callRules`.  
-4. Open Devices → enrollment window controls · heartbeat rows + degraded badges; open a device **Detail** for health events / token revoke.  
-5. Allowlist / Audit nav entries load (Phase 2A).
-
-Automated regression: `pytest -q tests/test_admin_ui_multiselect.py tests/test_admin_ui_call_rules.py tests/test_phase2_health_and_audit.py`
-
-## Phase note
-
-CDN Tailwind remains intentional. A CLI-built `static/app.css` can replace the CDN later without changing class names.
+Browser: open `/admin/ui/` → click every primary sidebar item → **sidebar chrome must stay SPA** (no Jinja reorder/missing items).

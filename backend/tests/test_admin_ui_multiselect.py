@@ -42,7 +42,8 @@ def test_admin_ui_create_and_reopen_keeps_multi_countries(client: TestClient) ->
 
 
 def test_admin_ui_login_required(client: TestClient) -> None:
-    r = client.get("/admin/ui/restrictions", follow_redirects=False)
+    # List GET is SPA shell; Jinja form routes still enforce server-side login.
+    r = client.get("/admin/ui/restrictions/new", follow_redirects=False)
     assert r.status_code in (303, 302)
     assert "/admin/ui/login" in r.headers.get("location", "")
 

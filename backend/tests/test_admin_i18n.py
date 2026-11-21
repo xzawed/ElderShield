@@ -9,17 +9,17 @@ def test_lang_cookie_switches_nav_copy(client: TestClient) -> None:
     )
     assert login.status_code in (303, 302)
 
-    en = client.get("/admin/ui/lang?set=en&next=/admin/ui/restrictions", follow_redirects=False)
+    en = client.get("/admin/ui/lang?set=en&next=/admin/ui/restrictions/new", follow_redirects=False)
     assert en.status_code in (303, 302)
     assert "es_admin_lang=en" in en.headers.get("set-cookie", "")
 
-    page_en = client.get("/admin/ui/restrictions")
+    page_en = client.get("/admin/ui/restrictions/new")
     assert page_en.status_code == 200
     assert "Country restrictions" in page_en.text
 
-    ko = client.get("/admin/ui/lang?set=ko&next=/admin/ui/restrictions", follow_redirects=False)
+    ko = client.get("/admin/ui/lang?set=ko&next=/admin/ui/restrictions/new", follow_redirects=False)
     assert ko.status_code in (303, 302)
-    page_ko = client.get("/admin/ui/restrictions")
+    page_ko = client.get("/admin/ui/restrictions/new")
     assert page_ko.status_code == 200
     assert "국가 제한" in page_ko.text
 
