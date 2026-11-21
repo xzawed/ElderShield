@@ -2,9 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a premium React admin shell with Dashboard (KPI + threats + policy) and Devices list, served under `/admin/ui`, using existing admin APIs—without regressing remaining Jinja CRUD routes.
+**Goal:** Ship a premium React admin shell with Dashboard (KPI + threats + policy) and Devices list, served under `/admin/ui`, using existing admin APIs—without regressing remaining Jinja CRUD **forms**.
 
-**Architecture:** Vite React SPA in `admin-web/` builds into `backend/app/static/admin-spa/`. FastAPI serves SPA for `/admin/ui/` and known SPA paths; Jinja keeps `/admin/ui/restrictions` etc. until Phase B. Auth via existing session cookie + `credentials: 'include'`.
+**Architecture:** Vite React SPA in `admin-web/` builds into `backend/app/static/admin-spa/`. FastAPI serves SPA for `/admin/ui/` and `SPA_SHELL_SEGMENTS` (includes policy **list** paths). Jinja keeps create/edit forms (`/restrictions/new`, etc.) until Phase B CRUD. Auth via session cookie + `X-ElderShield-Admin: 1`.
+
+**Post-A note (S6.7):** Phase A sidebar Jinja `<a href>` links caused fatal shell swap. Superseded — primary nav is React `Link` only; see design §2 셸 통일.
 
 **Tech Stack:** React 18 · Vite · TypeScript · React Router 6 · Tailwind 3 · Recharts · FastAPI StaticFiles · pytest
 

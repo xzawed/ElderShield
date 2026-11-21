@@ -31,3 +31,24 @@ def test_admin_devices_lists_heartbeat_devices(client) -> None:
 def test_admin_devices_requires_admin_key(client) -> None:
     assert client.get("/api/v1/admin/devices").status_code == 401
     assert client.get("/api/v1/admin/devices", headers=DEVICE).status_code == 403
+
+
+def test_admin_device_detail_includes_token_status(client) -> None:
+    client.post(
+        "/api/v1/devices/heartbeat",
+        headers=DEVICE,
+        json={
+            "deviceUuid": "dev-token-status-1",
+            "appVersion": "1.0.0",
+            "dnsConfigured": False,
+            "callScreeningEnabled": True,
+            "lastRuleVersion": 1,
+        },
+    )
+    r = client.get("/api/v1/admin/devices/dev-token-status-1", headers=ADMIN)
+    assert r.status_code == 200
+    body = r.json()
+    assert "device" in body
+    assert body["tokenStatus"] in ("active", "revoked", "none")
+    # Heartbeat-only device uses shared fleet key → no bound token hash.
+    assert body["tokenStatus"] == "none"

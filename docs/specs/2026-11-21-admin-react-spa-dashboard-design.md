@@ -1,10 +1,10 @@
 # Admin React SPA Dashboard — 설계
 
-**상태:** Approved — Phase A 구현 계획 작성됨  
+**상태:** Phase A + 로그 가시화(L1–L3) + **주 네비 셸 통일** 반영 · CRUD 폼은 Phase B 잔여  
 **일자:** 2026-11-21  
-**관련:** 기존 Jinja Admin UI (`backend/app/web/admin_ui.py`), API `/api/v1/admin/*`  
-**제품 URL:** `https://eldershield.up.railway.app/admin/ui/login`  
-**계획:** [`../plans/2026-11-21-admin-react-spa-phase-a-implementation.md`](../plans/2026-11-21-admin-react-spa-phase-a-implementation.md)
+**관련:** Jinja Admin UI (`backend/app/web/admin_ui.py`), API `/api/v1/admin/*`  
+**제품 URL:** `https://eldershield.up.railway.app/admin/ui/`  
+**계획:** [`../plans/2026-11-21-admin-react-spa-phase-a-implementation.md`](../plans/2026-11-21-admin-react-spa-phase-a-implementation.md) · 로그 [`2026-11-21-admin-log-visibility-design.md`](2026-11-21-admin-log-visibility-design.md)
 
 ## 1. 목적
 
@@ -12,87 +12,77 @@
 
 확정 범위 (**C**):
 
-- **홈 대시보드 신설** — 상태 KPI + 위협 패널 + 정책 요약
-- **핵심 목록 페이지 요약 띠** — Devices / Restrictions / DNS 등
-- **기능 유지** — 국가제한·call-rules·DNS·기기·Incident·allowlist·audit 전부 SPA로 이전(단계적)
+- **홈 대시보드** — 상태 KPI + 위협 패널 + 정책 요약
+- **핵심 목록** — Devices / Restrictions / Call rules / DNS denylist / Allowlist / Audit / DNS logs
+- **기능 유지** — CRUD는 단계적 SPA 이전; 목록·조회는 SPA, 생성·편집 폼은 당분간 Jinja
 
-확정 스택 (**안2 · R**):
-
-- React 18 + Vite + TypeScript + React Router
-- Tailwind (기존 brand teal / ink + Fraunces · Source Sans 3)
-- 차트 1종 (Recharts 권장)
-- 데이터: 기존 admin API + 세션 쿠키 (`credentials: 'include'`)
+확정 스택 (**안2 · R**): React 18 + Vite + TS + React Router · Tailwind · Recharts · 세션 쿠키 + `X-ElderShield-Admin: 1`
 
 **비범위:** 부모님 Android UI, VpnService, 실시간 웹소켓(초기), 외부 BI.
 
-## 2. 시각·UX 원칙
+## 2. 하드 UX 불변식 — 셸 통일
 
-- 다크 사이드바 + 밝은 캔버스 (현 Jinja 구조 발전)
-- 대시보드이므로 KPI/표/차트 조합 허용; 장식용 카드 남발 금지
-- 상태 배지(정상/저하/위험), 밀도 있는 표, 미세 모션 2–3개(페이드, KPI 등장)
-- **금지:** Inter/Roboto 기본 스택, 보라–인디고 AI 그라데이션, 과도한 glow, 이모지 장식
-- ko/en: 쿠키 `es_admin_lang` 공유, 문자열 JSON 이식
+- **주 사이드바 메뉴 이동 시 SPA `AdminShell`이 바뀌면 안 된다** (Jinja `base.html`로 전체 리로드 금지).
+- 주 목록 GET 경로(`SPA_SHELL_SEGMENTS`)는 모두 동일 `index.html`을 반환한다.
+- Jinja는 **폼·레거시 상세**만: `/restrictions/new`, `/restrictions/{id}`, call-rules/allowlist 생성·삭제 폼 등.
+- Jinja `base.html` 네비 링크도 SPA 목록 경로를 가리켜, 폼에서 나가면 React 셸로 복귀한다.
+- 검증: `tests/test_admin_spa_static.py` (세그먼트 집합 + `id="root"`) · `scripts/lab-admin-spa-smoke.ps1` (`spa-nav-shell-unity`).
 
-## 3. 정보 구조 — 홈 `/admin/ui/`
+## 3. 시각·UX 원칙
 
-| 구역 | 내용 |
-|------|------|
-| KPI 띠 | 전체 기기 · `protectionDegraded` · DNS 미설정 · CallScreening off |
-| 위협 | 최근 Incident 표, 고위험 스캔 요약; 행 클릭 → device/incident |
-| 차트 | 정상 vs 저하 도넛; 최근 Incident(또는 sync) 막대 |
-| 정책 | 제한 국가 수 · denylist TLD 수 · rules/bundle version · enrollment window ON/OFF |
+- 다크 사이드바 + 밝은 캔버스
+- KPI/표/차트 조합 허용; 장식용 카드 남발 금지
+- **금지:** Inter/Roboto 기본 스택, 보라–인디고 AI 그라데이션, 과도한 glow, 이모지
+- ko/en: 쿠키 `es_admin_lang` 공유
 
 ## 4. 라우트 · API 매핑
 
-Base path: `/admin/ui/` (Vite `base: '/admin/ui/'`).
+Base: `/admin/ui/` (Vite `base: '/admin/ui/'`).
 
-| 경로 | 화면 | API (대표) |
-|------|------|------------|
-| `/login` | 로그인 | 기존 admin UI login POST / 세션 |
-| `/` | Dashboard | devices, incidents 집계, scans, restrictions, dns-denylist, health/rules, enrollment-window |
-| `/devices` | 목록 + 요약 띠 | `GET /api/v1/admin/devices` |
-| `/devices/:uuid` | 상세 · 스캔 · Incident · export | device, scans, incidents, export |
-| `/restrictions` | CRUD + 요약 | country-restrictions |
-| `/call-rules` | CRUD | call-rules |
-| `/dns` | denylist + NextDNS sync | dns-denylist, sync-nextdns |
-| `/allowlist` | CRUD | allowlist |
-| `/audit` | 감사 | audit |
+| 경로 | 화면 | 셸 | API (대표) |
+|------|------|-----|------------|
+| `/login` | 로그인 | SPA | `POST /admin/ui/api/login` |
+| `/` | Dashboard | SPA | devices, incidents, restrictions, dns-denylist, health, enrollment |
+| `/devices` | 목록 | SPA | `GET /devices` |
+| `/devices/:uuid` | 상세 · revoke | SPA | device, health, scans, DELETE token |
+| `/incidents/:id` | Incident | SPA | export / incidents |
+| `/audit` | 감사 | SPA | audit |
+| `/dns-logs` | NextDNS 질의 | SPA | `GET /dns-logs` |
+| `/restrictions` | 목록(읽기) | SPA | country-restrictions |
+| `/call-rules` | 목록(읽기) | SPA | call-rules |
+| `/dns-denylist` | denylist 요약 | SPA | dns-denylist |
+| `/allowlist` | 목록(읽기) | SPA | app-allowlist |
+| `/restrictions/new` · `/{id}` 등 | CRUD 폼 | **Jinja** | form POST |
 
-401 → `/login`.
+401(API) → `/login`.
 
 ## 5. 레포 · 빌드 · 배포
 
 | 항목 | 결정 |
 |------|------|
-| 소스 | 레포 루트 `admin-web/` |
-| 빌드 산출 | `backend/app/static/admin-spa/` (`npm run build` outDir) |
-| FastAPI | `/admin/ui` 및 `/admin/ui/{path}` → SPA `index.html` fallback; `/api/v1` 기존 유지 |
-| Railway | backend 이미지/빌드 단계에서 `admin-web` npm build 포함 또는 CI artifact 복사 |
-| 로컬 | Vite dev + proxy → `http://127.0.0.1:8765` |
+| 소스 | `admin-web/` |
+| 빌드 산출 | `backend/app/static/admin-spa/` (gitignore; Docker/CI에서 빌드) |
+| FastAPI | `spa.py` exact segments + param routes; Jinja 폼 경로 공존 |
+| Railway | 루트 Dockerfile multi-stage npm build |
 
 ## 6. 마이그레이션 단계
 
-| Phase | 내용 | 성공 기준 |
-|-------|------|-----------|
-| **A** | 셸·로그인·Dashboard·Devices 읽기 | 홈에 KPI·위협·정책 실데이터; Devices SPA; 스켈레톤 해소 |
-| **B** | Restrictions, call-rules, DNS, allowlist, audit, device detail/Incident | 기존 Jinja CRUD와 동등 기능; 로그 가시화는 [`2026-11-21-admin-log-visibility-design.md`](2026-11-21-admin-log-visibility-design.md) |
-| **C** | Jinja 템플릿 deprecate (필요 시 login만 잔존) | 단일 SPA 콘솔 |
+| Phase | 내용 | 상태 |
+|-------|------|------|
+| **A** | 셸·로그인·Dashboard·Devices 목록 | Done (PR #18) |
+| **A′** | 로그 가시화 L1–L3 | Done (PR #21) |
+| **A″** | 주 네비 셸 통일 + 정책 목록 SPA 읽기 | Done (PR #22) |
+| **B** | Restrictions/call-rules/DNS/allowlist **CRUD를 SPA 폼으로** | Open |
+| **C** | Jinja 템플릿 deprecate | Open |
 
-Phase A에서 미이관 메뉴는 사이드바에서 旧 Jinja 경로 임시 링크 허용.
-
-## 7. 백엔드 보완 (필요 시)
-
-Dashboard 집계가 N+1이면 `GET /api/v1/admin/dashboard/summary` 추가 검토 (Phase A에서 클라이언트 집계로 시작 가능).
-
-## 8. 자기검토
+## 7. 자기검토
 
 | 점검 | 결과 |
 |------|------|
-| §1–§2 반영 | React·C범위·KPI/위협/정책·빌드 경로 명시 |
-| SSOT 충돌 | 관리자 전용 UI; 부모 UX·VpnService 무관 |
-| 플레이스홀더 | Phase A/B/C로 범위 분할 |
-| 구 도메인 | 운영 URL `eldershield.up.railway.app` 기준 |
+| 셸 통일 | 주 메뉴 `Link` only; Jinja 목록 GET은 SPA가 선점 |
+| SSOT | 관리자 전용; 부모 UX·VpnService 무관 |
+| 검증 공백 교훈 | HTTP/`id="root"`만으로는 사이드바 연속성 미검증 → 스모크에 nav 연속성 필수 |
 
-## 9. 다음 단계
+## 8. 다음 단계
 
-Phase A 구현 계획 승인·실행 → Phase B/C 별도 계획.
+Phase B: 정책 CRUD를 SPA 폼으로 옮겨 Jinja 셸 잔여를 제거.

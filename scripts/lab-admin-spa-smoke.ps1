@@ -92,28 +92,32 @@ try {
   }
 }
 
-try {
-  $audit = Invoke-WebRequest -Uri "$Base/admin/ui/audit" -WebSession $session `
-    -TimeoutSec 30 -UseBasicParsing
-  if ($audit.StatusCode -eq 200 -and $audit.Content -match 'id="root"') {
-    Add-R "spa-audit" "PASS" "200 html root"
-  } else {
-    Add-R "spa-audit" "FAIL" ("status={0}" -f $audit.StatusCode)
+# Primary nav list paths must all return the same SPA index (shell continuity).
+$navPaths = @(
+  "/admin/ui/",
+  "/admin/ui/devices",
+  "/admin/ui/restrictions",
+  "/admin/ui/call-rules",
+  "/admin/ui/dns-denylist",
+  "/admin/ui/dns-logs",
+  "/admin/ui/allowlist",
+  "/admin/ui/audit"
+)
+$shellMismatch = @()
+foreach ($p in $navPaths) {
+  try {
+    $page = Invoke-WebRequest -Uri "$Base$p" -WebSession $session -TimeoutSec 30 -UseBasicParsing
+    if ($page.StatusCode -ne 200 -or $page.Content -notmatch 'id="root"') {
+      $shellMismatch += ("{0}:{1}" -f $p, $page.StatusCode)
+    }
+  } catch {
+    $shellMismatch += ("{0}:err" -f $p)
   }
-} catch {
-  Add-R "spa-audit" "FAIL" $_.Exception.Message
 }
-
-try {
-  $dnsLogs = Invoke-WebRequest -Uri "$Base/admin/ui/dns-logs" -WebSession $session `
-    -TimeoutSec 30 -UseBasicParsing
-  if ($dnsLogs.StatusCode -eq 200 -and $dnsLogs.Content -match 'id="root"') {
-    Add-R "spa-dns-logs" "PASS" "200 html root"
-  } else {
-    Add-R "spa-dns-logs" "FAIL" ("status={0}" -f $dnsLogs.StatusCode)
-  }
-} catch {
-  Add-R "spa-dns-logs" "FAIL" $_.Exception.Message
+if ($shellMismatch.Count -eq 0) {
+  Add-R "spa-nav-shell-unity" "PASS" ("{0} primary paths → SPA root" -f $navPaths.Count)
+} else {
+  Add-R "spa-nav-shell-unity" "FAIL" ($shellMismatch -join "; ")
 }
 
 try {

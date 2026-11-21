@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { type DnsLogEvent, getDnsLogs } from '../api/admin'
 import DnsTopChart from '../components/DnsTopChart'
 import { useI18n } from '../i18n/useI18n'
@@ -49,6 +49,9 @@ export default function DnsLogsPage() {
     try {
       const fromIso = new Date(fromLocal).toISOString()
       const toIso = new Date(toLocal).toISOString()
+      if (Number.isNaN(Date.parse(fromIso)) || Number.isNaN(Date.parse(toIso))) {
+        throw new Error(t('dns_logs.invalid_range'))
+      }
       const res = await getDnsLogs({ from: fromIso, to: toIso, status, limit: 300 })
       if (res.error === 'nextdns_unset') {
         setUnset(true)
@@ -63,9 +66,11 @@ export default function DnsLogsPage() {
     }
   }, [fromLocal, toLocal, status, t])
 
+  // Initial fetch only — filter edits require explicit Refresh (avoids spam / mid-edit errors).
   useEffect(() => {
     void load()
-  }, [load])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once
+  }, [])
 
   const top = useMemo(() => {
     const counts = new Map<string, number>()
@@ -117,9 +122,9 @@ export default function DnsLogsPage() {
         >
           {t('dns_logs.refresh')}
         </button>
-        <a href="/admin/ui/dns-denylist" className="text-sm font-semibold text-ink-600 hover:text-ink-900 ml-auto">
+        <Link to="/dns-denylist" className="text-sm font-semibold text-ink-600 hover:text-ink-900 ml-auto">
           {t('dns_logs.denylist_link')}
-        </a>
+        </Link>
       </div>
 
       {unset ? (

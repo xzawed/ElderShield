@@ -340,8 +340,15 @@ def get_device(device_uuid: str, session: Session = Depends(get_session)) -> dic
             .limit(50)
         ).all()
     )
+    if device.api_token_hash and device.token_revoked_at is None:
+        token_status = "active"
+    elif device.token_revoked_at is not None:
+        token_status = "revoked"
+    else:
+        token_status = "none"
     return {
         "device": DeviceOut.model_validate(device).model_dump(by_alias=True),
+        "tokenStatus": token_status,
         "healthEvents": [
             {
                 "id": e.id,

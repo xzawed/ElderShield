@@ -1,6 +1,6 @@
 # Admin 수집 로그 가시화 — 설계
 
-**상태:** Approved  
+**상태:** Done (PR #21) · 셸 통일 follow-up PR #22  
 **일자:** 2026-11-21  
 **관련:** [`2026-11-21-incident-evidence-pack-design.md`](2026-11-21-incident-evidence-pack-design.md), [`2026-11-21-admin-react-spa-dashboard-design.md`](2026-11-21-admin-react-spa-dashboard-design.md)  
 **계획:** [`../plans/2026-11-21-admin-log-visibility-implementation.md`](../plans/2026-11-21-admin-log-visibility-implementation.md)
@@ -58,4 +58,5 @@
 |------|------|
 | SSOT | 증거 패킷·개인정보(해시만) 준수 |
 | SPA Phase A | 셸·쿠키 CSRF 재사용 |
-| 플레이스홀더 | L1/L2/L3로 분할 |
+| 셸 통일 | dns-logs/audit는 SPA nav; 타 목록 Jinja 링크 금지(설계 §2) |
+| 플레이스홀더 | L1/L2/L3 완료 |

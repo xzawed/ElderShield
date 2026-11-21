@@ -1,9 +1,9 @@
-"""Phase A — SPA static shell coexists with Jinja admin routes."""
+"""Phase A — SPA static shell coexists with Jinja admin form routes."""
 
 import pytest
 from fastapi.testclient import TestClient
 
-from app.web.spa import SPA_ASSETS_DIR, SPA_INDEX
+from app.web.spa import SPA_ASSETS_DIR, SPA_INDEX, SPA_SHELL_SEGMENTS
 
 pytestmark = pytest.mark.skipif(
     not SPA_INDEX.is_file(),
@@ -24,15 +24,36 @@ def test_spa_login_path_serves_same_shell(client: TestClient) -> None:
     assert 'id="root"' in r.text
 
 
-def test_jinja_restrictions_still_served(client: TestClient) -> None:
+def test_primary_nav_list_paths_serve_spa_shell(client: TestClient) -> None:
+    """Primary GET list paths must stay in one SPA shell (no Jinja sidebar swap)."""
+    expected = {
+        "login",
+        "devices",
+        "audit",
+        "dns-logs",
+        "incidents",
+        "restrictions",
+        "call-rules",
+        "dns-denylist",
+        "allowlist",
+    }
+    assert SPA_SHELL_SEGMENTS == expected
+    for segment in sorted(SPA_SHELL_SEGMENTS - {"login", "incidents"}):
+        r = client.get(f"/admin/ui/{segment}")
+        assert r.status_code == 200, segment
+        assert 'id="root"' in r.text, segment
+
+
+def test_jinja_restriction_form_still_served(client: TestClient) -> None:
     client.post(
         "/admin/ui/login",
         data={"api_key": "test-admin-key"},
         follow_redirects=True,
     )
-    r = client.get("/admin/ui/restrictions")
+    r = client.get("/admin/ui/restrictions/new")
     assert r.status_code == 200
     assert "restrictions" in r.text.lower()
+    assert 'id="root"' not in r.text
 
 
 def test_spa_asset_under_admin_ui_assets(client: TestClient) -> None:
@@ -59,12 +80,6 @@ def test_spa_assets_reject_path_traversal(client: TestClient) -> None:
     assert r.status_code in (404, 400, 403)
 
 
-def test_spa_devices_shell_serves_index(client: TestClient) -> None:
-    r = client.get("/admin/ui/devices")
-    assert r.status_code == 200
-    assert 'id="root"' in r.text
-
-
 def test_spa_incident_param_serves_index(client: TestClient) -> None:
     r = client.get("/admin/ui/incidents/inc-demo-1")
     assert r.status_code == 200
@@ -75,10 +90,3 @@ def test_spa_device_detail_param_serves_index(client: TestClient) -> None:
     r = client.get("/admin/ui/devices/dev-demo-1")
     assert r.status_code == 200
     assert 'id="root"' in r.text
-
-
-def test_spa_audit_and_dns_logs_shell(client: TestClient) -> None:
-    for path in ("/admin/ui/audit", "/admin/ui/dns-logs"):
-        r = client.get(path)
-        assert r.status_code == 200
-        assert 'id="root"' in r.text

@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from './client'
+import { apiDelete, apiGet, apiPost } from './client'
 
 export interface DeviceOut {
   deviceUuid: string
@@ -64,6 +64,8 @@ export interface IncidentOut {
 
 export interface DeviceDetailOut {
   device: DeviceOut
+  /** active | revoked | none — bound enroll token state (no raw hash). */
+  tokenStatus?: 'active' | 'revoked' | 'none'
   healthEvents: {
     id: string
     type: string
@@ -139,6 +141,10 @@ export function getDeviceDetail(deviceUuid: string): Promise<DeviceDetailOut> {
   return apiGet<DeviceDetailOut>(`/api/v1/admin/devices/${deviceUuid}`)
 }
 
+export function revokeDeviceToken(deviceUuid: string): Promise<void> {
+  return apiDelete(`/api/v1/admin/devices/${deviceUuid}/token`)
+}
+
 export function listAudit(limit = 200): Promise<AuditRow[]> {
   return apiGet<AuditRow[]>(`/api/v1/admin/audit?limit=${limit}`)
 }
@@ -177,6 +183,12 @@ export function listCountries(): Promise<unknown[]> {
 
 export function listCallRules(): Promise<unknown[]> {
   return apiGet<unknown[]>('/api/v1/admin/call-rules')
+}
+
+export function listAllowlist(): Promise<
+  { packageName: string; note?: string | null; createdAt?: string | null }[]
+> {
+  return apiGet('/api/v1/admin/app-allowlist')
 }
 
 export function openEnrollmentWindow(body: {

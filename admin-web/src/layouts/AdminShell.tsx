@@ -24,21 +24,6 @@ function NavItem({
   )
 }
 
-function JinjaLink({ href, label, active }: { href: string; label: string; active: boolean }) {
-  return (
-    <a
-      href={href}
-      className={
-        active
-          ? 'flex items-center gap-2 rounded-lg px-3 py-2.5 bg-brand-600 text-white'
-          : 'flex items-center gap-2 rounded-lg px-3 py-2.5 text-slate-300 hover:bg-white/5 hover:text-white'
-      }
-    >
-      {label}
-    </a>
-  )
-}
-
 export default function AdminShell() {
   const { t, lang } = useI18n()
   const location = useLocation()
@@ -51,15 +36,17 @@ export default function AdminShell() {
     if (path.startsWith('/devices/') && path !== '/devices') {
       return { heading: t('device.heading'), sub: t('device.sub') }
     }
-    if (path === '/devices' || path.endsWith('/devices')) {
-      return { heading: t('devices.heading'), sub: t('devices.sub') }
+    if (path === '/devices') return { heading: t('devices.heading'), sub: t('devices.sub') }
+    if (path === '/audit') return { heading: t('audit.heading'), sub: t('audit.sub') }
+    if (path === '/dns-logs') return { heading: t('dns_logs.heading'), sub: t('dns_logs.sub') }
+    if (path === '/restrictions') {
+      return { heading: t('restrictions.heading'), sub: t('restrictions.sub') }
     }
-    if (path === '/audit' || path.endsWith('/audit')) {
-      return { heading: t('audit.heading'), sub: t('audit.sub') }
+    if (path === '/call-rules') return { heading: t('call_rules.heading'), sub: t('call_rules.sub') }
+    if (path === '/dns-denylist') {
+      return { heading: t('dns_denylist.heading'), sub: t('dns_denylist.sub') }
     }
-    if (path === '/dns-logs' || path.endsWith('/dns-logs')) {
-      return { heading: t('dns_logs.heading'), sub: t('dns_logs.sub') }
-    }
+    if (path === '/allowlist') return { heading: t('allowlist.heading'), sub: t('allowlist.sub') }
     return { heading: t('dashboard.heading'), sub: t('dashboard.sub') }
   })()
 
@@ -77,12 +64,12 @@ export default function AdminShell() {
             label={t('nav.devices')}
             active={path === '/devices' || path.startsWith('/devices/')}
           />
-          <NavItem to="/audit" label={t('nav.audit')} active={path === '/audit'} />
+          <NavItem to="/restrictions" label={t('nav.restrictions')} active={path === '/restrictions'} />
+          <NavItem to="/call-rules" label={t('nav.call_rules')} active={path === '/call-rules'} />
+          <NavItem to="/dns-denylist" label={t('nav.dns')} active={path === '/dns-denylist'} />
           <NavItem to="/dns-logs" label={t('nav.dns_logs')} active={path === '/dns-logs'} />
-          <JinjaLink href="/admin/ui/restrictions" label={t('nav.restrictions')} active={false} />
-          <JinjaLink href="/admin/ui/call-rules" label={t('nav.call_rules')} active={false} />
-          <JinjaLink href="/admin/ui/dns-denylist" label={t('nav.dns')} active={false} />
-          <JinjaLink href="/admin/ui/allowlist" label={t('nav.allowlist')} active={false} />
+          <NavItem to="/allowlist" label={t('nav.allowlist')} active={path === '/allowlist'} />
+          <NavItem to="/audit" label={t('nav.audit')} active={path === '/audit'} />
           <a
             href="/admin/ui/logout"
             className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white"

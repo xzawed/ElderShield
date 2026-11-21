@@ -39,3 +39,9 @@
 ### Verify
 
 - [x] full pytest + `npm run build` + smoke updates (PR #21; prod smoke after merge)
+
+### Follow-up (S6.7 shell unity — PR #22)
+
+- [x] Primary nav no longer uses Jinja full-page links for list destinations
+- [x] SPA list pages: restrictions, call-rules, dns-denylist, allowlist
+- [x] `SPA_SHELL_SEGMENTS` + pytest + smoke `spa-nav-shell-unity`

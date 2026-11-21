@@ -49,7 +49,16 @@
         <p class="font-display text-xl tracking-tight text-white">ElderShield</p>
         <p class="mt-1 text-xs uppercase tracking-[0.18em] text-brand-100/80">{{ t('brand.sub') }}</p>
       </div>
+      {# Primary nav points at SPA shells so leaving a legacy Jinja form restores the React sidebar. #}
       <nav class="px-3 pb-6 space-y-1 text-sm">
+        <a href="/admin/ui/"
+           class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-slate-300 hover:bg-white/5 hover:text-white">
+          {{ t('nav.dashboard') }}
+        </a>
+        <a href="/admin/ui/devices"
+           class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/devices') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+          {{ t('nav.devices') }}
+        </a>
         <a href="/admin/ui/restrictions"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/restrictions') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
           {{ t('nav.restrictions') }}
@@ -62,9 +71,9 @@
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/dns-denylist') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
           {{ t('nav.dns') }}
         </a>
-        <a href="/admin/ui/devices"
-           class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/devices') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
-          {{ t('nav.devices') }}
+        <a href="/admin/ui/dns-logs"
+           class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/dns-logs') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
+          {{ t('nav.dns_logs') }}
         </a>
         <a href="/admin/ui/allowlist"
            class="flex items-center gap-2 rounded-lg px-3 py-2.5 {% if request.url.path.startswith('/admin/ui/allowlist') %}bg-brand-600 text-white{% else %}text-slate-300 hover:bg-white/5 hover:text-white{% endif %}">
