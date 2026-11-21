@@ -74,19 +74,21 @@ try {
 }
 
 try {
-  $noHdr = Invoke-WebRequest -Uri "$Base/api/v1/admin/devices" -WebSession $session `
-    -TimeoutSec 30 -UseBasicParsing -SkipHttpErrorCheck
-  if ($noHdr.StatusCode -eq 401) {
-    Add-R "admin-devices-csrf" "PASS" "cookie without header → 401"
-  } else {
-    Add-R "admin-devices-csrf" "FAIL" ("expected 401 got {0}" -f $noHdr.StatusCode)
+  # Fresh session so prior -Headers are not reused (WebRequestSession keeps them).
+  $csrfSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+  foreach ($c in $session.Cookies.GetCookies([uri]$Base)) {
+    $csrfSession.Cookies.Add($c)
   }
+  $null = Invoke-WebRequest -Uri "$Base/api/v1/admin/devices" -WebSession $csrfSession `
+    -TimeoutSec 30 -UseBasicParsing
+  Add-R "admin-devices-csrf" "FAIL" "expected 401 without CSRF header"
 } catch {
-  # Windows PowerShell may throw on 401 without SkipHttpErrorCheck
-  if ($_.Exception.Response.StatusCode.value__ -eq 401) {
+  $code = $null
+  try { $code = [int]$_.Exception.Response.StatusCode } catch {}
+  if ($code -eq 401) {
     Add-R "admin-devices-csrf" "PASS" "cookie without header → 401"
   } else {
-    Add-R "admin-devices-csrf" "FAIL" $_.Exception.Message
+    Add-R "admin-devices-csrf" "FAIL" ("status={0} err={1}" -f $code, $_.Exception.Message)
   }
 }
 
