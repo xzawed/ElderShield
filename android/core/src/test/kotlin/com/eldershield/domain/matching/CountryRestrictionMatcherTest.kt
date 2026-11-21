@@ -200,6 +200,11 @@ class CountryRestrictionMatcherTest {
     }
 
     @Test
+    fun `matchRestrictedIso CN number returns CN`() {
+        assertEquals("CN", matcher.matchRestrictedIso("+8613812345678", listOf(rule(listOf("CN")))))
+    }
+
+    @Test
     fun `UT-A-25 whitelist E164 matches national KR presentation`() {
         assertTrue(matcher.isWhitelisted("01091112222", listOf("+821091112222")))
         assertFalse(

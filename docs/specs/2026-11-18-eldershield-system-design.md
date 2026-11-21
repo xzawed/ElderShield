@@ -376,6 +376,7 @@ interface AppScanner {
 - HTTPS 필수. Admin UI 쿠키는 **HMAC 세션 토큰**(API 키 원문 금지). 운영 HTTPS에서는 `COOKIE_SECURE=1`
 - 규칙 변경 이력 보관 (restriction version 스냅샷 + 롤백)
 - 민감 정보(전화번호 원문 등) 최소화 저장
+- **Incident 증거 패킷** (트리거 확정 시에만): 앱·전화·DNS **메타만** 서버 보관. 전화번호 원문 없음(해시만). GPS·VpnService 없음. 보관 TTL **90일**. 상세 [`2026-11-21-incident-evidence-pack-design.md`](2026-11-21-incident-evidence-pack-design.md)
 - Play Store 내부 테스트 트랙으로 앱 배포 → 자동 업데이트
 - 원격 규칙 sync 실패 시 기기는 캐시/EmptyNoBlock(차단 안 함)을 유지하되 WorkManager는 **retry**
 

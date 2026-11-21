@@ -38,6 +38,14 @@ class DefaultCountryRestrictionMatcher(
             .flatMap { it.countries.map { c -> c.uppercase() } }
             .toSet()
 
+    fun matchRestrictedIso(phoneNumber: String, rules: List<CountryRestriction>): String? {
+        val digits = normalizeDigits(phoneNumber, defaultRegionIso)
+        if (digits.length < 8) return null
+        val restricted = getRestrictedCountries(rules)
+        if (restricted.isEmpty()) return null
+        return matchCountryIso(digits, restricted)
+    }
+
     fun isWhitelisted(phoneNumber: String, whitelist: List<String>): Boolean {
         val digits = normalizeDigits(phoneNumber, defaultRegionIso)
         if (digits.isEmpty()) return false

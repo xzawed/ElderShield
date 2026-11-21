@@ -5,8 +5,11 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import com.eldershield.data.ActiveRuleBundleCache
 import com.eldershield.data.RuleBundleJson
+import com.eldershield.data.local.CallEvidenceEntity
 import com.eldershield.data.local.ElderShieldDatabase
+import com.eldershield.domain.incident.PhoneEvidenceHasher
 import com.eldershield.domain.matching.CallScreeningDecision
+import com.eldershield.domain.matching.DefaultCountryRestrictionMatcher
 import com.eldershield.domain.model.RuleBundle
 import kotlinx.coroutines.runBlocking
 
@@ -37,6 +40,17 @@ class ElderCallScreeningService : CallScreeningService() {
                     "onScreenCall dir=$direction len=${number.length} " +
                         "bundleVer=${bundle?.version ?: -1} block=$block",
                 )
+                if (direction == CallScreeningDecision.DIRECTION_INCOMING) {
+                    // Evidence must not fail-open the screening decision.
+                    try {
+                        recordCallEvidence(number, block, bundle)
+                        if (block) {
+                            IncidentUploadWorker.enqueue(applicationContext, "call_reject")
+                        }
+                    } catch (e: Exception) {
+                        Log.w(TAG, "call evidence skipped: ${e.javaClass.simpleName}")
+                    }
+                }
                 if (block) {
                     CallResponse.Builder()
                         .setDisallowCall(true)
@@ -65,6 +79,25 @@ class ElderCallScreeningService : CallScreeningService() {
                 RuleBundleJson.decode(entity.payloadJson)
             }
         return ActiveRuleBundleCache.publishIfNewer(fromDb)
+    }
+
+    private fun recordCallEvidence(number: String, block: Boolean, bundle: RuleBundle?) {
+        val digits = DefaultCountryRestrictionMatcher.normalizeDigits(number)
+        val entity = CallEvidenceEntity(
+            atEpochMs = System.currentTimeMillis(),
+            countryIso = DefaultCountryRestrictionMatcher().matchRestrictedIso(
+                number,
+                bundle?.countryRestrictions.orEmpty(),
+            ),
+            decision = if (block) "Reject" else "Allow",
+            phoneHash = PhoneEvidenceHasher.hash(digits),
+            last4 = PhoneEvidenceHasher.last4(digits),
+        )
+        runBlocking {
+            val dao = ElderShieldDatabase.get(applicationContext).callEvidenceDao()
+            dao.insert(entity)
+            dao.trimToMax(200)
+        }
     }
 
     companion object {

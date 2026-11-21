@@ -1,0 +1,178 @@
+﻿{
+    "ranAt":  "2026-11-20T17:47:48.6403461Z",
+    "baseUrl":  "https://backend-production-6d51aca0.up.railway.app",
+    "deviceUuid":  "43630289-0cf4-49ed-bfc9-e4aa1e63c0e5",
+    "note":  "Clean Railway retest after pm clear. First script run polluted by lab 127.0.0.1:8765 RuleBundle v76 (CN-only) + version-monotonic sync refuse of Railway v2.",
+    "ops":  {
+                "rulesVersion":  2,
+                "androidMapHits":  [
+                                       "CN",
+                                       "IR",
+                                       "KP"
+                                   ],
+                "androidMapMissSample":  [
+                                             "GB",
+                                             "AU",
+                                             "DE",
+                                             "FR",
+                                             "EG"
+                                         ],
+                "countries":  119,
+                "applyTo":  [
+                                "call",
+                                "dns",
+                                "internet"
+                            ]
+            },
+    "summary":  {
+                    "fail":  0,
+                    "pass":  14,
+                    "bug":  5,
+                    "warn":  3,
+                    "skip":  1,
+                    "info":  1
+                },
+    "findings":  [
+                     {
+                         "detail":  "DEFAULT_CALLING_CODES has 7 entries; ops restricts 119. Only CN/IR/KP actually call-block. GB(+44)/AU(+61)/DE(+49) and ~113 others Allow despite admin selection.",
+                         "id":  "calling-code-coverage",
+                         "severity":  "BUG"
+                     },
+                     {
+                         "detail":  "RuleSyncPolicy keeps cache when remote.version \u003c cached.version. Lab v76 poisoned device so Railway v2 never applied until pm clear. Admin showed lastRuleVersion=76 while screening CN-only.",
+                         "id":  "version-monotonic-cross-env",
+                         "severity":  "BUG"
+                     },
+                     {
+                         "detail":  "Boot DeviceReportWorker raced ahead of RuleSyncWorker; lastRuleVersion/cachedBundleVersion stayed 0 on Railway even though CallScreening used bundleVer=2. Unique boot work not re-fired on activity restart.",
+                         "id":  "heartbeat-rule-version-race",
+                         "severity":  "BUG"
+                     },
+                     {
+                         "detail":  "Railway NEXTDNS_* unset; dnsConfigured=false; internet/dns applyTo is denylist plan only (tlds=119, uk/de/au/cn present). No live Private DNS enforcement on emu.",
+                         "id":  "nextdns-unset",
+                         "severity":  "WARN"
+                     },
+                     {
+                         "detail":  "CN/IR/KP Reject; KR/US/JP Allow (not in ops) — matches ops GLOBALISM after clean sync.",
+                         "id":  "call-mapped-countries",
+                         "severity":  "PASS"
+                     },
+                     {
+                         "detail":  "labattacker reported to Railway riskScore=100 reasons=installer_null|dangerous_permissions|overlay_permission.",
+                         "id":  "virtual-attacker",
+                         "severity":  "PASS"
+                     }
+                 ],
+    "callMatrix":  [
+                       {
+                           "got":  "Reject",
+                           "num":  "+8613999887766",
+                           "expect":  "Reject",
+                           "note":  "CN"
+                       },
+                       {
+                           "got":  "Reject",
+                           "num":  "+989121234567",
+                           "expect":  "Reject",
+                           "note":  "IR"
+                       },
+                       {
+                           "got":  "Reject",
+                           "num":  "+850191234567",
+                           "expect":  "Reject",
+                           "note":  "KP"
+                       },
+                       {
+                           "got":  "Allow",
+                           "num":  "+821098765432",
+                           "expect":  "Allow",
+                           "note":  "KR not in ops"
+                       },
+                       {
+                           "got":  "Allow",
+                           "num":  "+12025550123",
+                           "expect":  "Allow",
+                           "note":  "US not in ops"
+                       },
+                       {
+                           "got":  "Allow",
+                           "num":  "+818012345678",
+                           "expect":  "Allow",
+                           "note":  "JP not in ops"
+                       },
+                       {
+                           "got":  "Allow",
+                           "num":  "+447911123456",
+                           "expect":  "Reject(ops)",
+                           "note":  "BUG map gap GB"
+                       },
+                       {
+                           "got":  "Allow",
+                           "num":  "+61412345678",
+                           "expect":  "Reject(ops)",
+                           "note":  "BUG map gap AU"
+                       },
+                       {
+                           "got":  "Allow",
+                           "num":  "+4915112345678",
+                           "expect":  "Reject(ops)",
+                           "note":  "BUG map gap DE"
+                       }
+                   ],
+    "scans":  [
+                  {
+                      "packageName":  "com.eldershield.labattacker",
+                      "installer":  null,
+                      "dangerousPermissions":  [
+                                                   "android.permission.READ_SMS",
+                                                   "android.permission.READ_CALL_LOG",
+                                                   "android.permission.RECEIVE_SMS",
+                                                   "android.permission.REQUEST_INSTALL_PACKAGES"
+                                               ],
+                      "riskScore":  100,
+                      "reasons":  [
+                                      "installer_null",
+                                      "dangerous_permissions:android.permission.READ_SMS|android.permission.READ_CALL_LOG|android.permission.RECEIVE_SMS|android.permission.REQUEST_INSTALL_PACKAGES",
+                                      "overlay_permission"
+                                  ],
+                      "createdAt":  "2026-11-20T17:44:39.819153+00:00"
+                  },
+                  {
+                      "packageName":  "com.eldershield.labattacker",
+                      "installer":  null,
+                      "dangerousPermissions":  [
+                                                   "android.permission.READ_SMS",
+                                                   "android.permission.READ_CALL_LOG",
+                                                   "android.permission.RECEIVE_SMS",
+                                                   "android.permission.REQUEST_INSTALL_PACKAGES"
+                                               ],
+                      "riskScore":  100,
+                      "reasons":  [
+                                      "installer_null",
+                                      "dangerous_permissions:android.permission.READ_SMS|android.permission.READ_CALL_LOG|android.permission.RECEIVE_SMS|android.permission.REQUEST_INSTALL_PACKAGES",
+                                      "overlay_permission"
+                                  ],
+                      "createdAt":  "2026-11-20T17:44:39.806822+00:00"
+                  }
+              ],
+    "device":  {
+                   "deviceUuid":  "43630289-0cf4-49ed-bfc9-e4aa1e63c0e5",
+                   "name":  null,
+                   "model":  null,
+                   "appVersion":  "0.2.0",
+                   "dnsConfigured":  false,
+                   "callScreeningEnabled":  true,
+                   "callScreeningHeldBy":  "com.eldershield",
+                   "callScreeningPeers":  [
+                                              "com.google.android.dialer"
+                                          ],
+                   "lastRuleVersion":  0,
+                   "lastSyncAt":  "2026-11-20T17:44:39.089511Z",
+                   "dnsHostClass":  "none",
+                   "lastSyncOk":  true,
+                   "lastSyncErrorCode":  null,
+                   "cachedBundleVersion":  0,
+                   "protectionDegraded":  true
+               }
+}
