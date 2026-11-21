@@ -19,23 +19,23 @@
 
 ### L1 Incident detail
 
-- [ ] `spa.py`: SPA shell for `incidents/{id}`, nested `devices/{uuid}`
-- [ ] `admin-web`: IncidentPage, timeline merge util + tests, DNS chart
-- [ ] ThreatTable → `/incidents/:id`; API `getIncidentExport`
-- [ ] pytest SPA static paths
+- [x] `spa.py`: SPA shell for `incidents/{id}`, nested `devices/{uuid}`
+- [x] `admin-web`: IncidentPage, timeline merge util + tests, DNS chart
+- [x] ThreatTable → `/incidents/:id`; API `getIncidentExport`
+- [x] pytest SPA static paths
 
 ### L2 Device + Audit
 
-- [ ] DeviceDetailPage from `GET /devices/{uuid}`
-- [ ] AuditPage from `GET /audit`; nav SPA
-- [ ] Devices list row → detail
+- [x] DeviceDetailPage from `GET /devices/{uuid}`
+- [x] AuditPage from `GET /audit`; nav SPA
+- [x] Devices list row → detail
 
 ### L3 NextDNS logs
 
-- [ ] `GET /api/v1/admin/dns-logs` (503 if unset)
-- [ ] DnsLogsPage + nav
-- [ ] pytest mock httpx
+- [x] `GET /api/v1/admin/dns-logs` (503 if unset)
+- [x] DnsLogsPage + nav
+- [x] pytest mock httpx
 
 ### Verify
 
-- [ ] full pytest + `npm run build` + smoke updates
+- [x] full pytest + `npm run build` + smoke updates (PR #21; prod smoke after merge)
