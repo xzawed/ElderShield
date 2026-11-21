@@ -11,6 +11,7 @@ Zero-touch Play release는 **HTTPS** `eldershield.baseUrl`이 필요합니다.
    - **대안**: 저장소 루트 `Dockerfile` + `railway.toml` (`builder = DOCKERFILE`).
 3. Volume: mount `/data` (sqlite 영속).  
 4. Public domain 발급 (`*.up.railway.app`), healthcheck `/health`.  
+   **현재 운영:** `https://eldershield.up.railway.app` (Admin: `/admin/ui/login`, GitHub About homepage와 동일).  
    **주의:** 도메인 `targetPort`는 컨테이너가 실제로 listen하는 `$PORT`와 같아야 함 (Railpack 기본 8080, Dockerfile 기본 8000). 불일치 시 외부 502.
 
 ## 2. 필수 변수
@@ -39,15 +40,15 @@ Zero-touch Play release는 **HTTPS** `eldershield.baseUrl`이 필요합니다.
 ```bash
 cd android
 ./gradlew :app:bundleRelease \
-  -Peldershield.baseUrl=https://YOUR-SERVICE.up.railway.app \
+  -Peldershield.baseUrl=https://eldershield.up.railway.app \
   -Peldershield.playCloudProjectNumber=YOUR_CLOUD_PROJECT_NUMBER
 ```
 
 ## 5. 스모크
 
 ```bash
-curl -s https://YOUR-SERVICE.up.railway.app/health
-# Admin UI: /admin/ui/login
+curl -s https://eldershield.up.railway.app/health
+# Admin UI: https://eldershield.up.railway.app/admin/ui/login
 # Devices → Open enrollment window → Play/Internal 설치
 ```
 
