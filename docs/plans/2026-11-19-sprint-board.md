@@ -33,7 +33,7 @@
 | **S3** | Android Room + sync | UT-A-30–33 | `./gradlew :core:test` | Pass 2026-11-19 |
 | **S4** | Matcher + CallScreening | UT-A-01–22 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
 | **S5** | Scanner + DnsMonitor | UT-A-40–44 | `./gradlew :core:test` + assembleDebug | Pass 2026-11-19 |
-| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial 2026-11-19 — CI+#11; AVD combinatorial PASS; nocall S22 DNS/banks/BD PASS; **NextDNS_*/Play AAB = operator** |
+| **S6** | Device + internal ship | M5 checklist; unit only if gap | User device + 1p runbook | Partial 2026-11-21 — Incident evidence pack A+B implemented, C NextDNS-dependent |
 
 ## S1 slices
 

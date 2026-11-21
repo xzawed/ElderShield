@@ -5,9 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [RuleBundleEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [RuleBundleEntity::class, CallEvidenceEntity::class],
+    version = 2,
+    exportSchema = false,
+)
 abstract class ElderShieldDatabase : RoomDatabase() {
     abstract fun ruleBundleDao(): RuleBundleDao
+    abstract fun callEvidenceDao(): CallEvidenceDao
 
     companion object {
         @Volatile private var instance: ElderShieldDatabase? = null
@@ -19,7 +24,10 @@ abstract class ElderShieldDatabase : RoomDatabase() {
                         context.applicationContext,
                         ElderShieldDatabase::class.java,
                         "eldershield.db",
-                    ).build().also { instance = it }
+                    )
+                        .fallbackToDestructiveMigration()
+                        .build()
+                        .also { instance = it }
             }
     }
 }

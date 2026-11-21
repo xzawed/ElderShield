@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Session, col, select
 
@@ -12,6 +13,7 @@ from app.api.schemas import (
     CountryRestrictionUpdate,
     DeviceOut,
     DnsDenylistOut,
+    IncidentOut,
     NextDnsSyncOut,
     RulesRollbackOut,
     RulesRollbackRequest,
@@ -24,6 +26,9 @@ from app.models.country_restriction import CountryRestriction
 from datetime import datetime, timezone
 
 from app.models.device import AppAllowlist, AppScanResult, AuditLog, Device, DeviceHealthEvent
+from app.models.incident import Incident
+from app.services.incident_merge import strip_raw_phone_keys
+from app.services.nextdns_logs import enrich_incident_dns
 from app.services.audit import record_audit
 from app.services.call_rule_service import create_call_rule
 from app.services.country_restriction_service import (
@@ -375,6 +380,56 @@ def list_scan_results(device_uuid: str, session: Session = Depends(get_session))
         }
         for r in rows
     ]
+
+
+def _incident_out(row: Incident) -> IncidentOut:
+    out = IncidentOut.from_row(row)
+    out.payload = strip_raw_phone_keys(out.payload)
+    return out
+
+
+@router.get("/devices/{device_uuid}/incidents", response_model=list[IncidentOut])
+def list_device_incidents(
+    device_uuid: str, session: Session = Depends(get_session)
+) -> list[IncidentOut]:
+    rows = session.exec(
+        select(Incident)
+        .where(Incident.device_uuid == device_uuid)
+        .order_by(col(Incident.triggered_at).desc())
+    ).all()
+    return [_incident_out(row) for row in rows]
+
+
+@router.get("/incidents/{incident_id}/export")
+def export_incident(incident_id: str, session: Session = Depends(get_session)) -> JSONResponse:
+    row = session.get(Incident, incident_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    body = _incident_out(row).model_dump(by_alias=True, mode="json")
+    body = strip_raw_phone_keys(body)
+    payload = body.get("payload") if isinstance(body.get("payload"), dict) else {}
+    enriched = strip_raw_phone_keys(enrich_incident_dns(payload))
+    body["payload"] = enriched
+    before_avail = bool((payload.get("dns") or {}).get("available")) if isinstance(payload.get("dns"), dict) else False
+    after_avail = bool((enriched.get("dns") or {}).get("available")) if isinstance(enriched.get("dns"), dict) else False
+    if after_avail and not before_avail:
+        row.payload = enriched
+        session.add(row)
+        session.commit()
+    return JSONResponse(
+        content=body,
+        headers={
+            "Content-Disposition": f"attachment; filename=incident-{incident_id}.json",
+        },
+    )
+
+
+@router.get("/incidents/{incident_id}", response_model=IncidentOut)
+def get_incident(incident_id: str, session: Session = Depends(get_session)) -> IncidentOut:
+    row = session.get(Incident, incident_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return _incident_out(row)
 
 
 @router.get("/app-allowlist")

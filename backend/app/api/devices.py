@@ -1,13 +1,23 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, ConfigDict, Field
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from app.api.deps import DeviceAuth, assert_device_uuid_bound, require_device
+from app.api.schemas import IncidentIn, IncidentOut
 from app.db import get_session
 from app.models.device import AppAllowlist, AppScanResult, Device, DeviceHealthEvent
+from app.models.incident import Incident
 from app.services.admin_notify import notify_admin
+from app.services.incident_merge import (
+    IncidentSanitizeError,
+    merge_payloads,
+    purge_old_incidents,
+    sanitize_calls,
+    should_merge,
+    strip_raw_phone_keys,
+)
 from app.services.rule_bundle_builder import build_rule_bundle
 
 router = APIRouter(prefix="/api/v1", tags=["device"])
@@ -211,3 +221,93 @@ def scan_result(
             )
     session.commit()
     return {"ok": True, "saved": saved}
+
+
+def _as_utc(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _ensure_device(session: Session, auth: DeviceAuth, device_uuid: str) -> None:
+    if session.get(Device, device_uuid) is None:
+        if not auth.shared_key:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="device_not_found")
+        session.add(Device(device_uuid=device_uuid, last_sync_at=datetime.now(timezone.utc)))
+        session.commit()
+
+
+def _incident_payload(body: IncidentIn, calls: list[dict]) -> dict:
+    payload: dict = {
+        "apps": list(body.apps or []),
+        "calls": calls,
+        "dns": dict(body.dns or {}),
+        "triggers": list(body.triggers or []),
+    }
+    if body.window is not None:
+        payload["window"] = body.window
+    if body.country_hints is not None:
+        payload["countryHints"] = body.country_hints
+    if body.protection_snapshot is not None:
+        payload["protectionSnapshot"] = body.protection_snapshot
+    return strip_raw_phone_keys(payload)
+
+
+@router.post("/devices/incidents", response_model=IncidentOut)
+def post_incident(
+    body: IncidentIn,
+    response: Response,
+    session: Session = Depends(get_session),
+    auth: DeviceAuth = Depends(require_device),
+) -> IncidentOut:
+    assert_device_uuid_bound(auth, body.device_uuid)
+    try:
+        calls = sanitize_calls(body.calls)
+    except IncidentSanitizeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(exc),
+        ) from exc
+
+    purge_old_incidents(session, days=90)
+    _ensure_device(session, auth, body.device_uuid)
+
+    incoming = _incident_payload(body, calls)
+    triggered_at = _as_utc(body.triggered_at)
+
+    existing = session.get(Incident, body.incident_id)
+    if existing is not None:
+        response.status_code = status.HTTP_200_OK
+        session.commit()
+        return IncidentOut.from_row(existing)
+
+    latest = session.exec(
+        select(Incident)
+        .where(Incident.device_uuid == body.device_uuid)
+        .order_by(col(Incident.triggered_at).desc())
+    ).first()
+    if latest is not None and should_merge(_as_utc(latest.triggered_at), triggered_at):
+        merged = merge_payloads(latest.payload or {}, incoming)
+        latest.payload = strip_raw_phone_keys(merged)
+        latest.triggers = list(merged.get("triggers") or [])
+        latest_at = _as_utc(latest.triggered_at)
+        if triggered_at > latest_at:
+            latest.triggered_at = triggered_at
+        session.add(latest)
+        session.commit()
+        session.refresh(latest)
+        response.status_code = status.HTTP_200_OK
+        return IncidentOut.from_row(latest)
+
+    row = Incident(
+        id=body.incident_id,
+        device_uuid=body.device_uuid,
+        triggered_at=triggered_at,
+        triggers=list(body.triggers or []),
+        payload=incoming,
+    )
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    response.status_code = status.HTTP_201_CREATED
+    return IncidentOut.from_row(row)

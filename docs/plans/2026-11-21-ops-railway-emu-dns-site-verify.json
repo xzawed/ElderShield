@@ -1,0 +1,84 @@
+{
+    "ranAt":  "2026-11-20T17:50:50.1582800Z",
+    "baseUrl":  "https://backend-production-6d51aca0.up.railway.app",
+    "verdict":  "FAIL_NOT_ENFORCED",
+    "summary":  "Restricted-country sites resolve and respond on emulator. Internet/DNS blocking is not active.",
+    "causes":  [
+                   "POST /api/v1/admin/dns-denylist/sync-nextdns returns 503 (NEXTDNS_API_KEY/PROFILE unset on Railway)",
+                   "Emulator private_dns_mode=opportunistic (ElderShield requires hostname mode for dnsConfigured=true); dnsConfigured=false hostClass=none",
+                   "Android app does not block traffic itself (SSOT: Private DNS / NextDNS path only; VpnService off)"
+               ],
+    "denylistPlan":  {
+                         "domains":  17,
+                         "tlds":  119,
+                         "note":  "Backend builds denylist from ops countries, but it is not pushed to a live resolver"
+                     },
+    "probes":  [
+                   {
+                       "host":  "baidu.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block",
+                       "ip":  "124.237.177.164"
+                   },
+                   {
+                       "host":  "www.baidu.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "qq.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "taobao.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "sina.com.cn",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "www.gov.cn",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "digikala.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "aparat.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "example.com.au",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "bbc.co.uk",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "block"
+                   },
+                   {
+                       "host":  "www.naver.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "allow"
+                   },
+                   {
+                       "host":  "www.google.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "allow"
+                   },
+                   {
+                       "host":  "example.com",
+                       "got":  "RESOLVED+PING",
+                       "expect":  "allow"
+                   }
+               ]
+}

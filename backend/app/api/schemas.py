@@ -138,3 +138,55 @@ class RulesRollbackOut(BaseModel):
     version: int
     description: Optional[str] = None
     bundle_version: int = Field(serialization_alias="bundleVersion")
+
+
+class IncidentIn(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    incident_id: str = Field(alias="incidentId")
+    device_uuid: str = Field(alias="deviceUuid")
+    triggered_at: datetime = Field(alias="triggeredAt")
+    triggers: list[str]
+    window: Optional[dict] = None
+    apps: list[dict] = Field(default_factory=list)
+    calls: list[dict] = Field(default_factory=list)
+    dns: dict = Field(default_factory=dict)
+    country_hints: Optional[dict] = Field(default=None, alias="countryHints")
+    protection_snapshot: Optional[dict] = Field(default=None, alias="protectionSnapshot")
+
+
+class IncidentOut(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True, ser_json_by_alias=True)
+
+    incident_id: str = Field(
+        serialization_alias="incidentId",
+        validation_alias=AliasChoices("incidentId", "incident_id"),
+    )
+    device_uuid: str = Field(
+        serialization_alias="deviceUuid",
+        validation_alias=AliasChoices("deviceUuid", "device_uuid"),
+    )
+    triggered_at: datetime = Field(
+        serialization_alias="triggeredAt",
+        validation_alias=AliasChoices("triggeredAt", "triggered_at"),
+    )
+    triggers: list[str]
+    payload: dict
+    created_at: datetime = Field(
+        serialization_alias="createdAt",
+        validation_alias=AliasChoices("createdAt", "created_at"),
+    )
+
+    @classmethod
+    def from_row(cls, row: object) -> "IncidentOut":
+        payload = getattr(row, "payload", None) or {}
+        if not isinstance(payload, dict):
+            payload = {}
+        return cls(
+            incident_id=getattr(row, "id"),
+            device_uuid=getattr(row, "device_uuid"),
+            triggered_at=getattr(row, "triggered_at"),
+            triggers=list(getattr(row, "triggers", None) or []),
+            payload=payload,
+            created_at=getattr(row, "created_at"),
+        )

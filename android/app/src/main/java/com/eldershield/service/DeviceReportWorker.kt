@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.eldershield.data.local.ElderShieldDatabase
 import com.eldershield.data.remote.DeviceApi
+import com.eldershield.domain.scanner.AppRiskScorer
 import com.eldershield.monitor.PrivateDnsMonitor
 import com.eldershield.scanner.PackageAppScanner
 import java.util.UUID
@@ -70,6 +71,14 @@ class DeviceReportWorker(
             val suspicious = PackageAppScanner(applicationContext).scanSuspicious()
             if (suspicious.isNotEmpty()) {
                 api.postScanResult(deviceUuid, suspicious)
+            }
+            val hottest = suspicious.filter { it.riskScore >= AppRiskScorer.THRESHOLD }.maxByOrNull { it.riskScore }
+            if (hottest != null) {
+                IncidentUploadWorker.enqueue(
+                    applicationContext,
+                    trigger = "app_scan",
+                    packageName = hottest.packageName,
+                )
             }
             Result.success()
         } catch (_: Exception) {
