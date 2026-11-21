@@ -12,6 +12,7 @@
 - **Grok**: 주 실행 — 보일러플레이트, CRUD/API, 테스트 백필, 기계적 리팩터, 모듈 구현
 - **오케스트레이터(Composer/Claude)**: 아키텍처·보안·API 형태 결정, Grok diff 리뷰, 커밋 여부 판단
 - **자동 커밋 금지**. 리뷰 후 사용자가 커밋 요청할 때만 커밋
+- **가상화·랩 자원 회수**: Android 에뮬/`adb`/일회성 Docker 랩이 끝나면 반드시 종료·회수 (전역 규칙 `reclaim-virt-resources`). **사용자 VirtualBox VM은 건드리지 않음**
 
 ## 하드 제약 (위반 금지)
 
