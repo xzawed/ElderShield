@@ -1,0 +1,15 @@
+---
+description: ElderShield lab reclaim — emulator/adb/gradle only; never VirtualBox
+alwaysApply: true
+---
+
+# 랩 종료 시 자원 회수
+
+에뮬·`adb` gsm/install·Gradle 랩 종료 시:
+
+1. `adb emu kill` → `adb kill-server`
+2. 남은 **Android emulator/qemu** 만 종료
+3. `android/gradlew.bat --stop`
+
+**VirtualBox / 사용자 VM은 회수 대상이 아님** — 종료·poweroff 금지.  
+실기기 `adb` 시리얼은 강제 리셋하지 말 것.
