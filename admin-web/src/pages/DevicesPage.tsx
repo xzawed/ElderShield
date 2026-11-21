@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { type DeviceOut, listDevices } from '../api/admin'
 import KpiStrip from '../components/KpiStrip'
 import StatusBadge from '../components/StatusBadge'
@@ -19,6 +20,7 @@ function formatSync(iso: string | null, lang: string): string {
 
 export default function DevicesPage() {
   const { t, lang } = useI18n()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [devices, setDevices] = useState<DeviceOut[]>([])
@@ -94,9 +96,7 @@ export default function DevicesPage() {
                 <tr
                   key={d.deviceUuid}
                   className="hover:bg-slate-50 cursor-pointer"
-                  onClick={() => {
-                    window.location.assign(`/admin/ui/devices/${d.deviceUuid}`)
-                  }}
+                  onClick={() => navigate(`/devices/${d.deviceUuid}`)}
                 >
                   <td className="px-4 py-2.5 font-mono text-xs text-ink-800" title={d.deviceUuid}>
                     {shortUuid(d.deviceUuid)}

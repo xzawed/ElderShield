@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Session, col, select
@@ -28,7 +28,7 @@ from datetime import datetime, timezone
 from app.models.device import AppAllowlist, AppScanResult, AuditLog, Device, DeviceHealthEvent
 from app.models.incident import Incident
 from app.services.incident_merge import strip_raw_phone_keys
-from app.services.nextdns_logs import enrich_incident_dns
+from app.services.nextdns_logs import enrich_incident_dns, fetch_dns_log_events, nextdns_configured
 from app.services.audit import record_audit
 from app.services.call_rule_service import create_call_rule
 from app.services.country_restriction_service import (
@@ -500,3 +500,50 @@ def list_audit(limit: int = 100, session: Session = Depends(get_session)) -> lis
         }
         for r in rows
     ]
+
+
+@router.get("/dns-logs")
+def list_dns_logs(
+    from_: str | None = Query(default=None, alias="from"),
+    to: str | None = Query(default=None, alias="to"),
+    log_status: str = Query(default="blocked", alias="status"),
+    limit: int = 200,
+) -> JSONResponse:
+    """Thin NextDNS logs proxy for admin SPA (domain meta only)."""
+    if not nextdns_configured():
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"error": "nextdns_unset"},
+        )
+
+    def _parse(raw: str | None, fallback: datetime) -> datetime:
+        if not raw or not raw.strip():
+            return fallback
+        try:
+            dt = datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail="invalid_datetime") from exc
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+
+    now = datetime.now(timezone.utc)
+    default_from = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    start = _parse(from_, default_from)
+    end = _parse(to, now)
+    if end <= start:
+        raise HTTPException(status_code=400, detail="invalid_window")
+    lim = max(1, min(limit, 1000))
+    try:
+        events, next_cursor = fetch_dns_log_events(
+            start, end, status=log_status, limit=lim
+        )
+    except ValueError:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"error": "nextdns_unset"},
+        )
+    body: dict = {"events": events}
+    if next_cursor:
+        body["nextCursor"] = next_cursor
+    return JSONResponse(content=body)

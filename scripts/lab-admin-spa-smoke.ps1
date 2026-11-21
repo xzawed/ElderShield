@@ -92,6 +92,48 @@ try {
   }
 }
 
+try {
+  $audit = Invoke-WebRequest -Uri "$Base/admin/ui/audit" -WebSession $session `
+    -TimeoutSec 30 -UseBasicParsing
+  if ($audit.StatusCode -eq 200 -and $audit.Content -match 'id="root"') {
+    Add-R "spa-audit" "PASS" "200 html root"
+  } else {
+    Add-R "spa-audit" "FAIL" ("status={0}" -f $audit.StatusCode)
+  }
+} catch {
+  Add-R "spa-audit" "FAIL" $_.Exception.Message
+}
+
+try {
+  $dnsLogs = Invoke-WebRequest -Uri "$Base/admin/ui/dns-logs" -WebSession $session `
+    -TimeoutSec 30 -UseBasicParsing
+  if ($dnsLogs.StatusCode -eq 200 -and $dnsLogs.Content -match 'id="root"') {
+    Add-R "spa-dns-logs" "PASS" "200 html root"
+  } else {
+    Add-R "spa-dns-logs" "FAIL" ("status={0}" -f $dnsLogs.StatusCode)
+  }
+} catch {
+  Add-R "spa-dns-logs" "FAIL" $_.Exception.Message
+}
+
+try {
+  $logsApi = Invoke-WebRequest -Uri "$Base/api/v1/admin/dns-logs" -WebSession $session `
+    -Headers @{ "X-ElderShield-Admin" = "1" } -TimeoutSec 30 -UseBasicParsing
+  if ($logsApi.StatusCode -eq 200) {
+    Add-R "dns-logs-api" "PASS" "200 events"
+  } else {
+    Add-R "dns-logs-api" "FAIL" ("status={0}" -f $logsApi.StatusCode)
+  }
+} catch {
+  $code = $null
+  try { $code = [int]$_.Exception.Response.StatusCode } catch {}
+  if ($code -eq 503) {
+    Add-R "dns-logs-api" "PASS" "503 nextdns_unset (expected without env)"
+  } else {
+    Add-R "dns-logs-api" "FAIL" ("status={0} err={1}" -f $code, $_.Exception.Message)
+  }
+}
+
 $fail = @($Results | Where-Object { $_.status -eq "FAIL" }).Count
 $pass = @($Results | Where-Object { $_.status -eq "PASS" }).Count
 Write-Host "---"

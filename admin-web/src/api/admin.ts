@@ -62,6 +62,46 @@ export interface IncidentOut {
   createdAt?: string
 }
 
+export interface DeviceDetailOut {
+  device: DeviceOut
+  healthEvents: {
+    id: string
+    type: string
+    detail: string | null
+    createdAt: string | null
+  }[]
+  scans: {
+    packageName: string
+    installer: string | null
+    dangerousPermissions: string[]
+    riskScore: number
+    reasons: string[]
+    createdAt: string | null
+  }[]
+}
+
+export interface AuditRow {
+  id: string
+  actor: string
+  action: string
+  resourceType: string
+  resourceId: string | null
+  detail: string | null
+  createdAt: string | null
+}
+
+export interface DnsLogEvent {
+  at: string
+  domain: string
+  status: string
+}
+
+export interface DnsLogsOut {
+  events: DnsLogEvent[]
+  nextCursor?: string
+  error?: string
+}
+
 export function listDevices(): Promise<DeviceOut[]> {
   return apiGet<DeviceOut[]>('/api/v1/admin/devices')
 }
@@ -89,6 +129,46 @@ export function getEnrollmentWindow(): Promise<EnrollmentWindowOut> {
 
 export function listDeviceIncidents(deviceUuid: string): Promise<IncidentOut[]> {
   return apiGet<IncidentOut[]>(`/api/v1/admin/devices/${deviceUuid}/incidents`)
+}
+
+export function getIncidentExport(incidentId: string): Promise<IncidentOut> {
+  return apiGet<IncidentOut>(`/api/v1/admin/incidents/${incidentId}/export`)
+}
+
+export function getDeviceDetail(deviceUuid: string): Promise<DeviceDetailOut> {
+  return apiGet<DeviceDetailOut>(`/api/v1/admin/devices/${deviceUuid}`)
+}
+
+export function listAudit(limit = 200): Promise<AuditRow[]> {
+  return apiGet<AuditRow[]>(`/api/v1/admin/audit?limit=${limit}`)
+}
+
+export async function getDnsLogs(params: {
+  from?: string
+  to?: string
+  status?: string
+  limit?: number
+}): Promise<DnsLogsOut> {
+  const q = new URLSearchParams()
+  if (params.from) q.set('from', params.from)
+  if (params.to) q.set('to', params.to)
+  if (params.status) q.set('status', params.status)
+  if (params.limit) q.set('limit', String(params.limit))
+  const path = `/api/v1/admin/dns-logs?${q.toString()}`
+  const r = await fetch(path, {
+    credentials: 'include',
+    headers: { 'X-ElderShield-Admin': '1' },
+  })
+  if (r.status === 401) {
+    window.location.assign('/admin/ui/login')
+    throw new Error('unauthorized')
+  }
+  const body = (await r.json()) as DnsLogsOut
+  if (r.status === 503) {
+    return { events: [], error: body.error || 'nextdns_unset' }
+  }
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+  return body
 }
 
 export function listCountries(): Promise<unknown[]> {

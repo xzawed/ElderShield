@@ -1,17 +1,23 @@
-"""Phase A — serve built React admin SPA alongside Jinja admin routes."""
+"""Serve built React admin SPA alongside Jinja admin routes."""
 
 from pathlib import Path
 
 from fastapi import APIRouter, FastAPI
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 SPA_DIR = Path(__file__).resolve().parents[1] / "static" / "admin-spa"
 SPA_INDEX = SPA_DIR / "index.html"
 SPA_ASSETS_DIR = SPA_DIR / "assets"
 
-# Exact first segments after /admin/ui/ owned by the SPA shell (not Jinja).
-SPA_SHELL_SEGMENTS = frozenset({"login", "devices"})
+# Exact first segments after /admin/ui/ owned by the SPA shell (not Jinja list pages).
+SPA_SHELL_SEGMENTS = frozenset({"login", "devices", "audit", "dns-logs", "incidents"})
+
+# Parameterized SPA shells (shadow Jinja device detail when SPA is built).
+SPA_PARAM_PATHS = (
+    "/admin/ui/incidents/{incident_id}",
+    "/admin/ui/devices/{device_uuid}",
+)
 
 
 def spa_index_available() -> bool:
@@ -51,6 +57,16 @@ def register_admin_spa(app: FastAPI) -> None:
             return serve_spa_index()
 
         router.add_api_route(path, admin_spa_shell, methods=["GET"], include_in_schema=False)
+
+    @router.get("/admin/ui/incidents/{incident_id}")
+    def admin_spa_incident(incident_id: str) -> FileResponse:
+        _ = incident_id
+        return serve_spa_index()
+
+    @router.get("/admin/ui/devices/{device_uuid}")
+    def admin_spa_device(device_uuid: str) -> FileResponse:
+        _ = device_uuid
+        return serve_spa_index()
 
     for name in ("favicon.svg", "icons.svg"):
         file_path = SPA_DIR / name

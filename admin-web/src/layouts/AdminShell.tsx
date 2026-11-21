@@ -45,8 +45,20 @@ export default function AdminShell() {
   const path = location.pathname
 
   const pageMeta = (() => {
-    if (path.endsWith('/devices') || path === '/devices') {
+    if (path.startsWith('/incidents/')) {
+      return { heading: t('incident.heading'), sub: t('incident.sub') }
+    }
+    if (path.startsWith('/devices/') && path !== '/devices') {
+      return { heading: t('device.heading'), sub: t('device.sub') }
+    }
+    if (path === '/devices' || path.endsWith('/devices')) {
       return { heading: t('devices.heading'), sub: t('devices.sub') }
+    }
+    if (path === '/audit' || path.endsWith('/audit')) {
+      return { heading: t('audit.heading'), sub: t('audit.sub') }
+    }
+    if (path === '/dns-logs' || path.endsWith('/dns-logs')) {
+      return { heading: t('dns_logs.heading'), sub: t('dns_logs.sub') }
     }
     return { heading: t('dashboard.heading'), sub: t('dashboard.sub') }
   })()
@@ -63,13 +75,14 @@ export default function AdminShell() {
           <NavItem
             to="/devices"
             label={t('nav.devices')}
-            active={path === '/devices' || path.endsWith('/devices')}
+            active={path === '/devices' || path.startsWith('/devices/')}
           />
+          <NavItem to="/audit" label={t('nav.audit')} active={path === '/audit'} />
+          <NavItem to="/dns-logs" label={t('nav.dns_logs')} active={path === '/dns-logs'} />
           <JinjaLink href="/admin/ui/restrictions" label={t('nav.restrictions')} active={false} />
           <JinjaLink href="/admin/ui/call-rules" label={t('nav.call_rules')} active={false} />
           <JinjaLink href="/admin/ui/dns-denylist" label={t('nav.dns')} active={false} />
           <JinjaLink href="/admin/ui/allowlist" label={t('nav.allowlist')} active={false} />
-          <JinjaLink href="/admin/ui/audit" label={t('nav.audit')} active={false} />
           <a
             href="/admin/ui/logout"
             className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white"
@@ -78,36 +91,30 @@ export default function AdminShell() {
           </a>
         </nav>
         <div className="px-5 pb-6 space-y-2">
-          <div className="flex gap-2 text-xs">
-            <a
-              href={langToggleHref('ko')}
-              className={`rounded-md px-2 py-1 ${lang === 'ko' ? 'bg-brand-600 text-white' : 'bg-white/5 text-slate-300 hover:text-white'}`}
-            >
-              {t('lang.ko')}
-            </a>
-            <a
-              href={langToggleHref('en')}
-              className={`rounded-md px-2 py-1 ${lang === 'en' ? 'bg-brand-600 text-white' : 'bg-white/5 text-slate-300 hover:text-white'}`}
-            >
-              {t('lang.en')}
-            </a>
-          </div>
+          <a
+            href={langToggleHref(lang === 'ko' ? 'en' : 'ko')}
+            className="text-xs text-slate-400 hover:text-white"
+          >
+            {lang === 'ko' ? t('lang.en') : t('lang.ko')}
+          </a>
         </div>
       </aside>
-      <div className="flex-1 min-w-0">
-        <header className="border-b border-slate-200 bg-white/90 backdrop-blur px-6 py-4 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-lg font-semibold text-ink-950">{pageMeta.heading}</h1>
-            <p className="text-sm text-ink-600">{pageMeta.sub}</p>
+      <main className="flex-1 min-w-0">
+        <header className="border-b border-slate-200 bg-white/80 backdrop-blur px-6 py-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="font-display text-2xl text-ink-950 tracking-tight">{pageMeta.heading}</h1>
+              <p className="mt-1 text-sm text-ink-600">{pageMeta.sub}</p>
+            </div>
+            <span className="hidden sm:inline-flex items-center rounded-full bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200 px-2.5 py-1 text-xs font-semibold">
+              {t('header.live')}
+            </span>
           </div>
-          <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">
-            {t('header.live')}
-          </span>
         </header>
-        <main className="px-6 py-8 max-w-6xl">
+        <div className="p-6">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   )
 }
