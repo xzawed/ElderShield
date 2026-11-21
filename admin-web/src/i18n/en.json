@@ -88,6 +88,12 @@
   "device.scans": "App scans",
   "device.incidents": "Incidents",
   "device.open_incident": "Open",
+  "device.token_active": "Device token active",
+  "device.token_revoked": "Device token revoked",
+  "device.token_none": "Shared key / no token",
+  "device.revoke": "Revoke device token",
+  "device.revoke_confirm": "Revoke this device token? The phone must re-enroll with the enrollment window open.",
+  "device.revoke_done": "Token revoked.",
   "audit.heading": "Audit log",
   "audit.sub": "Admin change history",
   "audit.filter_action": "Action",
@@ -107,5 +113,6 @@
   "dns_logs.denylist_link": "Denylist policy →",
   "dns_logs.unset": "NEXTDNS_API_KEY / NEXTDNS_PROFILE_ID are not configured.",
   "dns_logs.top": "Top domains",
-  "dns_logs.empty": "No logs in this window."
+  "dns_logs.empty": "No logs in this window.",
+  "dns_logs.invalid_range": "Invalid time range."
 }

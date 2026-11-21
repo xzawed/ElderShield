@@ -88,6 +88,12 @@
   "device.scans": "앱 스캔",
   "device.incidents": "Incident",
   "device.open_incident": "상세",
+  "device.token_active": "기기 토큰 활성",
+  "device.token_revoked": "기기 토큰 폐기됨",
+  "device.token_none": "공유키 / 토큰 없음",
+  "device.revoke": "기기 토큰 폐기",
+  "device.revoke_confirm": "이 기기 토큰을 폐기할까요? 등록 창을 연 뒤 재등록이 필요합니다.",
+  "device.revoke_done": "토큰을 폐기했습니다.",
   "audit.heading": "감사 로그",
   "audit.sub": "관리자 변경 이력",
   "audit.filter_action": "동작",
@@ -107,5 +113,6 @@
   "dns_logs.denylist_link": "Denylist 정책 →",
   "dns_logs.unset": "NEXTDNS_API_KEY / NEXTDNS_PROFILE_ID가 설정되지 않았습니다.",
   "dns_logs.top": "도메인 Top",
-  "dns_logs.empty": "이 구간에 로그가 없습니다."
+  "dns_logs.empty": "이 구간에 로그가 없습니다.",
+  "dns_logs.invalid_range": "조회 기간이 올바르지 않습니다."
 }

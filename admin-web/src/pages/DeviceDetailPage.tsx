@@ -5,6 +5,7 @@ import {
   type IncidentOut,
   getDeviceDetail,
   listDeviceIncidents,
+  revokeDeviceToken,
 } from '../api/admin'
 import KpiStrip from '../components/KpiStrip'
 import StatusBadge from '../components/StatusBadge'
@@ -30,6 +31,8 @@ export default function DeviceDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [detail, setDetail] = useState<DeviceDetailOut | null>(null)
   const [incidents, setIncidents] = useState<IncidentOut[]>([])
+  const [revoking, setRevoking] = useState(false)
+  const [revokeMsg, setRevokeMsg] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     if (!deviceUuid) return
@@ -58,6 +61,22 @@ export default function DeviceDetailPage() {
     [detail],
   )
 
+  const onRevoke = async () => {
+    if (!deviceUuid) return
+    if (!window.confirm(t('device.revoke_confirm'))) return
+    setRevoking(true)
+    setRevokeMsg(null)
+    try {
+      await revokeDeviceToken(deviceUuid)
+      setRevokeMsg(t('device.revoke_done'))
+      await load()
+    } catch (e) {
+      setRevokeMsg(e instanceof Error ? e.message : t('state.error'))
+    } finally {
+      setRevoking(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="rounded-xl bg-white shadow-panel ring-1 ring-slate-200 px-6 py-12 text-center text-sm text-ink-600">
@@ -78,6 +97,7 @@ export default function DeviceDetailPage() {
   }
 
   const d = detail.device
+  const tokenStatus = detail.tokenStatus || 'none'
 
   return (
     <div className="space-y-6">
@@ -95,19 +115,19 @@ export default function DeviceDetailPage() {
           {
             key: 'dns',
             label: t('devices.col_dns'),
-            value: d.dnsConfigured ? 1 : 0,
+            value: d.dnsConfigured ? t('yes') : t('no'),
             accent: d.dnsConfigured ? 'default' : 'warn',
           },
           {
             key: 'screen',
             label: t('devices.col_screening'),
-            value: d.callScreeningEnabled ? 1 : 0,
+            value: d.callScreeningEnabled ? t('yes') : t('no'),
             accent: d.callScreeningEnabled ? 'default' : 'risk',
           },
           {
             key: 'deg',
             label: t('devices.col_degraded'),
-            value: d.protectionDegraded ? 1 : 0,
+            value: d.protectionDegraded ? t('yes') : t('no'),
             accent: d.protectionDegraded ? 'warn' : 'default',
           },
           {
@@ -117,6 +137,40 @@ export default function DeviceDetailPage() {
           },
         ]}
       />
+
+      <section className="rounded-xl bg-white shadow-panel ring-1 ring-slate-200 p-5 space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <StatusBadge
+            label={
+              tokenStatus === 'active'
+                ? t('device.token_active')
+                : tokenStatus === 'revoked'
+                  ? t('device.token_revoked')
+                  : t('device.token_none')
+            }
+            variant={tokenStatus === 'active' ? 'ok' : tokenStatus === 'revoked' ? 'warn' : 'muted'}
+          />
+          <StatusBadge
+            label={d.dnsConfigured ? `DNS ${d.dnsHostClass || 'on'}` : 'DNS off'}
+            variant={d.dnsConfigured ? 'ok' : 'warn'}
+          />
+        </div>
+        {tokenStatus === 'active' ? (
+          <button
+            type="button"
+            disabled={revoking}
+            onClick={() => void onRevoke()}
+            className="rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-60"
+          >
+            {revoking ? t('state.loading') : t('device.revoke')}
+          </button>
+        ) : null}
+        {revokeMsg ? <p className="text-sm text-ink-700">{revokeMsg}</p> : null}
+        <p className="text-xs text-ink-500">
+          app {d.appVersion}
+          {d.lastSyncErrorCode ? ` · sync ${d.lastSyncErrorCode}` : ''}
+        </p>
+      </section>
 
       <section className="rounded-xl bg-white shadow-panel ring-1 ring-slate-200 p-5">
         <h2 className="text-sm font-semibold text-ink-950 mb-3">{t('device.health')}</h2>
@@ -180,13 +234,6 @@ export default function DeviceDetailPage() {
           </ul>
         )}
       </section>
-
-      <div className="text-sm">
-        <StatusBadge
-          label={d.dnsConfigured ? `DNS ${d.dnsHostClass || 'on'}` : 'DNS off'}
-          variant={d.dnsConfigured ? 'ok' : 'warn'}
-        />
-      </div>
     </div>
   )
 }

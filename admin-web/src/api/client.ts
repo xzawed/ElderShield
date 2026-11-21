@@ -31,3 +31,16 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   if (r.status === 204) return undefined as T
   return r.json() as Promise<T>
 }
+
+export async function apiDelete(path: string): Promise<void> {
+  const r = await fetch(path, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: ADMIN_UI_HEADERS,
+  })
+  if (r.status === 401) {
+    window.location.assign('/admin/ui/login')
+    throw new Error('unauthorized')
+  }
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+}
