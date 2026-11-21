@@ -1,6 +1,8 @@
 from pathlib import Path
 import time
 
+from pydantic import BaseModel, ConfigDict, Field
+
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
@@ -23,7 +25,7 @@ from app.services.country_restriction_service import (
 from app.services.dns_denylist import build_dns_denylist
 from app.services.incident_merge import strip_raw_phone_keys
 from app.services.nextdns_logs import enrich_incident_dns
-from app.web.auth import login_redirect, logout_redirect, require_admin_ui
+from app.web.auth import login_redirect, logout_redirect, require_admin_ui, set_admin_session_cookie
 from app.web.i18n import LANG_COOKIE, make_translator, normalize_lang, resolve_lang
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
@@ -119,8 +121,44 @@ def login_submit(request: Request, api_key: str = Form(...)) -> Response:
     return login_redirect(api_key)
 
 
+class AdminLoginJsonIn(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    api_key: str = Field(alias="apiKey")
+
+
+@router.post("/api/login")
+def login_json(request: Request, body: AdminLoginJsonIn) -> JSONResponse:
+    import hmac
+
+    from app.core.config import settings
+
+    ip = _client_ip(request)
+    if _login_blocked(ip):
+        return JSONResponse(
+            status_code=429,
+            content={"ok": False, "error": "rate"},
+        )
+
+    expected = settings.admin_api_key or ""
+    candidate = body.api_key.encode("utf-8")
+    right = expected.encode("utf-8")
+    if len(candidate) != len(right) or not hmac.compare_digest(candidate, right):
+        _record_login_failure(ip)
+        return JSONResponse(
+            status_code=401,
+            content={"ok": False, "error": "invalid"},
+        )
+
+    _LOGIN_FAILURES.pop(ip, None)
+    resp = JSONResponse(content={"ok": True})
+    set_admin_session_cookie(resp, body.api_key)
+    return resp
+
+
 @router.get("/logout")
-def logout(_: str = Depends(require_admin_ui)) -> RedirectResponse:
+def logout() -> RedirectResponse:
+    # Always clear cookie (even if session already invalid / expired).
     return logout_redirect()
 
 

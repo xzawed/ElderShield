@@ -4,7 +4,8 @@
 **Local only:** `ELDERSHIELD_ALLOW_INSECURE_DEFAULTS=1`.
 
 **Admin UI cookie:** HMAC session (`eldershield_admin_session`), never the raw key.  
-Production HTTPS: set `COOKIE_SECURE=1`.
+Production HTTPS: set `COOKIE_SECURE=1`.  
+Cookie-authenticated `/api/v1/admin/*` also requires header `X-ElderShield-Admin: 1` (SPA sends it; blocks top-level CSRF GET). Logout clears the cookie with the same `Secure`/`SameSite`/`Path` flags used at login.
 
 **Android (debug/lab):** provision shared `device_api_key` + `base_url` (or **Lab: enroll** / `scripts/lab-enroll-device.ps1`). Blank key → WorkManager retry, no insecure default.
 

@@ -14,6 +14,7 @@ from app.db import init_db
 from app.models.device import Device
 from app.models.rule_bundle_meta import SINGLETON_ID, RuleBundleMeta
 from app.web.admin_ui import router as admin_ui_router
+from app.web.spa import register_admin_spa, spa_home_path, spa_index_available
 
 
 @asynccontextmanager
@@ -24,6 +25,7 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="ElderShield API", version="0.2.0", lifespan=lifespan)
+register_admin_spa(app)
 app.include_router(admin_router)
 app.include_router(device_router)
 app.include_router(enroll_router)
@@ -32,13 +34,15 @@ app.include_router(admin_ui_router)
 
 @app.get("/")
 def root() -> RedirectResponse:
-    """Public Railway / GitHub About URL → admin UI login."""
-    return RedirectResponse(url="/admin/ui/login", status_code=302)
+    """Public Railway / GitHub About URL → admin UI."""
+    return RedirectResponse(url=spa_home_path(), status_code=302)
 
 
 @app.get("/admin")
 @app.get("/admin/ui")
 def admin_entry() -> RedirectResponse:
+    if spa_index_available():
+        return RedirectResponse(url="/admin/ui/", status_code=302)
     return RedirectResponse(url="/admin/ui/login", status_code=302)
 
 

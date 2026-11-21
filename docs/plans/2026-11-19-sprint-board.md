@@ -79,6 +79,7 @@
 | S6.2 | Play internal track + rollback runbook | Runbooks + `v0.1.0.md`; **signed AAB upload = operator** |
 | S6.3 | Country internet via DNS denylist | Code Pass; denylist Pass; **NEXTDNS_* sync + .cn NXDOMAIN = operator** |
 | S6.4 | CI closeout | Pass (pytest + `:core:test`) |
+| S6.5 | Admin React SPA Phase A | shell+login+dashboard+devices; Railway/CI SPA build | Pass 2026-11-21 |
 
 ## Doc budget
 

@@ -1,4 +1,7 @@
-﻿FROM python:3.12-slim
+﻿# Railway rootDirectory=/backend: admin-web is outside Docker context.
+# Run backend/scripts/build-admin-spa.sh before image build, or use repo-root Dockerfile (multi-stage).
+# CI (.github/workflows/ci.yml) builds admin-web before pytest/deploy artifacts.
+FROM python:3.12-slim
 
 WORKDIR /app
 
